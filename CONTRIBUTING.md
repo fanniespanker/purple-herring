@@ -43,8 +43,9 @@ Recommended fallback rules:
    - `CiNnaMoN` -> `cinnamon`
 
 3. Replace spaces with underscores.
-   - `CNML Specification.md` -> `cnml_specification.md`
-   - `PÂTE Specification.md` -> `pate_specification.md`
+   - `C4 Technical Specification.md` -> `c4_technical_specification.md`
+   - `SARDINE Specification.md` -> `sardine_specification.md`
+   - `Herring Bones Guide.md` -> `herring_bones_guide.md`
 
 4. Avoid punctuation except underscore `_`, hyphen `-` when semantically useful, and period `.` for extensions.
 
@@ -53,9 +54,15 @@ Recommended fallback rules:
 Examples:
 
 ```text
-PÂTE Specification.md      -> pate_specification.md
-CNML Specification.md      -> cnml_specification.md
-CiNnaMoN Specification.md  -> cinnamon_specification.md
+C4 Technical Specification.md      -> c4_technical_specification.md
+SARDINE Specification.md           -> sardine_specification.md
+Herring Bones Guide.md             -> herring_bones_guide.md
+CAThedral Specification.md         -> cathedral_specification.md
+GEL Execution Semantics.md         -> gel_execution_semantics.md
+CPM Patch Semantics.md             -> cpm_patch_semantics.md
+CNML Specification.md              -> cnml_specification.md
+PÂTE Specification.md              -> pate_specification.md
+CiNnaMoN Specification.md          -> cinnamon_specification.md
 ```
 
 ASCII fallback filenames are convenience handles only. They do not change the project vocabulary, formal names, document titles, or required UTF-8 support.
