@@ -6,9 +6,19 @@ Contributions should preserve the distinction between canonical project vocabula
 
 ## Repository Scope
 
-This repository is for public Purple Herring materials, including C4, SARDINE, Herring Bones, CAThedral, GEL, CPM, and cleanly separated public LIBRARIUM materials.
+This repository is for public Purple Herring materials, including language specifications, tooling specifications, reusable semantic libraries, execution semantics, patch semantics, and related authoring or markup specifications.
 
-Do not add private Neurative architecture notes, working-state handoffs, private integration notes, internal planning files, or unpublished downstream layers to this repository.
+Do not add private planning notes, unpublished integration notes, working drafts, internal project files, local scratch files, or process artifacts to this repository.
+
+## Contribution Authorship and License Compatibility
+
+Only contribute material that you wrote yourself or have the right to submit under this repository's licenses.
+
+Do not copy code, documentation, data, examples, generated files, or substantial text from third-party sources unless the source license is compatible with the target file or directory and all attribution requirements are satisfied.
+
+Generated, vendored, bundled, or adapted material must be clearly marked and must preserve required copyright notices, attribution, SPDX identifiers, and license text.
+
+When authorship, provenance, or license compatibility is unclear, do not add the material until it has been reviewed.
 
 ## Filename and Encoding Policy
 
@@ -161,7 +171,7 @@ Code identifiers should use ASCII unless a language, toolchain, or data format e
 When converting project names into code identifiers:
 
 1. Transliterate accented Latin characters to nearest ASCII.
-2. Use the host language’s normal identifier convention.
+2. Use the host language's normal identifier convention.
 3. Preserve canonical spelling in user-facing strings, documentation headings, comments where helpful, and metadata.
 
 Examples:
@@ -183,8 +193,8 @@ User-facing label:      CiNnaMoN
 
 Code identifiers are operational handles, not canonical names. ASCII code identifiers do not rename the project concept.
 
-## Public-Safety Review
+## Public-Scope Review
 
-Before adding or publishing material here, check that it does not include private Neurative architecture details, private integration notes, working-state capsules, or internal governance material.
+Before adding or publishing material here, check that it belongs to the public Purple Herring ecosystem and does not include private planning notes, unpublished integration notes, working drafts, internal project files, local scratch files, or process artifacts.
 
-When in doubt, keep the material in the private working repository until it has been curated for public release.
+When in doubt, leave the material out until it has been reviewed.
