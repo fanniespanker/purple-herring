@@ -240,10 +240,26 @@ examples/         file- or directory-specific
 
 ## 10. Conflict Resolution
 
-If a file contains an explicit SPDX license identifier, that file-level identifier controls for that file.
+License resolution proceeds as follows:
 
-If a directory contains a local `LICENSE.md`, that directory-level notice applies to files in that directory unless a file says otherwise.
+```text
+case all applicable license markers agree:
+    the most specific marker controls
+    file-level > directory-level > repository-level
 
-If neither a file-level nor directory-level notice exists, this top-level `LICENSE.md` and the repository layout determine the intended license.
+case no file-level or directory-level marker exists:
+    top-level LICENSE.md and repository layout control
 
-When in doubt, ask the repository maintainers before redistributing modified versions of mixed-license materials.
+case any applicable license markers conflict:
+    treat as an error
+    do not rely on any conflicting marker
+    ask the repository maintainers before copying, redistributing, incorporating, or modifying the affected material
+
+default:
+    license is ambiguous
+    ask before reuse
+```
+
+In summary, all applicable levels of licensing must agree before any specific license marker may be relied upon.
+
+Applicable license markers include file-level SPDX identifiers, file-level license notices, directory-level `LICENSE.md` files, the top-level `LICENSE.md`, and the repository license layout.
