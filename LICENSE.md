@@ -54,18 +54,23 @@ The share-alike license is used so that modified versions of the specifications 
 
 ## 3. Design History and Official Lineage Records
 
+This category is included for official lineage/history materials that may be added to this repository if and when they are intentionally published. Materials that remain private should stay outside the public repository.
+
 Design-history documents, official lineage records, origin notes, naming-history documents, and aesthetic/conceptual history documents are licensed under Creative Commons Attribution-NoDerivatives 4.0 International:
 
 ```text
 SPDX-License-Identifier: CC-BY-ND-4.0
 ```
 
-This applies to materials such as:
+This applies to current or future materials such as:
 
 * `design-history/`
 * official historical lineage notes
 * origin and naming-history records
 * non-normative aesthetic/conceptual history supplements
+* official donor-draft tombstones
+* official naming-history records
+* published boundary-history records, if intentionally added
 
 These documents may be copied and redistributed with attribution, but modified versions may not be distributed.
 
@@ -98,6 +103,8 @@ These materials are intended to be freely copied, changed, embedded, forked, reu
 
 ## 5. API, SDK, Adapter, and Integration Glue
 
+This category is included now as a planned future integration surface, even if the repository does not yet contain API clients, SDKs, adapters, or integration glue.
+
 API clients, SDK glue, protocol adapters, blob adapters, and integration examples may be licensed under a permissive software license where marked:
 
 ```text
@@ -110,7 +117,7 @@ or:
 SPDX-License-Identifier: MIT
 ```
 
-This may apply to materials such as:
+This may apply to current or future materials such as:
 
 * `api/`
 * `sdk/`
@@ -119,6 +126,10 @@ This may apply to materials such as:
 * protocol bindings
 * blob/API integration examples
 * examples intended for easy third-party adoption
+* public reference clients
+* import/export adapters
+* editor integrations
+* language-server integration glue
 
 Unless a file or directory is explicitly marked otherwise, official core implementation code remains AGPL-3.0-or-later.
 
@@ -206,6 +217,8 @@ or:
 
 ## 9. Recommended Repository License Files
 
+The `LICENSES/` directory may include license texts for both currently used categories and planned future public categories. Keeping future license texts present is intentional: it records expected licensing boundaries before all public components exist. It does not imply that private materials belong in this repository.
+
 A complete checkout should include the full license texts under `LICENSES/`:
 
 ```text
@@ -230,9 +243,9 @@ specs/            CC-BY-SA-4.0
 docs/             CC-BY-SA-4.0
 design-history/   CC-BY-ND-4.0
 herring-bones/    CC0-1.0
-api/              Apache-2.0 or MIT where marked
-sdk/              Apache-2.0 or MIT where marked
-adapters/         Apache-2.0 or MIT where marked
+api/              Apache-2.0 or MIT where marked; planned/future if absent
+sdk/              Apache-2.0 or MIT where marked; planned/future if absent
+adapters/         Apache-2.0 or MIT where marked; planned/future if absent
 examples/         file- or directory-specific
 ```
 
