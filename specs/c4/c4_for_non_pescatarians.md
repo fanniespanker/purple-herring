@@ -100,6 +100,38 @@ Plain English:
 Judith, a character in Hardboiled Whore by Fannie Spanker, has the role femme fatale.
 ```
 
+### Why fish work this way
+
+C4 is for writing relationships in a form that both people and software can inspect.
+
+A fish works because it keeps the basic pieces of a relationship visible:
+
+```text
+TAIL & RELATION @ HEAD
+```
+
+In ordinary language, this means:
+
+```text
+this thing has this relationship to that thing
+```
+
+That shape is simple, but it is powerful enough to describe many kinds of meaning:
+
+```text
+this source supports this claim
+this field maps to that field
+this rule applies in this context
+this character belongs to this faction
+this component depends on this service
+```
+
+The point is not that every domain should use the same vocabulary. The point is that many domains need the same basic kind of structure: explicit relationships that can be read, reviewed, checked, transformed, and shared.
+
+C4 is most useful when knowledge needs to be portable between systems and disciplines — when relationships need to cross contexts, schemas, tools, teams, or interpretations without losing their structure.
+
+A fish is therefore both readable and structured. A person can inspect it as a relationship. A tool can parse it as source.
+
 ---
 
 ## 2. Fish-Market Terminology
@@ -723,6 +755,27 @@ This is where C4 starts to feel different from simple triples.
 The chapter is not just related to one resource.
 
 It is related to a structured school of fish.
+
+### Why schools exist
+
+A single fish can describe one relationship.
+
+A school exists because meaning often comes in groups.
+
+For example, a chapter, policy, dataset, scene, requirement, or design decision may establish several relationships at once. Those relationships may need to stay together because they share a context, source, scope, or interpretation.
+
+A school is a block of fish that can be treated as a structured resource:
+
+```text
+Act_2/Chapter_17&establishes@{
+  Andrea&is_[owner]_of@Judith;
+  Judith&is_[pet]_of@Andrea;
+}
+```
+
+This says that the chapter establishes the whole group, not just one isolated relation.
+
+That matters because C4 is not only trying to say facts. It is trying to preserve the structure around meaning: where relationships came from, what context they belong to, and how they can be inspected later.
 
 ---
 
