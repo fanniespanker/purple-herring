@@ -77,6 +77,8 @@ C4 gives those relationships a source form.
 
 That source form can be reviewed by people, parsed by tools, checked by validators, reused through Herring Bones, and transformed into other representations.
 
+C4 is most useful when knowledge needs to be portable between systems and disciplines — when relationships need to cross contexts, schemas, tools, teams, or interpretations without losing their structure.
+
 ## A small example
 
 A mapping might begin life as an informal note:
