@@ -67,6 +67,34 @@ C4 lets people write meaning like source code.
 
 That does not mean every meaning becomes simple or final. It means relationships can become explicit enough to inspect, discuss, validate, and transform.
 
+## Why not just use prose, code, diagrams, or a database?
+
+C4 is not trying to replace those things.
+
+It exists because many relationships are too important to leave only in prose, too semantic to hide inside code, too structured for ordinary notes, and too cross-domain for one local database schema.
+
+C4 gives those relationships a source form.
+
+That source form can be reviewed by people, parsed by tools, checked by validators, reused through Herring Bones, and transformed into other representations.
+
+## A small example
+
+A mapping might begin life as an informal note:
+
+```text
+customer_id in System A is basically client.id in System B, except for legacy accounts
+```
+
+That sentence may be understandable to a person, but it is difficult for tools to validate, search, transform, or compare consistently.
+
+C4 aims to make that kind of relationship explicit, contextual, and inspectable:
+
+```text
+system_a/customer_id&maps_to@system_b/client/id~contexts/non_legacy_accounts
+```
+
+The exact relation vocabulary belongs to C4 templates, Herring Bones, and project-specific vocabularies. The point is that the relationship becomes something tools can inspect rather than a sentence they might ignore.
+
 ## A semantic lingua franca
 
 C4 is designed to act as a small semantic lingua franca between people and software.
