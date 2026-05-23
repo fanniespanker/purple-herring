@@ -1,8 +1,8 @@
 # C4 Applications in Plain Terms
 
-C4 is a way to write down meaningful relationships so that both people and software can understand them.
+C4 is a way to write down meaningful relationships so that both people and software can inspect them.
 
-The basic idea is simple:
+The basic pattern is simple:
 
 ```text
 this thing has this relationship to that thing
@@ -18,9 +18,17 @@ this character belongs to that faction
 this software component depends on that service
 ```
 
-C4 gives those relationships a source format. That means they can be written, reviewed, searched, validated, version-controlled, and transformed without hiding the meaning inside a database, diagram, spreadsheet, or custom script.
+C4 gives those relationships a source format. That means they can be written, reviewed, searched, validated, version-controlled, and transformed as explicit semantic structure rather than remaining only in prose, diagrams, spreadsheets, database fields, or custom scripts.
 
 Purple Herring is the public ecosystem around C4: the language, tooling, reusable scaffolds, validation rules, execution semantics, and related specifications.
+
+## Status
+
+This document is a plain-language overview of applications that can reasonably be projected from the current C4 specification and its public ecosystem direction.
+
+The central capability described here is grounded in the C4 language model: C4 represents resources, relations, heads, tails, context grounding, bindings, query bindings, lists, schools, relation templates, and complete fish as first-class resources.
+
+The application areas below are illustrative. They are not claims that complete domain-specific tooling already exists.
 
 ## The problem C4 is trying to solve
 
@@ -36,21 +44,13 @@ They need to know how things relate:
 - which requirement is tested by which test;
 - which story event changes which later possibility.
 
-People already track this kind of information, but often in fragile ways:
-
-- prose notes that are hard to validate;
-- diagrams that are hard to diff;
-- spreadsheets that become inconsistent;
-- database schemas that are too rigid;
-- code comments that drift away from reality;
-- hidden glue logic inside scripts;
-- knowledge graphs that require specialized tools before anyone can contribute.
+People already track this kind of information, but often in formats that are difficult to parse, validate, compare, or reuse consistently.
 
 C4 is meant to make relationship structure easier to write down directly.
 
 ## The practical pitch
 
-C4 tries to make semantic structure:
+C4 is intended to make semantic structure:
 
 - human-authorable;
 - machine-parseable;
@@ -65,224 +65,179 @@ In plain terms:
 C4 lets people write meaning like source code.
 ```
 
-That does not mean every meaning becomes simple or final. It means the relationships become explicit enough to inspect, discuss, validate, and transform.
+That does not mean every meaning becomes simple or final. It means relationships can become explicit enough to inspect, discuss, validate, and transform.
 
-## Knowledge graphs people can actually write
+## Knowledge graphs and semantic source files
 
-Knowledge graphs are useful, but many graph tools are hard to author by hand. They may require a database, a visual editor, or a large ontology before ordinary contributors can do useful work.
+C4 can be used as a text source format for graph-like semantic relationships.
 
-C4 can act as a Git-friendly source language for knowledge graphs.
+That makes it relevant to projects that maintain structured knowledge, such as:
 
-A team could use C4 to maintain:
-
-- research knowledge bases;
+- research notes;
 - institutional memory;
-- policy graphs;
+- policy maps;
 - legal knowledge maps;
-- medical guideline maps;
 - literary and cultural metadata;
-- software architecture knowledge graphs.
+- software architecture knowledge maps.
 
-The advantage is that relationships can be reviewed in pull requests, compared across versions, canonicalized by tools, and exported into other systems.
+The reasonable projection is not that C4 replaces graph databases. Rather, C4 can provide an authorable source layer that may be parsed, canonicalized, validated, and exported into other representations.
 
 ## Mapping between systems
 
-Different teams often describe the same world in different ways.
+The C4 specification includes mapping / projection syntax and relation syntax for describing relationships between resources, concepts, scopes, and structures.
 
-One database has one schema. Another system has another schema. One archive uses one vocabulary. Another archive uses a different one. Two standards may overlap without matching exactly.
+That makes C4 a natural fit for describing how one system relates to another.
 
-C4 can describe those relationships explicitly:
+Examples include:
 
 - this field maps to that field;
-- this concept roughly corresponds to that concept;
+- this concept corresponds to that concept;
 - this category is narrower than that category;
 - this term conflicts with that term in this context;
-- this transformation preserves one meaning but loses another.
+- this transformation preserves one distinction but loses another.
 
-This could help with:
+Potential areas include:
 
 - metadata crosswalks;
-- library and archive systems;
-- museum collection metadata;
-- healthcare terminology mapping;
-- enterprise data integration;
-- scientific vocabulary alignment.
+- archive and library vocabularies;
+- schema mapping;
+- terminology alignment;
+- data integration notes.
 
-The important part is that mappings stop being hidden inside ETL scripts or informal documentation. They become reviewable semantic artifacts.
+The key point is that mappings can become explicit semantic artifacts rather than only implementation details.
 
-## AI and retrieval systems
+## Provenance, claims, and context
 
-Many AI retrieval systems store chunks of text and embeddings. That can be useful, but it often loses clear structure around claims, sources, contradictions, and context.
+C4 supports complete fish as first-class resources. This means a relationship can itself be addressed, cited, contextualized, supported, disputed, transformed, or grouped.
 
-C4 could help represent:
+That makes C4 relevant to provenance and claim-tracking work.
 
-- where a claim came from;
-- what supports it;
-- what contradicts it;
-- what context it belongs to;
-- which entity has which role;
-- which answer was derived from which source.
+Possible structures include:
 
-This could support:
+- this source supports this claim;
+- this claim contradicts that claim;
+- this statement is grounded in this context;
+- this interpretation depends on this scope;
+- this answer was derived from this source.
 
-- retrieval-augmented generation;
-- agent memory inspection;
-- source attribution;
-- claim graphs;
-- fact-checking pipelines;
-- semantic audit trails.
+This is relevant to research notes, source attribution, fact-checking workflows, audit trails, and retrieval systems that need inspectable relationships in addition to raw text.
 
-The simple version:
+## Legal, policy, and compliance structure
 
-```text
-do not only store chunks; store inspectable relationships
-```
+Legal, policy, and compliance work often involves relationships among rules, definitions, obligations, exceptions, parties, controls, and contexts.
 
-## Legal, policy, and compliance work
+C4 could be used to author and inspect relationship structures such as:
 
-Legal and compliance work is full of relationships, exceptions, definitions, roles, scopes, and contexts.
+- a contract clause creates an obligation;
+- a policy applies to a situation;
+- an exception modifies a rule;
+- a control satisfies a requirement;
+- evidence supports a compliance claim.
 
-C4 could help encode:
+This does not imply automated legal judgment. It means C4 may be useful for representing structured relationships that experts still need to review.
 
-- contract obligations;
-- policy requirements;
-- exceptions;
-- definitions;
-- party roles;
-- jurisdictional scope;
-- controls and evidence;
-- license compatibility notes.
+## Software architecture and requirements
 
-This does not mean replacing lawyers or compliance experts. It means giving people and tools a clearer way to inspect and maintain structured relationships.
+Software projects contain many relationships that are often scattered across diagrams, comments, tickets, and documentation.
 
-## Software architecture
+C4 could describe structures such as:
 
-Software architecture documentation often becomes stale because it lives in prose, diagrams, or scattered comments.
+- a service depends on another service;
+- a module owns a resource;
+- an API implements a capability;
+- a migration transforms one schema into another;
+- a requirement is implemented by a feature;
+- a test validates a requirement;
+- a decision supersedes an older decision.
 
-C4 could help describe:
-
-- which service depends on which service;
-- which module owns which resource;
-- which API implements which capability;
-- which component violates which boundary;
-- which migration transforms one schema into another;
-- which decision supersedes an older decision.
-
-Because C4 is text, these relationships can be reviewed, changed, and tracked like other source files.
+Because C4 is text, these structures can be reviewed and versioned alongside other project files.
 
 ## Data lineage and semantic data contracts
 
-Data pipelines often track where data moves, but not always what the data means.
+Data systems need to know not only where data moves, but what it means.
 
-C4 could describe:
+C4 could represent:
 
-- which dataset derives from which dataset;
-- which field maps to which field;
-- which transformation preserves meaning;
-- which transformation loses meaning;
-- what a column means in a specific context.
+- a dataset derives from another dataset;
+- a field maps to another field;
+- a transformation preserves a meaning;
+- a transformation loses or changes a meaning;
+- a column has a particular meaning in a particular context.
 
-This could help with:
-
-- data catalogs;
-- warehouse lineage;
-- analytics governance;
-- semantic data contracts;
-- schema migration documentation;
-- pipeline validation.
+This makes C4 relevant to data catalogs, lineage notes, schema migration documentation, and semantic data contracts.
 
 ## Archives, publishing, and humanities work
 
-Libraries, archives, and scholarly projects often need rich relationships that do not fit cleanly into one table or one metadata standard.
+C4 can describe relationships among works, editions, citations, interpretations, characters, themes, publication contexts, and annotations.
 
-C4 could help represent:
+This makes it relevant to:
 
-- works, editions, adaptations, and citations;
-- character relationships;
-- themes and motifs;
-- publication relationships;
-- parody, support, opposition, or influence;
-- annotations and interpretive claims.
+- archive metadata;
+- scholarly editions;
+- literary analysis;
+- media databases;
+- annotated corpora;
+- publication relationship tracking.
 
-This makes it useful for digital humanities, scholarly editions, archive metadata, literary analysis, media databases, and annotated corpora.
+The current specification already supports the underlying relationship model. Domain-specific usefulness would depend on appropriate Herring Bones, vocabularies, and examples.
 
 ## Games and narrative systems
 
-Games, especially narrative games and role-playing games, contain many structured relationships:
+Narrative systems contain structured relationships among characters, places, factions, events, conditions, and consequences.
 
-- characters belong to factions;
-- quests depend on earlier choices;
-- locations contain objects;
-- dialogue depends on world state;
-- lore facts support or contradict other facts;
-- player choices change future conditions.
+C4 could describe:
 
-C4 could help build inspectable world-state and lore graphs.
+- a character belongs to a faction;
+- a quest depends on an earlier choice;
+- a location contains an object;
+- a dialogue option depends on world state;
+- a lore fact supports or contradicts another lore fact.
 
-Possible uses include:
-
-- RPG lore databases;
-- quest logic inspection;
-- interactive fiction engines;
-- dialogue condition graphs;
-- procedural narrative constraints;
-- worldbuilding tools.
+This is a reasonable projection from C4's support for scoped relations, context grounding, schools, and complete fish as resources.
 
 ## Education and curriculum design
 
-Curricula are relationship graphs:
+Curricula can be described as relationship structures:
 
-- this concept is a prerequisite for that concept;
-- this lesson teaches this skill;
-- this exercise assesses this objective;
-- this misconception conflicts with this idea;
-- this standard maps to this activity.
+- one concept is a prerequisite for another;
+- a lesson teaches a skill;
+- an exercise assesses an objective;
+- a misconception conflicts with an idea;
+- a standard maps to an activity.
 
-C4 could help teachers, curriculum designers, and learning systems keep those relationships explicit and inspectable.
+C4 may be useful where those relationships need to be explicit, reviewable, and reusable.
 
 ## Scientific research and hypothesis tracking
 
-Research depends on relationships among claims, evidence, models, methods, and contexts.
+Research workflows often involve relationships among claims, evidence, models, methods, variables, and contexts.
 
-C4 could help represent:
+C4 could describe:
 
-- which study supports which claim;
-- which result contradicts which hypothesis;
-- which method measures which variable;
-- which model predicts which outcome;
-- which concept is operationalized by which measurement.
+- a study supports a claim;
+- a result contradicts a hypothesis;
+- a method measures a variable;
+- a model predicts an outcome;
+- a measurement operationalizes a concept.
 
-This could support literature reviews, lab notebooks, hypothesis graphs, systematic reviews, and model comparison.
+These uses follow from C4's general relation model, context grounding, and ability to reify complete fish as resources.
 
 ## Security and threat modeling
 
-Security work is full of structured relationships:
+Threat models are also relationship structures:
 
-- assets are exposed to threats;
-- vulnerabilities affect components;
-- controls mitigate risks;
-- attacker capabilities enable attack paths;
-- requirements map to controls.
+- an asset is exposed to a threat;
+- a vulnerability affects a component;
+- a control mitigates a risk;
+- an attacker capability enables an attack path;
+- a requirement maps to a control.
 
-C4 could make threat models easier to diff, reuse, validate, and inspect.
-
-## Product and requirements traceability
-
-Product work also depends on relationships:
-
-- a customer need motivates a feature;
-- a requirement is implemented by a module;
-- a test validates a requirement;
-- a bug violates an invariant;
-- a decision supersedes an older decision.
-
-C4 could provide lightweight traceability without requiring a heavy proprietary requirements system.
+C4 could serve as an authorable source format for such structures if suitable vocabularies and validation profiles are defined.
 
 ## Where Herring Bones fit
 
 C4 provides the language for writing relationships.
 
-Herring Bones provide reusable scaffolds for common kinds of relationships.
+Herring Bones provide reusable scaffolds for common relationship structures.
 
 A Herring Bone might define the structure for:
 
@@ -294,11 +249,11 @@ A Herring Bone might define the structure for:
 - a claim-and-evidence pattern;
 - an ontology mapping.
 
-This matters because adoption does not have to start from a blank page. People can reuse structural patterns that already fit common problems.
+Those examples are projected use cases. Their practical support depends on actual `.bone` files, validation rules, and tooling.
 
 ## The short version
 
-C4 is useful anywhere people need structured meaning that is:
+C4 is relevant anywhere people need structured meaning that is:
 
 - readable by humans;
 - usable by tools;
@@ -309,7 +264,7 @@ C4 is useful anywhere people need structured meaning that is:
 
 Purple Herring makes that structure part of a broader public ecosystem.
 
-The project is intentionally strange on the surface, but the practical goal is straightforward:
+The practical goal is straightforward:
 
 ```text
 make meaningful relationships easier to write, review, reuse, and trust
