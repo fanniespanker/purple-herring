@@ -1,4 +1,4 @@
-# C4 for Non-Pescatarians v0.1.5
+# C4 for Non-Pescatarians v0.1
 
 ## 0. What This Is
 
@@ -11,7 +11,7 @@ CURRENT - C4 Technical Specification
 Language version:
 
 ```text
-C4 v0.1.5
+C4 v0.1.x
 ```
 
 C4 expands to:
@@ -24,7 +24,7 @@ C3TCalc is the former development name of C4.
 
 The technical spec is authoritative for parser, syntax, validation, and canonicalization rules.
 
-This document explains the same language version in plain language.
+This document explains the C4 v0.1.x language series in plain language.
 
 C4 is a compact language for making **meaning-maps**.
 
@@ -37,9 +37,10 @@ This document explains the idea in plain language.
 Version policy:
 
 ```text
-C4 Technical Specification and C4 for Non-Pescatarians should remain version-synchronized.
-Intentional content patches that affect interpretation, examples, syntax, semantics, or terminology should bump both by +0.0.1.
-Pure typo / formatting corrections do not require a version bump.
+C4 for Non-Pescatarians uses major/minor versions and tracks the corresponding C4 language series.
+For example, C4 for Non-Pescatarians v0.1 explains the C4 v0.1.x technical series.
+Intentional content patches that affect interpretation, examples, syntax, semantics, or terminology should update this guide when relevant.
+Pure typo / formatting corrections do not require a version change.
 ```
 
 ---
