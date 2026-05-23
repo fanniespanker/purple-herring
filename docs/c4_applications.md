@@ -67,6 +67,20 @@ C4 lets people write meaning like source code.
 
 That does not mean every meaning becomes simple or final. It means relationships can become explicit enough to inspect, discuss, validate, and transform.
 
+## A semantic lingua franca
+
+C4 is designed to act as a small semantic lingua franca between people and software.
+
+Natural language is expressive, but difficult for tools to validate consistently. Ordinary code is precise, but often hides meaning inside implementation details. Database schemas are structured, but usually local to one system.
+
+C4 sits between those layers.
+
+It gives people a way to write relationships in a form that is readable enough to review and structured enough for tools to parse, validate, transform, and exchange.
+
+The goal is not to replace natural language, programming languages, databases, or ontologies. The goal is to provide a shared relationship layer that can connect them.
+
+In the project vocabulary, this means humans and machines should be able to prepare, inspect, cook, serve, and consume fish together without either side losing the structure that makes the fish meaningful.
+
 ## Knowledge graphs and semantic source files
 
 C4 can be used as a text source format for graph-like semantic relationships.
