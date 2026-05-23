@@ -9,7 +9,7 @@ Version delta:
 ```text
 previous: v0.1.0
 current:  v0.2.0
-delta:    public-safety / C4-facing migration
+delta:    public-facing C4 migration
 ```
 
 CAThedral is reusable public graph infrastructure within the Purple Herring / C4 ecosystem.
