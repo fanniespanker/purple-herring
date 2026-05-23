@@ -76,9 +76,13 @@ Prefer stable semantic filenames whose contents can evolve without requiring ren
 Recommended:
 
 ```text
-c4_technical_specification.md
+c4_specification.md
 c4_for_non_pescatarians.md
+sardine_specification.md
+herring_bones_guide.md
 cathedral_specification.md
+gel_execution_semantics.md
+cpm_patch_semantics.md
 cnml_specification.md
 pate_specification.md
 cinnamon_specification.md
@@ -87,8 +91,8 @@ cinnamon_specification.md
 Avoid for current documents:
 
 ```text
-c4_v0.1.6_technical_specification.md
-CURRENT_c4_technical_specification.md
+c4_v0.1.6_specification.md
+CURRENT_c4_specification.md
 cathedral_specification_v0.2.0.md
 2026-05-21_c4_specification.md
 ```
@@ -117,7 +121,9 @@ YYYY-MM-DD__ascii_snake_name__version__status.ext
 Examples:
 
 ```text
-2026-05-21__c4_technical_specification__v0.1.6__current_snapshot.md
+2026-05-21__c4_specification__v0.1.6__current_snapshot.md
+2026-05-21__sardine_specification__unknown_version__current_snapshot.md
+2026-05-21__herring_bones_guide__unknown_version__current_snapshot.md
 2026-05-21__cathedral_specification__v0.2.0__current_snapshot.md
 2026-05-21__c3tcalc_specification__v0.2__deprecated_donor.md
 2026-05-21__gel_god_unified_core__unknown_version__deprecated_donor.md
@@ -150,19 +156,40 @@ Handles may simplify, transliterate, lowercase, abbreviate, or otherwise regular
 Examples:
 
 ```text
+Canonical name: C4
+Filename:       c4_specification.md
+Module handle:  c4
+Code type:      C4Graph
+CLI handle:     c4
+Display label:  C4
+
+Canonical name: SARDINE
+Filename:       sardine_specification.md
+Module handle:  sardine
+Code type:      SardineParser
+CLI handle:     sardine
+Display label:  SARDINE
+
+Canonical name: Herring Bones
+Filename:       herring_bones_guide.md
+Module handle:  herring_bones
+Code type:      HerringBone
+CLI handle:     herring-bones
+Display label:  Herring Bones
+
+Canonical name: CAThedral
+Filename:       cathedral_specification.md
+Module handle:  cathedral
+Code type:      CathedralTrace
+CLI handle:     cathedral
+Display label:  CAThedral
+
 Canonical name: PÂTE
 Filename:       pate_specification.md
 Module handle:  pate
 Code type:      PateLayout
 CLI handle:     pate
 Display label:  PÂTE
-
-Canonical name: CiNnaMoN
-Filename:       cinnamon_specification.md
-Module handle:  cinnamon
-Code type:      CinnamonScore
-CLI handle:     cinnamon
-Display label:  CiNnaMoN
 ```
 
 Use canonical display forms in prose, headings, UI labels, and user-facing documentation.
@@ -184,18 +211,40 @@ When converting project names into code identifiers:
 Examples:
 
 ```text
+Canonical display name: C4
+Rust module:            c4
+Rust type:              C4Graph
+Python module:          c4
+JavaScript function:    parseC4Fish
+User-facing label:      C4
+
+Canonical display name: SARDINE
+Rust module:            sardine
+Rust type:              SardineParser
+Python module:          sardine
+JavaScript function:    cleanFish
+User-facing label:      SARDINE
+
+Canonical display name: Herring Bones
+Rust module:            herring_bones
+Rust type:              HerringBone
+Python module:          herring_bones
+JavaScript function:    loadHerringBone
+User-facing label:      Herring Bones
+
+Canonical display name: CAThedral
+Rust module:            cathedral
+Rust type:              CathedralTrace
+Python module:          cathedral
+JavaScript function:    cookFish
+User-facing label:      CAThedral
+
 Canonical display name: PÂTE
 Rust module:            pate
 Rust type:              PateLayout
 Python module:          pate
 JavaScript function:    parsePateSpan
 User-facing label:      PÂTE
-
-Canonical display name: CiNnaMoN
-Rust module:            cinnamon
-Rust type:              CinnamonScore
-JavaScript type:        CinnamonScore
-User-facing label:      CiNnaMoN
 ```
 
 Code identifiers are operational handles, not canonical names. ASCII code identifiers do not rename the project concept.
