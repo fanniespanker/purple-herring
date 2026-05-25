@@ -272,3 +272,120 @@ $$
 
 when the right-hand side is defined.
 
+---
+
+## 7. Statement Domain
+
+A C4 statement is a complete directed relation expression.
+
+Let:
+
+$$
+\mathcal{E}_{rel} \subseteq \mathcal{E}
+$$
+
+be the subset of expressions admissible in relation position by grammar.
+
+Profile-relative relation validity is separate from syntactic relation-position admissibility.
+
+Let:
+
+$$
+\Phi = \{\varnothing,\neg\}
+$$
+
+be the polarity domain, and:
+
+$$
+\Sigma = \{\varnothing,?\}
+$$
+
+be the resolution-state domain.
+
+Then:
+
+$$
+\mathrm{Stmt}
+=
+\mathcal{E}
+\times
+\mathcal{E}_{rel}
+\times
+\mathcal{E}
+\times
+\Phi
+\times
+\Sigma
+\times
+\operatorname{Option}(\mathcal{E})
+$$
+
+An individual statement is written:
+
+$$
+P = (\mathbf{s},\mathbf{r},\mathbf{t},\phi,\sigma,c)
+$$
+
+where:
+
+- $\mathbf{s},\mathbf{t} \in \mathcal{E}$ are source and target expressions;
+- $\mathbf{r} \in \mathcal{E}_{rel}$ is the relation-position expression;
+- $\phi \in \Phi$ is polarity;
+- $\sigma \in \Sigma$ is resolution state;
+- $c \in \operatorname{Option}(\mathcal{E})$ is optional context.
+
+Source and target are expressions, not necessarily already-resolved resources.
+
+When resolution succeeds:
+
+$$
+\rho_{\Gamma}(\mathbf{s}),\rho_{\Gamma}(\mathbf{t}) \in \mathcal{U}
+$$
+
+---
+
+## 8. Statement Mode Notation
+
+C4 Core represents relation application as:
+
+$$
+\mathbf{r}^{\phi}_{\sigma}(\mathbf{s},\mathbf{t})
+$$
+
+The default positive resolved case is abbreviated:
+
+$$
+\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t})
+\equiv
+\mathbf{r}(\mathbf{s},\mathbf{t})
+$$
+
+Mode interpretations are:
+
+$$
+\begin{aligned}
+\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t})
+&\equiv
+\mathbf{r}(\mathbf{s},\mathbf{t}) \\
+\mathbf{r}^{\varnothing}_{?}(\mathbf{s},\mathbf{t})
+&\equiv
+\mathsf{Unres}(\mathbf{r}(\mathbf{s},\mathbf{t})) \\
+\mathbf{r}^{\neg}_{\varnothing}(\mathbf{s},\mathbf{t})
+&\equiv
+\neg \mathbf{r}(\mathbf{s},\mathbf{t}) \\
+\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
+&\equiv
+\mathsf{Unres}(\neg \mathbf{r}(\mathbf{s},\mathbf{t}))
+\end{aligned}
+$$
+
+The unresolved negative case is explicitly not equivalent to negating an unresolved positive case:
+
+$$
+\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
+\not\equiv
+\neg \mathsf{Unres}(\mathbf{r}(\mathbf{s},\mathbf{t}))
+$$
+
+The symbol $?$ does not encode probability or statistical confidence. It denotes unresolvedness, contextuality, inquiry, or incomplete crystallization.
+
