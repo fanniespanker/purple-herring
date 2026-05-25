@@ -1,8 +1,8 @@
-# C4 v0.1.6 Technical Specification
+# C4/Fish Combined Technical Specification v0.1.6
 
 ## 0. Status
 
-C4 v0.1.6 is the current technical specification for the C4 / Purple Herring language line.
+C4/Fish v0.1.6 is the current combined technical draft for the C4 abstract relation model, the fish surface language, and Herring Bones scaffolding used by the Purple Herring stack.
 
 C4 expands to:
 
@@ -11,6 +11,24 @@ Contextual Compositional Concept Calculus
 ```
 
 C3TCalc is the former development name of C4 and remains only a historical term in supersession lists, migration notes, and design history.
+
+This combined draft remains the compatibility entry point for the current technical series.
+
+Future drafts SHOULD split this document into separate specifications:
+
+```text
+C4 Core Specification
+Fish Language Specification
+Herring Bones Specification
+```
+
+The intended split is:
+
+- C4 Core defines the abstract relation, resource, assertion, validation, and semantic model.
+- Fish Language defines the canonical machine-parseable and human-readable surface language for C4 expressions.
+- Herring Bones defines standard libraries, relation templates, registries, validation profiles, and ontology scaffolding.
+
+Until that split stabilizes, this combined specification remains normative for the v0.1.x technical series.
 
 Version delta:
 
@@ -47,7 +65,7 @@ Pure typo / formatting correction with no interpretive effect: no version bump r
 C4 for Non-Pescatarians uses only major/minor versions and tracks the corresponding C4 language line. For example, C4 for Non-Pescatarians v0.1 explains the C4 v0.1.x technical series.
 ```
 
-This version preserves the current C4 language decisions:
+This version preserves the current fish surface-language decisions for authoring C4 expressions:
 
 - a complete fish is itself a first-class resource;
 - ordinary fish use `&` as the tail marker;
@@ -82,14 +100,22 @@ This version includes implementation and ontology scaffolding migrated from earl
 
 ## 1. Purpose
 
-C4 defines a compact graph-native expression syntax for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
+C4 defines the abstract graph-native relation model for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
 
-C4 is independently useful as a standalone graph expression language.
+Fish is the canonical machine-parseable and human-readable surface language for authoring, exchanging, parsing, and displaying C4 expressions.
+
+A fish document, fish block, or fish statement encodes C4 relations, but C4 itself is not identical to fish syntax.
+
+C4 is independently useful as a standalone semantic model. Fish is independently useful as a readable C4 expression language.
+
+Other C4 serializations MAY exist, including JSON, XML, binary, RDF/graph-native, or implementation-internal encodings. Fish remains the canonical Purple Herring surface language for C4 expressions unless an active profile declares otherwise.
 
 It may be used as:
 
-- a semantic graph expression language;
-- a CNML embedded relation language;
+- an abstract semantic graph/relation model;
+- a semantic graph expression model;
+- a fish-authored relation language;
+- a CNML embedded fish relation language;
 - a graph-pattern notation;
 - an ontology-bridging notation;
 - a deterministic graph-patch source language;
@@ -106,7 +132,7 @@ C4 is graph-anatomical rather than algebraic.
 
 Relations have tails and heads.
 
-A complete relation expression is a **fish**.
+A complete fish surface expression encodes one complete C4 relation expression.
 
 A complete fish is itself a **resource**.
 
@@ -168,7 +194,7 @@ mdo:Movements/antifascism
 
 ### 3.2 Fish
 
-A **fish** is a complete C4 relation expression.
+A **fish** is a complete surface expression that encodes a C4 relation.
 
 Canonical anatomy:
 

@@ -1,6 +1,6 @@
-# CNML Specification v0.5.2 (Draft)
+# CNML Specification v0.5.3 (Draft)
 
-This Purple Herring CNML draft incorporates the current CNML structural-frame, addressing/milestone, discourse, linguistic-system, prosody, affect, fish/C4 integration, and information-integrity revisions.
+This Purple Herring CNML draft incorporates the current CNML structural-frame, addressing/milestone, discourse, linguistic-system, prosody, affect, C4/fish integration, and information-integrity revisions.
 
 ## Foundations
 
@@ -17,6 +17,15 @@ CNML encodes semantic, experiential, structural, temporal, prosodic, and spatial
 Evaluation, rendering, playback, and projection are interpreter-dependent realizations of CNML source structure.
 
 Operational interpretation MAY derive additional structure for rendering or execution purposes, but such derived structure MUST NOT be treated as intrinsic source semantics.
+
+CNML does not require Purple Herring/C4 adoption. CNML documents remain conforming and semantically useful when they use only direct CNML metadata, `<link>` declarations, `<ref>` elements, RDFa-compatible attributes, generic `<data>` blocks, or external metadata resources.
+
+Within the Purple Herring stack, C4 and fish are distinct layers:
+
+- C4 is the abstract relation, resource, assertion, validation, and semantic model.
+- fish is the canonical concrete surface language for authoring C4 expressions.
+
+Fish syntax encodes C4 relations, but C4 itself is not identical to fish syntax. Purple Herring-conformant CNML processors SHOULD support CNML-native `<fish>` blocks. Non-Purple-Herring CNML processors MAY ignore, preserve, warn on, or expose `<fish>` blocks as uninterpreted semantic data according to their processing profile.
 
 ---
 
@@ -166,11 +175,44 @@ author
 date
 identifier
 license
+link
 summary
 synopsis
 ```
 
 Relational, ontological, interpretive, subject, genre, audience, adaptation, parody, support/opposition, portrayal, and thematic metadata SHOULD be represented with fish relation statements.
+
+`<link>` declares an associated resource for the current CNML context. It does not represent visible linked text by default.
+
+`<link>` is distinct from inline `<ref>`:
+
+- `<link>` attaches or declares a resource used by a processor, renderer, validator, edition, accessibility layer, or semantic layer.
+- `<ref>` marks visible or source-level reference content in the authored text.
+
+Common `<link>` attributes include:
+
+```text
+rel       relationship or purpose of the linked resource
+href      external URI, path, or locator
+target    internal CNML target, when not using href
+format    resource format token
+type      media type, when useful
+lang      language scope
+scope     work, chapter, voice, narrator, edition, profile, or evaluator-defined scope
+resource  persistent semantic identity, when different from href
+```
+
+Examples:
+
+```xml
+<link rel="pronunciation-lexicon" format="pls" href="pronunciation.pls" lang="en"/>
+<link rel="segmentation-profile" format="json" href="segmentation.json"/>
+<link rel="c4-registry" format="fish" href="relations.fish"/>
+<link rel="pate-profile" format="pate" href="layout.pate"/>
+<link rel="stylesheet" format="css" href="edition.css"/>
+```
+
+Pronunciation lexicons MAY be attached for rendering, speech synthesis, accessibility, audiobook generation, pronunciation-sensitive analysis, or edition-specific speech profiles. PLS SHOULD be the default interchange format for pronunciation lexicons. CNML processors MAY support evaluator-defined pronunciation lexicon formats through `format`.
 
 Example:
 
@@ -191,7 +233,7 @@ Example:
   <mainmatter>
     <chapter n="Chapter 1">
       <scene n="Opening Scene">
-        <p>...</p>
+        <paragraph>...</paragraph>
       </scene>
     </chapter>
   </mainmatter>
@@ -279,10 +321,34 @@ Common frame-header elements include:
 title
 summary
 synopsis
+heading
 subheading
 ```
 
+Frame-header status is determined by the parent element. A `<title>`, `<summary>`, `<synopsis>`, `<heading>`, or `<subheading>` is a structural frame header only when it is an immediate child of one of the structural frames listed above.
+
+The same element names MAY also appear inside non-structural block content when that content model permits them. In that case, they describe the local content item rather than a structural frame and MUST NOT be used by outline extraction, rank-discipline checks, or structural-frame inference as evidence of a nested frame.
+
+Example:
+
+```xml
+<chapter n="Chapter 1">
+  <title>Chapter Title</title>
+
+  <poem n="poem-1">
+    <title>Poem Title</title>
+    <stanza>
+      <line>...</line>
+    </stanza>
+  </poem>
+</chapter>
+```
+
+In this example, the first `<title>` is the chapter frame header. The second `<title>` is the title of the embedded poem and does not imply a nested chapter, scene, section, or other structural frame.
+
 The `n` attribute and `<title>` serve different roles. `n` supplies an address segment; `<title>` supplies title/display metadata.
+
+`<heading>` and `<subheading>` are core heading elements. `<heading>` marks a local heading or heading-like label; `<subheading>` marks a secondary, qualifying, subtitle-like, or subordinate heading. When either element needs an authored CNML local address segment, authors SHOULD use `n`. Authors SHOULD NOT use `id` for CNML-local addressing; XML-native identity, when needed, SHOULD use `xml:id`.
 
 ### Content Containers
 
@@ -290,7 +356,7 @@ Structural-frame parentage defines where structural frames may appear.
 
 Text-bearing source content is represented by block content and inline content, not by structural frames.
 
-Block content includes paragraphs, expression elements, experiential modality elements, poem/music blocks, fish blocks, semantic extension points, and other source-content elements permitted by the active CNML profile.
+Block content includes paragraphs, lists, expression elements, experiential modality elements, transcript/message blocks, playback blocks, poem/music blocks, fish blocks, semantic extension points, and other source-content elements permitted by the active CNML profile.
 
 Block content MAY appear inside:
 
@@ -315,13 +381,85 @@ Block content is lower-rank than structural frames for Same-Context Rank Discipl
 
 If a context contains a structural frame, block content MUST appear inside the appropriate descendant frame rather than as a sibling of that structural frame.
 
-Raw character data belongs inside text-bearing block or inline elements.
+CNML has canonical implicit paragraphs.
+
+Contiguous non-whitespace character data that appears directly inside a block-content context is interpreted as implicit `<paragraph>` content even when no explicit paragraph wrapper is present.
+
+An explicit `<paragraph>` element MAY be used when an author, editor, schema profile, or processor needs a stable canonical paragraph container.
+
+`<p>` is a compact compatibility alias for `<paragraph>`. Processors MUST interpret `<p>` as a paragraph element. Canonical serializers SHOULD emit `<paragraph>` unless an active compact-output profile requests `<p>`.
+
+Implicit paragraphs are content units. They are lower-rank than structural frames, participate in ordinary paragraph projection, and MAY receive processor-derived paragraph address segments such as `_paragraph1`.
+
+Implicit paragraphs do not alter the XML tree. Processors that need element nodes MAY project them to explicit `<paragraph>` nodes, but such projected nodes are derived structures and MUST NOT be treated as authored source elements.
 
 Inline content includes text nodes, milestones, information-integrity elements, prosody elements, and other inline elements permitted by the active CNML profile.
 
-Structural frames SHOULD NOT contain raw character data directly except for insignificant whitespace.
+Structural frames MAY contain implicit paragraphs only in contexts where block content is otherwise legal. If a context contains a higher-rank structural frame, implicit paragraphs MUST appear inside the appropriate descendant frame rather than as siblings of the higher-rank frame.
 
 Text-bearing block and inline elements define their own mixed-content behavior.
+
+### Core Block Elements
+
+The following block/content elements are part of the core CNML draft:
+
+```text
+paragraph
+list
+item
+poem
+stanza
+line
+music
+data
+fish
+chat
+msg
+playback
+```
+
+Expression modalities, experiential modalities, and information-integrity elements may also appear as block content when their surrounding content model permits.
+
+`<paragraph>` is the canonical explicit paragraph element. `<p>` MAY appear as an authored compatibility alias and canonicalizes to `<paragraph>`.
+
+`<list>` contains one or more `<item>` elements. `type` MAY be used to distinguish ordered, unordered, definition, checklist, or evaluator-defined list forms.
+
+`<item>` is a list item. It may contain inline content, block content, nested lists, or profile-defined item content according to the active validation profile.
+
+### Core Inline Elements
+
+The following inline elements are part of the core CNML draft:
+
+```text
+quote
+abbr
+ordinal
+sup
+sub
+ref
+ref-work
+ms
+```
+
+`<quote>` marks quoted or cited discourse/content without asserting that the quoted material is objectively true.
+
+`<abbr>` marks an abbreviation or abbreviated surface form.
+
+`<ordinal>` marks ordinal-number content. When `value` is absent, processors MAY infer the ordinal value from the element's normalized text content. If inference fails or is ambiguous, the ordinal remains semantically marked but value-unknown. Authors SHOULD use `value` only when needed to disambiguate or supply a machine-readable ordinal value.
+
+Examples:
+
+```xml
+July <ordinal>12th</ordinal>, 2024
+
+<ordinal value="12">twelfth</ordinal>
+```
+
+`<sup>` and `<sub>` mark superscript and subscript source content.
+
+`<ref>` is the preferred generic reference element. It MAY carry `resource`, `target`, `href`, `type`, or profile-defined attributes for external or internal references.
+
+`<ref-work>` is a specialized work/media reference retained in this draft for clarity and compatibility. Future profiles MAY normalize `<ref-work>` to `<ref type="work">`.
 
 ---
 
@@ -362,9 +500,9 @@ The `n` attribute defines an authored local CNML name usable as a segment in CNM
 <work format="novel" n="Example Work">
   <act n="Act 1">
     <chapter n="Chapter 4">
-      <p>
+      <paragraph>
         <ms n="ms5"/>Text.<ms n="ms9"/>
-      </p>
+      </paragraph>
     </chapter>
   </act>
 </work>
@@ -450,9 +588,9 @@ A milestone:
 Example:
 
 ```xml
-<p>
+<paragraph>
   <ms n="start"/>The old house <emph>remembered</emph> her.<ms n="end"/>
-</p>
+</paragraph>
 ```
 
 Milestones MUST NOT produce visible output by default.
@@ -555,7 +693,12 @@ poem
 music
 stanza
 line
-p
+paragraph
+list
+item
+chat
+msg
+playback
 ms
 ```
 
@@ -565,7 +708,7 @@ A segmentation profile is the declared rule set used by a processor to derive se
 
 Derived sentence, word, and token pseudo-unit addresses are reproducible only when the segmentation profile is declared or otherwise fixed.
 
-### Derived Address Segments
+### Derived Ordinal Selectors and Address Segments
 
 Any addressable CNML unit without an authored `n` MAY be assigned a processor-derived address segment.
 
@@ -577,7 +720,17 @@ Authored `n` values beginning with `_` are reserved and SHOULD NOT be used in co
 
 Explicit `n` values define authored address segments and take precedence over derived address segments.
 
-Recommended derived segment forms:
+CNML supports derived ordinal selectors for addressable element kinds and derived pseudo-units.
+
+Canonical derived ordinal selectors use the form:
+
+```text
+_{selector-name}{ordinal}
+```
+
+The selector name SHOULD be a readable element-kind or pseudo-unit name rather than a terse abbreviation.
+
+Recommended canonical selector names:
 
 ```text
 _series1       first series
@@ -585,30 +738,84 @@ _work1         first work
 _frontmatter1  first frontmatter
 _mainmatter1   first mainmatter
 _backmatter1   first backmatter
-_sec1          first section
+_section1      first section
 _part1         first part
 _act1          first act
 _prologue1     first prologue
 _interlude1    first interlude
 _epilogue1     first epilogue
-_ch1           first chapter
-_sc1           first scene
-_p1            first paragraph
-_l1            first line
-_st1           first stanza
-_s1            first derived sentence pseudo-unit
-_w1            first derived word pseudo-unit
-_t1            first derived token pseudo-unit
+_chapter1      first chapter
+_scene1        first scene
+_poem1         first poem
+_music1        first music block
+_stanza1       first stanza
+_line1         first line
+_paragraph1    first paragraph or implicit paragraph
+_list1         first list
+_item1         first list item
+_chat1         first chat/transcript block
+_msg1          first message
+_playback1     first playback block
+_fish1         first CNML fish block
+_sentence1     first derived sentence pseudo-unit
+_word1         first derived word pseudo-unit
+_token1        first derived token pseudo-unit
 _ms1           first anonymous or generated milestone
 ```
 
-Element-kind ordinals are counted by element kind within the relevant containing scope.
+A derived ordinal selector is evaluated among matching descendants of the current address context in canonical source order unless an active selector profile narrows evaluation to direct children or otherwise declares a different traversal rule.
+
+Examples:
+
+```text
+Armed Escorts._work1._part2._act2._chapter4._scene3
+
+Hardboiled Whore._chapter20
+
+act1.chapter2._paragraph4._sentence3.(_word7--_word20)
+```
+
+The first example selects the third scene inside the fourth chapter inside the second act inside the second part inside the first work named or scoped as `Armed Escorts`, using derived ordinal selectors at each step.
+
+The second example selects the twentieth chapter descendant in canonical source order under the `Hardboiled Whore` context, regardless of which act or part contains it.
+
+The third example combines authored structural address segments with derived paragraph, sentence, and word selectors. It denotes the span from the seventh through twentieth derived word in the third derived sentence of the fourth paragraph in `act1.chapter2`.
+
+Element-kind ordinals are counted by element kind within the relevant containing scope after the current address context has been resolved.
 
 Derived address segments are positional and may change when the source changes.
 
 Sentence, word, and token segmentation are profile-dependent unless explicitly marked by a profile-defined mechanism.
 
+Derived ordinal selectors are primarily for tooling, generated tables of contents, indexes, reports, edition-specific citations, and fine-grained references into text-bearing content. They SHOULD NOT be treated as durable authored identifiers unless tied to a frozen edition, source snapshot, or selector profile.
+
+Profiles MAY define short aliases such as `_ch1`, `_sc1`, `_p1`, `_s1`, `_w1`, and `_t1`, but canonical generated CNML references SHOULD prefer the long selector forms above.
+
+Within a CNML `<fish>` block, derived `_statementN` selectors identify parsed fish statements encoding C4 relations in source order.
+
+Statement boundaries are determined by fish syntax, typically statement separators such as `;`, not by physical source line breaks. A fish statement that spans multiple visual source lines is still one `_statement`; multiple fish statements on one visual source line are multiple `_statement` units.
+
+Example:
+
+```text
+chapter3._fish1._statement2
+```
+
+This example selects the second parsed fish statement inside the first CNML `<fish>` block under `chapter3`.
+
 Milestones SHOULD be used for durable fine-grained addressing.
+
+### Breaks, Scenes, and Source Boundaries
+
+`<ms/>` is the canonical zero-width source-position milestone.
+
+Scene, page, and other source-boundary markers may be represented with milestones when the author needs a durable addressable position without asserting a structural frame.
+
+CNML has not yet stabilized a canonical `<break>` element.
+
+Scene breaks remain an open design point. A scene-like division may be represented as an explicit `<scene>` structural frame when it is a source subdivision, or by one or more `<ms/>` milestones when the author needs a boundary position without committing to scene-frame semantics.
+
+Page breaks are projection- or edition-dependent unless an edition profile defines them as source-significant boundaries.
 
 ### Resource and Subresource Paths
 
@@ -673,6 +880,8 @@ Formal model:
 NarrativeMode = EpistemicSource × Volition
 ```
 
+`<memory>` is deprecated. Use `<remember>` for voluntary retrieved experiential content or `<flashback>` for involuntary retrieved experiential content.
+
 ---
 
 ## Fish Relations and Embedded Data
@@ -689,9 +898,11 @@ CNML distinguishes CNML-native fish relation blocks from generic embedded data b
 <fish>
 ```
 
-`<fish>` embeds Purple Herring / C4 relation statements whose resource-resolution context is the surrounding CNML document.
+`<fish>` embeds fish source text whose resource-resolution context is the surrounding CNML document. The fish source text encodes C4 relation statements.
 
-A `<fish>` element MAY contain one or more fish statements. The element content may be parsed as a C4 school fragment when multiple statements are present.
+A `<fish>` element MAY contain one or more fish statements. The element content may be parsed as a fish school fragment when multiple statements are present.
+
+CNML addresses MAY select `<fish>` blocks with derived ordinal selectors such as `_fish1`. Parsed statements inside a `<fish>` block MAY be selected with derived `_statementN` selectors.
 
 A `<fish>` block MAY address CNML-native resources such as the current structural frame resource, declared anchors or milestone spans, `xml:id`-addressable elements, and evaluator-defined CNML projections.
 
@@ -741,7 +952,7 @@ Fish resource access semantics are CNML-integrated. They are not equivalent to R
 
 `<data>` embeds external data, metadata, relation languages, or serialization formats. The `format` attribute is REQUIRED and identifies the embedded language, notation, or serialization format.
 
-`<data format="fish">` MAY be accepted as a generic embedded-data form, but it is not equivalent to `<fish>` unless an evaluator explicitly grants it the same CNML-native resource access semantics. Authors SHOULD use `<fish>` when Purple Herring/C4 is intended to operate as the CNML-native semantic relation layer.
+`<data format="fish">` MAY be accepted as a generic embedded-data form, but it is not equivalent to `<fish>` unless an evaluator explicitly grants it the same CNML-native resource access semantics. Authors SHOULD use `<fish>` when fish is intended to operate as the CNML-native surface language for C4 relations.
 
 ---
 
@@ -776,6 +987,37 @@ For signed languages, facial expression, gaze, posture, and body movement that a
 The `with` attribute identifies one or more qualitative expression channels.
 
 Recommended core `with` tokens include face, eyes, gaze, mouth, brows, head, hand, hands, finger, arms, shoulders, posture, body, movement, stillness, and silence.
+
+### Transcript and Message Blocks
+
+CNML includes core transcript/message elements for represented mediated discourse:
+
+```xml
+<chat>
+<msg>
+```
+
+`<chat>` represents a mediated exchange, conversation thread, group chat, transcript, log, or comparable discourse container.
+
+`<msg>` represents one message or utterance within a chat/transcript context.
+
+`<msg>` may contain inline CNML content, expression modalities, prosody, references, and other permitted inline/message content.
+
+`<msg>` MAY carry attributes such as `who`, `from`, `to`, `dir`, `at`, `medium`, or profile-defined equivalents when a processor or author needs sender, recipient, direction, timing, or medium metadata.
+
+`<chat>` and `<msg>` represent discourse as presented in the source. They do not by themselves assert that the message content is true, delivered, received, read, or chronologically reliable.
+
+### Playback Blocks
+
+```xml
+<playback>
+```
+
+`<playback>` represents a source moment where the evaluative viewport switches to presented audio, video, recording, broadcast, surveillance, playback, or comparable media output.
+
+Playback is not the same as memory. It represents output from a presented media channel rather than retrieved experiential content.
+
+`<playback>` may contain transcript/message content, expression modalities, prose, music, data, milestones, or profile-defined media annotations according to the active content model.
 
 ### Affect Attribute
 
@@ -922,17 +1164,24 @@ For redaction-, censorship-, masking-, substitution-, or projection-dependent ob
 
 ## Rendering Model
 
-CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScript, OpenDocument, audio, or interactive runtimes.
+CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScript, OpenDocument, audio, interactive runtimes, or any number of other textual, visual, audio, spatial, archival, application-native, or media formats.
 
-### Recommended HTML Projection
+### Suggested Target-Format Equivalents
 
-| CNML | HTML |
-|---|---|
-| narrative units | `<p>` |
-| prosody | `<span>` |
-| poem/music | inline SVG or evaluator-defined projection |
-| fish/data blocks | non-rendered metadata or evaluator-defined projection |
-| obscured | author-supplied surface text and/or renderer-mediated obscuration according to method and projection policy |
+The following examples are illustrative and non-normative. They show common target-format equivalents a renderer MAY choose when projecting CNML into HTML, TeX/LaTeX, DOCX/OpenDocument, EPUB, SVG, audio, interactive, or application-native formats. A conforming renderer is not required to use these exact target elements, provided it preserves the semantics required by its declared rendering profile.
+
+| Target family | Paragraph/list content | Discourse/media content | Expressive/prosodic content | Reference/semantic content | Spatial/music/integrity content |
+|---|---|---|---|---|---|
+| HTML / EPUB | `<p>`, `<ol>`, `<ul>`, `<dl>`, `<li>` | transcript structures, message lists, `<audio>`, `<video>`, `<figure>` | `<span>` with class/style, ARIA/accessibility annotations | `<a>`, citation spans, metadata blocks, omitted fish/data rendering | verse blocks, SVG, embedded media, author-supplied obscured text, redaction spans |
+| TeX / LaTeX / PDF | paragraph breaks, paragraph macros, list environments | transcript environments, figures, media references | macros, commands, run styles, performance annotations | citation macros, footnotes, hyperlinks, auxiliary metadata files | verse environments, music notation output, redaction macros, masked text |
+| DOCX / OpenDocument | paragraph nodes/styles, list paragraph styles | styled message paragraphs, tables, embedded media, captioned figures | character styles, run formatting, comments, review annotations | hyperlinks, fields, citation objects, custom XML parts, metadata fields | styled verse, embedded notation/media, redaction marks, hidden/replaced runs |
+| Markdown / plain text | blank-line paragraphs, Markdown lists, outline text | transcript blocks, quoted logs, media placeholders | inline markers, typographic conventions, editorial notes | Markdown links, reference definitions, frontmatter metadata | verse indentation, fenced data blocks, plain-text obscuration |
+| SSML / audio | phrase and paragraph grouping, pause structure | speaker turns, recorded-media cues, playback transitions | prosody tags, emphasis, phonation, breath/laughter/sigh cues | pronunciation hints, link/citation narration policy | bleep, silence, masking, sound-design or performance cues |
+| Screenplay / stageplay | action blocks, list-like business, scene text | dialogue, character cues, parentheticals, transcript-like exchanges | delivery notes, actor direction, vocal emphasis | source/citation notes, production metadata | stage directions, lyrics/music cues, lighting/sound/obscuration cues |
+| Captions / subtitles | caption blocks, reading-order chunks | WebVTT/SRT/TTML cues, speaker labels, media timing | emphasis markers, sound captions, nonverbal cue text | metadata tracks, annotation tracks | redaction/bleep captions, timed visual/audio effects |
+| Layout / design | text frames, paragraph styles, list styles | anchored media frames, transcript panels, chat bubbles | character styles, visual emphasis, performance glyphs | linked objects, authority records, metadata panels | PÂTE, SVG, IDML/Affinity-native objects, notation or score views |
+| Interactive / game | UI text blocks, menu/list widgets | dialogue nodes, chat logs, playback scenes | bark/delivery metadata, animation/audio cues | graph edges, variables, linked resources | spatial UI, timed events, hidden/revealed content |
+| Semantic / archival exchange | TEI/JATS-like paragraph/list structures | TEI speech/transcript structures, media annotations | feature annotations, stand-off markup | RDF, JSON-LD, C4/fish relation graphs, authority links | TEI verse/music structures, integrity annotations, preservation metadata |
 
 ---
 
@@ -943,7 +1192,13 @@ CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScr
 - Structural frames MUST satisfy their legal immediate container rules.
 - A context MUST NOT mix structural frames of different hierarchy ranks.
 - Block content is lower-rank than structural frames for Same-Context Rank Discipline.
-- Raw character data belongs inside text-bearing block or inline elements; structural frames SHOULD NOT contain raw character data directly except for insignificant whitespace.
+- CNML has canonical implicit paragraphs.
+- Contiguous non-whitespace character data directly inside a block-content context is interpreted as implicit `<paragraph>` content.
+- Explicit `<paragraph>` is the canonical authored paragraph container; `<p>` is a compatibility alias that canonicalizes to `<paragraph>`.
+- `<list>` and `<item>` are core CNML block/content elements.
+- `<heading>` and `<subheading>` are core CNML heading elements; use `n`, not `id`, for authored CNML local address segments.
+- `<link>` declares an associated resource for the current CNML context and does not represent visible linked text by default.
+- Pronunciation lexicons SHOULD use PLS as the default interchange format when attached with `<link rel="pronunciation-lexicon">`.
 - `<work>` is the work-level source/publication frame; `format` identifies the work form, medium, or publication category.
 - `<part>` is a high-level mainmatter structural frame.
 - `<prologue>`, `<interlude>`, and `<epilogue>` are special mainmatter structural frames.
@@ -956,11 +1211,20 @@ CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScr
 - `(...)` compresses shared-prefix spans.
 - `%XX` escapes reserved characters inside address expressions.
 - `_` prefixes derived, non-authorial address segments.
+- Derived ordinal selectors SHOULD use readable canonical long forms such as `_chapter1`, `_paragraph1`, `_fish1`, `_statement1`, `_sentence1`, `_word1`, and `_token1`.
 - `xml:id` remains optional and XML-native; it does not replace CNML path addressing.
 - Derived sentence, word, and token addresses are pseudo-unit addresses and require declared segmentation behavior before they can be considered reproducible.
 - `<s>`, `<w>`, and `<t>` are not canonical CNML elements in this draft.
 - Cross-frame spans are outside required alpha processor behavior unless a referencing layer defines them.
-- `<fish>` is the preferred form for CNML-native Purple Herring/C4 relation statements.
+- `<memory>` is deprecated; use `<remember>` or `<flashback>` according to volition.
+- `<chat>` and `<msg>` are core CNML transcript/message elements.
+- `<playback>` represents a viewport switch to presented audio, video, recording, broadcast, surveillance, playback, or comparable media output.
+- `<ref>` is the preferred generic reference element; `<ref-work>` remains a specialized work/media reference in this draft.
+- `<ordinal>` is a core inline semantic element for ordinal-number content; `value` MAY supply the machine-readable ordinal value when inference from content is ambiguous or unavailable.
+- `<break>` is not yet stabilized as a canonical CNML element; use `<scene>` for structural scene divisions or `<ms/>` for durable boundary positions until this design point is resolved.
+- C4 is the abstract Purple Herring relation and semantic model; fish is the canonical concrete surface language for authoring C4 expressions.
+- CNML does not require Purple Herring/C4 adoption; non-Purple-Herring processors MAY preserve or expose `<fish>` as uninterpreted semantic data.
+- `<fish>` is the preferred CNML-native form for fish source text that encodes C4 relation statements.
 - In `<fish>`, bare `#` resolves to the nearest enclosing structural frame resource by default.
 - In `<fish>`, `+{ancestor}#` explicitly selects the nearest enclosing ancestor of the named element or evaluator-recognized ancestor type.
 - `<data format="fish">` MUST NOT be assumed equivalent to `<fish>` unless an evaluator explicitly grants it CNML-native fish resource access semantics.
