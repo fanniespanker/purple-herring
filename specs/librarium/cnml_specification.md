@@ -191,7 +191,7 @@ Example:
   <mainmatter>
     <chapter n="Chapter 1">
       <scene n="Opening Scene">
-        <p>...</p>
+        <paragraph>...</paragraph>
       </scene>
     </chapter>
   </mainmatter>
@@ -341,13 +341,15 @@ If a context contains a structural frame, block content MUST appear inside the a
 
 CNML has canonical implicit paragraphs.
 
-Contiguous non-whitespace character data that appears directly inside a block-content context is interpreted as paragraph content even when no explicit `<p>` wrapper is present.
+Contiguous non-whitespace character data that appears directly inside a block-content context is interpreted as implicit `<paragraph>` content even when no explicit paragraph wrapper is present.
 
-An explicit `<p>` element MAY be used when an author, editor, schema profile, or processor needs a stable paragraph container.
+An explicit `<paragraph>` element MAY be used when an author, editor, schema profile, or processor needs a stable canonical paragraph container.
+
+`<p>` is a compact compatibility alias for `<paragraph>`. Processors MUST interpret `<p>` as a paragraph element. Canonical serializers SHOULD emit `<paragraph>` unless an active compact-output profile requests `<p>`.
 
 Implicit paragraphs are content units. They are lower-rank than structural frames, participate in ordinary paragraph projection, and MAY receive processor-derived paragraph address segments such as `_paragraph1`.
 
-Implicit paragraphs do not alter the XML tree. Processors that need element nodes MAY project them to explicit paragraph nodes, but such projected nodes are derived structures and MUST NOT be treated as authored source elements.
+Implicit paragraphs do not alter the XML tree. Processors that need element nodes MAY project them to explicit `<paragraph>` nodes, but such projected nodes are derived structures and MUST NOT be treated as authored source elements.
 
 Inline content includes text nodes, milestones, information-integrity elements, prosody elements, and other inline elements permitted by the active CNML profile.
 
@@ -360,7 +362,7 @@ Text-bearing block and inline elements define their own mixed-content behavior.
 The following block/content elements are part of the core CNML draft:
 
 ```text
-p
+paragraph
 list
 item
 poem
@@ -375,6 +377,8 @@ playback
 ```
 
 Expression modalities, experiential modalities, and information-integrity elements may also appear as block content when their surrounding content model permits.
+
+`<paragraph>` is the canonical explicit paragraph element. `<p>` MAY appear as an authored compatibility alias and canonicalizes to `<paragraph>`.
 
 `<list>` contains one or more `<item>` elements. `type` MAY be used to distinguish ordered, unordered, definition, checklist, or evaluator-defined list forms.
 
@@ -454,9 +458,9 @@ The `n` attribute defines an authored local CNML name usable as a segment in CNM
 <work format="novel" n="Example Work">
   <act n="Act 1">
     <chapter n="Chapter 4">
-      <p>
+      <paragraph>
         <ms n="ms5"/>Text.<ms n="ms9"/>
-      </p>
+      </paragraph>
     </chapter>
   </act>
 </work>
@@ -542,9 +546,9 @@ A milestone:
 Example:
 
 ```xml
-<p>
+<paragraph>
   <ms n="start"/>The old house <emph>remembered</emph> her.<ms n="end"/>
-</p>
+</paragraph>
 ```
 
 Milestones MUST NOT produce visible output by default.
@@ -647,7 +651,7 @@ poem
 music
 stanza
 line
-p
+paragraph
 list
 item
 chat
@@ -1129,8 +1133,8 @@ CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScr
 - A context MUST NOT mix structural frames of different hierarchy ranks.
 - Block content is lower-rank than structural frames for Same-Context Rank Discipline.
 - CNML has canonical implicit paragraphs.
-- Contiguous non-whitespace character data directly inside a block-content context is interpreted as implicit paragraph content.
-- Explicit `<p>` MAY be used when an authored paragraph container is needed.
+- Contiguous non-whitespace character data directly inside a block-content context is interpreted as implicit `<paragraph>` content.
+- Explicit `<paragraph>` is the canonical authored paragraph container; `<p>` is a compatibility alias that canonicalizes to `<paragraph>`.
 - `<list>` and `<item>` are core CNML block/content elements.
 - `<heading>` and `<subheading>` are core CNML heading elements; use `n`, not `id`, for authored CNML local address segments.
 - `<work>` is the work-level source/publication frame; `format` identifies the work form, medium, or publication category.
