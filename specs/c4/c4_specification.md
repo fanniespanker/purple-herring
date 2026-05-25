@@ -2,7 +2,7 @@
 
 ## 0. Status
 
-C4 v0.1.6 is the current technical specification for the C4 / Purple Herring language line.
+C4 v0.1.6 is the current technical specification for the C4 abstract relation model used by the Purple Herring stack.
 
 C4 expands to:
 
@@ -47,7 +47,7 @@ Pure typo / formatting correction with no interpretive effect: no version bump r
 C4 for Non-Pescatarians uses only major/minor versions and tracks the corresponding C4 language line. For example, C4 for Non-Pescatarians v0.1 explains the C4 v0.1.x technical series.
 ```
 
-This version preserves the current C4 language decisions:
+This version preserves the current fish surface-language decisions for authoring C4 expressions:
 
 - a complete fish is itself a first-class resource;
 - ordinary fish use `&` as the tail marker;
@@ -82,14 +82,20 @@ This version includes implementation and ontology scaffolding migrated from earl
 
 ## 1. Purpose
 
-C4 defines a compact graph-native expression syntax for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
+C4 defines the abstract graph-native relation model for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
 
-C4 is independently useful as a standalone graph expression language.
+Fish is the canonical concrete surface language for authoring C4 expressions.
+
+A fish document, fish block, or fish statement encodes C4 relations, but C4 itself is not identical to fish syntax.
+
+C4 is independently useful as a standalone semantic model. Fish is independently useful as a human-readable C4 expression language.
 
 It may be used as:
 
-- a semantic graph expression language;
-- a CNML embedded relation language;
+- an abstract semantic graph/relation model;
+- a semantic graph expression model;
+- a fish-authored relation language;
+- a CNML embedded fish relation language;
 - a graph-pattern notation;
 - an ontology-bridging notation;
 - a deterministic graph-patch source language;
@@ -106,7 +112,7 @@ C4 is graph-anatomical rather than algebraic.
 
 Relations have tails and heads.
 
-A complete relation expression is a **fish**.
+A complete fish surface expression encodes one complete C4 relation expression.
 
 A complete fish is itself a **resource**.
 
@@ -168,7 +174,7 @@ mdo:Movements/antifascism
 
 ### 3.2 Fish
 
-A **fish** is a complete C4 relation expression.
+A **fish** is a complete surface expression that encodes a C4 relation.
 
 Canonical anatomy:
 
