@@ -116,3 +116,159 @@ $$
 
 Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
 
+---
+
+## 4. Expression Domain
+
+Let:
+
+$$
+\mathcal{E}
+$$
+
+be the domain of C4 expressions.
+
+A C4 expression is a structured form that may denote, bind, construct, query, project, or resolve to a resource.
+
+Expressions are broader than resolved resources.
+
+Resource-denoting traversal expressions are one subdomain of $\mathcal{E}$, not the whole expression domain.
+
+A preliminary decomposition is:
+
+$$
+\mathcal{E}
+=
+\mathcal{E}_{trav}
+\cup
+\mathcal{E}_{lit}
+\cup
+\mathcal{E}_{bind}
+\cup
+\mathcal{E}_{list}
+\cup
+\mathcal{E}_{block}
+\cup
+\mathcal{E}_{stmt}
+\cup
+\mathcal{E}_{proj}
+\cup
+\cdots
+$$
+
+where:
+
+- $\mathcal{E}_{trav}$ contains traversal expressions;
+- $\mathcal{E}_{lit}$ contains literal expressions;
+- $\mathcal{E}_{bind}$ contains anonymous, scoped, and query binding expressions;
+- $\mathcal{E}_{list}$ contains list expressions;
+- $\mathcal{E}_{block}$ contains block expressions;
+- $\mathcal{E}_{stmt}$ contains statement-reference expressions;
+- $\mathcal{E}_{proj}$ contains projection / mapping expressions.
+
+This decomposition is provisional and SHOULD be refined when the exact canonical AST schema is defined.
+
+---
+
+## 5. Traversal Expressions
+
+Let:
+
+$$
+\mathcal{T}
+$$
+
+be the traversal-step domain.
+
+A traversal step is written:
+
+$$
+\eta \in \mathcal{T}
+$$
+
+A traversal chain is written:
+
+$$
+\gamma = \langle \eta_1,\ldots,\eta_n \rangle
+$$
+
+A traversal expression is a root resource together with a traversal chain:
+
+$$
+\mathcal{E}_{trav}
+=
+\mathcal{U}
+\times
+\operatorname{Seq}(\mathcal{T})
+$$
+
+A path-like surface expression such as:
+
+```text
+Politics/movements/feminism/radical_feminism
+```
+
+is a surface serialization of a rooted traversal expression, not a primitive string.
+
+Traversal steps are profile-defined. They MAY represent subresource selection, relation-mediated traversal, path-component traversal, prefix-expanded IRI-relative addressing, or other deterministic graph-addressing operations.
+
+---
+
+## 6. Resolution
+
+Let:
+
+$$
+\Gamma
+$$
+
+be the active resolution environment.
+
+The environment $\Gamma$ may contain the active graph, prefix declarations, binding scope, loaded profiles, Herring Bones modules, ontology/template registries, canonicalization policies, and validation mode.
+
+Let:
+
+$$
+\rho
+$$
+
+be the resolution operator.
+
+General expression resolution is partial:
+
+$$
+\rho_{\Gamma} : \mathcal{E} \rightharpoonup \mathcal{U}
+$$
+
+Traversal-chain resolution is also partial:
+
+$$
+\rho^{\Gamma}_{\gamma} : \mathcal{U} \rightharpoonup \mathcal{U}
+$$
+
+For:
+
+$$
+\gamma = \langle \eta_1,\ldots,\eta_n \rangle
+$$
+
+traversal resolution is:
+
+$$
+\rho^{\Gamma}_{\gamma}(u_0)
+=
+\eta_n^{\Gamma}(\cdots\eta_2^{\Gamma}(\eta_1^{\Gamma}(u_0))\cdots)
+$$
+
+when every traversal step is defined.
+
+Traversal expression resolution is the special case:
+
+$$
+\rho_{\Gamma}((u_0,\gamma))
+=
+\rho^{\Gamma}_{\gamma}(u_0)
+$$
+
+when the right-hand side is defined.
+
