@@ -282,6 +282,27 @@ synopsis
 subheading
 ```
 
+Frame-header status is determined by the parent element. A `<title>`, `<summary>`, `<synopsis>`, or `<subheading>` is a structural frame header only when it is an immediate child of one of the structural frames listed above.
+
+The same element names MAY also appear inside non-structural block content when that content model permits them. In that case, they describe the local content item rather than a structural frame and MUST NOT be used by outline extraction, rank-discipline checks, or structural-frame inference as evidence of a nested frame.
+
+Example:
+
+```xml
+<chapter n="Chapter 1">
+  <title>Chapter Title</title>
+
+  <poem n="poem-1">
+    <title>Poem Title</title>
+    <stanza>
+      <line>...</line>
+    </stanza>
+  </poem>
+</chapter>
+```
+
+In this example, the first `<title>` is the chapter frame header. The second `<title>` is the title of the embedded poem and does not imply a nested chapter, scene, section, or other structural frame.
+
 The `n` attribute and `<title>` serve different roles. `n` supplies an address segment; `<title>` supplies title/display metadata.
 
 ### Content Containers
