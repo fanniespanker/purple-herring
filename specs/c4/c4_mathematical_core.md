@@ -46,10 +46,22 @@ An **integral named graph** is a graph with a stable name and distinguished root
 
 “Integral” does not mean internally structureless. An integral graph MAY contain arbitrary internal graph structure. It is integral only in the sense that C4 treats the graph as a named whole unless a traversal expression selects a subresource.
 
+An arbitrary specific integral named graph is written:
+
+$$
+G_j \in \mathcal{G}
+$$
+
+When describing graph-to-graph mapping, projection, migration, or alignment, source and target graphs MAY be written:
+
+$$
+G_s,G_t \in \mathcal{G}
+$$
+
 An integral named graph may be represented as:
 
 $$
-G = (n,V,E,r,\ell)
+G_j = (n,V,E,r,\ell)
 $$
 
 where:
@@ -64,7 +76,85 @@ The exact internal structure of $E$ is profile-defined. In C4 graph-native imple
 
 ---
 
-## 3. Resource Universe
+## 3. Graph Names
+
+Let:
+
+$$
+\mathcal{N}
+$$
+
+be the universe of names.
+
+Let:
+
+$$
+\mathcal{D}(X)
+$$
+
+denote the set of naming domains associated with objects of kind $X$.
+
+Let:
+
+$$
+\mathcal{N}(D)
+$$
+
+denote the set of names drawn from naming domains $D$.
+
+The graph-name domain is:
+
+$$
+\mathcal{N}_G := \mathcal{N}(\mathcal{D}(\mathcal{G}))
+$$
+
+where $\mathcal{G}$ is the class of integral named graphs.
+
+A graph name is therefore:
+
+$$
+g \in \mathcal{N}_G
+$$
+
+For a specific graph $G_j$, the graph-specific name domain MAY be written:
+
+$$
+\mathcal{N}_{G_j} := \mathcal{N}(\mathcal{D}(G_j))
+$$
+
+For source and target graphs, graph-specific name domains MAY be written:
+
+$$
+\mathcal{N}_{G_s},\mathcal{N}_{G_t}
+$$
+
+Graph-name resolution is environment-relative:
+
+$$
+\chi_\Gamma : \mathcal{N}_G \rightharpoonup \mathcal{G}
+$$
+
+If:
+
+$$
+\chi_\Gamma(g)=G_j
+$$
+
+then $G_j$ is the integral named graph resolved from graph name $g$ under environment $\Gamma$.
+
+The root resource of $G_j$ is:
+
+$$
+G_j[\epsilon]
+$$
+
+C4 Core does not define URI schemes, network protocols, domain names, filesystem paths, `/`, or `//` as primitive mathematical operators. Such forms are surface serializations or profile-defined locator syntaxes.
+
+Profiles MAY map URI-like, IRI-like, filesystem-like, package-like, registry-like, or domain-like locator systems into graph names, but those locator systems are not part of C4 Core graph identity unless a profile explicitly makes them so.
+
+---
+
+## 4. Resource Universe
 
 Let:
 
@@ -81,40 +171,44 @@ In the core graph model, a resource is represented as a rooted subgraph selected
 Let:
 
 $$
-\mathcal{T}_G
+\mathcal{T}_{G_j}
 $$
 
-be the traversal-step domain available in graph $G$.
+be the traversal-step domain available in graph $G_j$.
 
-A traversal chain over $G$ is:
-
-$$
-\gamma \in \mathrm{Seq}(\mathcal{T}_G)
-$$
-
-A resource selected from $G$ by traversal chain $\gamma$ is written:
+A traversal chain over $G_j$ is:
 
 $$
-G[\gamma]
+\gamma \in \mathrm{Seq}(\mathcal{T}_{G_j})
 $$
 
-The root resource of $G$ is:
+A resource selected from $G_j$ by traversal chain $\gamma$ is written:
 
 $$
-G[\epsilon]
+G_j[\gamma]
+$$
+
+The root resource of $G_j$ is:
+
+$$
+G_j[\epsilon]
 $$
 
 where $\epsilon$ is the empty traversal chain.
 
 The primary resource universe is therefore:
 
-$\mathcal{U} = \{\,G[\gamma] \mid G \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_G),\ G[\gamma]\ \text{is defined}\,\}$
+$$
+\mathcal{U}
+=
+\{\,G_j[\gamma] \mid G_j \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_{G_j}),\ G_j[\gamma]\ \text{is defined}\,\}
+$$
 
 Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
 
 ---
 
-## 4. Expression Domain
+## 5. Expression Domain
 
 Let:
 
@@ -165,7 +259,7 @@ This decomposition is provisional and SHOULD be refined when the exact canonical
 
 ---
 
-## 5. Traversal Expressions
+## 6. Traversal Expressions
 
 Let:
 
@@ -237,13 +331,21 @@ $$
 \mathrm{Seq}(\mathcal{T})
 $$
 
-A path-like surface expression such as:
+A path-like surface expression MAY serialize a rooted traversal chain, but the formal C4 traversal operator is:
 
-```text
-Politics/movements/feminism/radical_feminism
-```
+$$
+u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+$$
 
-is a surface serialization of a rooted traversal expression, not a primitive string.
+C4 Core does not require any particular textual path separator.
+
+For a path component $x$, the corresponding path-component traversal operator MAY be written:
+
+$$
+\eta_{\mathrm{path}(x)}
+$$
+
+Thus a surface path-like form is a compact serialization of a rooted traversal chain, not an assertion of containment, subtype, membership, or network location unless a profile explicitly materializes such statements.
 
 Traversal operators are profile-defined partial resource-resolution operators:
 
@@ -275,7 +377,7 @@ A profile MAY define materialization rules that emit C4 statements corresponding
 
 ---
 
-## 6. Resolution
+## 7. Resolution
 
 Let:
 
@@ -331,9 +433,23 @@ $$
 
 when the right-hand side is defined.
 
+Graph-name resolution is separate from expression resolution:
+
+$$
+\chi_\Gamma : \mathcal{N}_G \rightharpoonup \mathcal{G}
+$$
+
+If $\chi_\Gamma(g)=G_j$, then traversal from the graph root may be written:
+
+$$
+\rho^\Gamma_\gamma(G_j[\epsilon])=G_j[\gamma]
+$$
+
+when $G_j[\gamma]$ is defined.
+
 ---
 
-## 7. Statement Domain
+## 8. Statement Domain
 
 A C4 statement is a complete directed relation expression.
 
@@ -394,15 +510,21 @@ where:
 
 Source and target are expressions, not necessarily already-resolved resources.
 
-When resolution succeeds:
+When source and target resolution succeeds, the resolved endpoint resources may be written:
 
 $$
-\rho_{\Gamma}(\mathbf{s}),\rho_{\Gamma}(\mathbf{t}) \in \mathcal{U}
+u_s=\rho_\Gamma(\mathbf{s})
 $$
+
+$$
+u_t=\rho_\Gamma(\mathbf{t})
+$$
+
+with $u_s,u_t \in \mathcal{U}$.
 
 ---
 
-## 8. Statement Mode Notation
+## 9. Statement Mode Notation
 
 C4 Core represents relation application as:
 
@@ -449,7 +571,7 @@ The symbol $?$ does not encode probability or statistical confidence. It denotes
 
 ---
 
-## 9. Blocks
+## 10. Blocks
 
 A C4 block is an ordered sequence of statements:
 
@@ -472,7 +594,7 @@ A block MAY itself be treated as a resource when canonicalized.
 
 ---
 
-## 10. Statement and Block Resources
+## 11. Statement and Block Resources
 
 C4 statements and blocks are reifiable resources.
 
@@ -508,7 +630,7 @@ Exact surface syntax for addressing a statement-resource or block-resource is de
 
 ---
 
-## 11. Canonicalization
+## 12. Canonicalization
 
 Let:
 
@@ -542,7 +664,7 @@ Fish-specific parsing and canonicalization are instances of this general form, n
 
 ---
 
-## 12. Validation
+## 13. Validation
 
 Validation is profile-relative.
 
@@ -586,7 +708,7 @@ An unknown relation may parse and canonicalize as a statement while failing vali
 
 ---
 
-## 13. Fish Mapping
+## 14. Fish Mapping
 
 Fish maps its surface markers onto C4 Core statement notation as follows:
 
@@ -613,7 +735,7 @@ C4 Core terminology SHOULD use source/target.
 
 ---
 
-## 14. Open Questions
+## 15. Open Questions
 
 The following remain open for future formalization:
 
@@ -622,6 +744,7 @@ The following remain open for future formalization:
 - exact grammar-defined definition of $\mathcal{E}_{rel}$;
 - exact structure of traversal steps $\eta$;
 - exact contents of resolution environment $\Gamma$;
+- exact relationship between graph names, locator profiles, and integral named graphs;
 - exact relationship between integral named graphs and virtual/projected resources;
 - exact surface syntax for statement-resource and block-resource addressing;
 - exact conformance levels for parsers, canonicalizers, validators, emitters, and profile loaders.
