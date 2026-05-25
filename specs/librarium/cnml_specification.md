@@ -1107,21 +1107,24 @@ For redaction-, censorship-, masking-, substitution-, or projection-dependent ob
 
 ## Rendering Model
 
-CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScript, OpenDocument, audio, or interactive runtimes.
+CNML MAY be rendered into HTML, PDF, TeX/LaTeX DVI, SVG, EPUB, Markdown, PostScript, OpenDocument, audio, interactive runtimes, or any number of other textual, visual, audio, spatial, archival, application-native, or media formats.
 
-### Recommended HTML Projection
+### Suggested Target-Format Equivalents
 
-| CNML | HTML |
-|---|---|
-| explicit or implicit paragraphs | `<p>` |
-| list/item | `<ol>`, `<ul>`, `<dl>`, or evaluator-defined list projection |
-| chat/msg | transcript, message list, or evaluator-defined chat projection |
-| playback | embedded media, transcript, figure, or evaluator-defined media-output projection |
-| prosody | `<span>` |
-| ref/ref-work | `<a>`, citation span, or evaluator-defined reference projection |
-| poem/music | inline SVG or evaluator-defined projection |
-| fish/data blocks | non-rendered metadata or evaluator-defined projection |
-| obscured | author-supplied surface text and/or renderer-mediated obscuration according to method and projection policy |
+The following examples are illustrative and non-normative. They show common target-format equivalents a renderer MAY choose when projecting CNML into HTML, TeX/LaTeX, DOCX/OpenDocument, EPUB, SVG, audio, interactive, or application-native formats. A conforming renderer is not required to use these exact target elements, provided it preserves the semantics required by its declared rendering profile.
+
+| Target family | Paragraph/list content | Discourse/media content | Expressive/prosodic content | Reference/semantic content | Spatial/music/integrity content |
+|---|---|---|---|---|---|
+| HTML / EPUB | `<p>`, `<ol>`, `<ul>`, `<dl>`, `<li>` | transcript structures, message lists, `<audio>`, `<video>`, `<figure>` | `<span>` with class/style, ARIA/accessibility annotations | `<a>`, citation spans, metadata blocks, omitted fish/data rendering | verse blocks, SVG, embedded media, author-supplied obscured text, redaction spans |
+| TeX / LaTeX / PDF | paragraph breaks, paragraph macros, list environments | transcript environments, figures, media references | macros, commands, run styles, performance annotations | citation macros, footnotes, hyperlinks, auxiliary metadata files | verse environments, music notation output, redaction macros, masked text |
+| DOCX / OpenDocument | paragraph nodes/styles, list paragraph styles | styled message paragraphs, tables, embedded media, captioned figures | character styles, run formatting, comments, review annotations | hyperlinks, fields, citation objects, custom XML parts, metadata fields | styled verse, embedded notation/media, redaction marks, hidden/replaced runs |
+| Markdown / plain text | blank-line paragraphs, Markdown lists, outline text | transcript blocks, quoted logs, media placeholders | inline markers, typographic conventions, editorial notes | Markdown links, reference definitions, frontmatter metadata | verse indentation, fenced data blocks, plain-text obscuration |
+| SSML / audio | phrase and paragraph grouping, pause structure | speaker turns, recorded-media cues, playback transitions | prosody tags, emphasis, phonation, breath/laughter/sigh cues | pronunciation hints, link/citation narration policy | bleep, silence, masking, sound-design or performance cues |
+| Screenplay / stageplay | action blocks, list-like business, scene text | dialogue, character cues, parentheticals, transcript-like exchanges | delivery notes, actor direction, vocal emphasis | source/citation notes, production metadata | stage directions, lyrics/music cues, lighting/sound/obscuration cues |
+| Captions / subtitles | caption blocks, reading-order chunks | WebVTT/SRT/TTML cues, speaker labels, media timing | emphasis markers, sound captions, nonverbal cue text | metadata tracks, annotation tracks | redaction/bleep captions, timed visual/audio effects |
+| Layout / design | text frames, paragraph styles, list styles | anchored media frames, transcript panels, chat bubbles | character styles, visual emphasis, performance glyphs | linked objects, authority records, metadata panels | PÂTE, SVG, IDML/Affinity-native objects, notation or score views |
+| Interactive / game | UI text blocks, menu/list widgets | dialogue nodes, chat logs, playback scenes | bark/delivery metadata, animation/audio cues | graph edges, variables, linked resources | spatial UI, timed events, hidden/revealed content |
+| Semantic / archival exchange | TEI/JATS-like paragraph/list structures | TEI speech/transcript structures, media annotations | feature annotations, stand-off markup | RDF, JSON-LD, C4/fish relation graphs, authority links | TEI verse/music structures, integrity annotations, preservation metadata |
 
 ---
 
