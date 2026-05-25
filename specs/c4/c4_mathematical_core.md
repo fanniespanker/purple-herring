@@ -108,11 +108,7 @@ where $\epsilon$ is the empty traversal chain.
 
 The primary resource universe is therefore:
 
-$$
-\mathcal{U}
-=
-\{\,G[\gamma] \mid G \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_G),\ G[\gamma]\ \text{is defined}\,\}
-$$
+$\mathcal{U} = \{\,G[\gamma] \mid G \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_G),\ G[\gamma]\ \text{is defined}\,\}$
 
 Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
 
@@ -137,8 +133,7 @@ Resource-denoting traversal expressions are one subdomain of $\mathcal{E}$, not 
 A preliminary decomposition is:
 
 $$
-\mathcal{E}
-=
+\mathcal{E} =
 \mathcal{E}_{trav}
 \cup
 \mathcal{E}_{lit}
@@ -195,8 +190,7 @@ $$
 A traversal expression is a root resource together with a traversal chain:
 
 $$
-\mathcal{E}_{trav}
-=
+\mathcal{E}_{trav} =
 \mathcal{U}
 \times
 \mathrm{Seq}(\mathcal{T})
@@ -255,8 +249,7 @@ $$
 traversal resolution is:
 
 $$
-\rho^{\Gamma}_{\gamma}(u_0)
-=
+\rho^{\Gamma}_{\gamma}(u_0) =
 \eta_n^{\Gamma}(\cdots\eta_2^{\Gamma}(\eta_1^{\Gamma}(u_0))\cdots)
 $$
 
@@ -265,8 +258,7 @@ when every traversal step is defined.
 Traversal expression resolution is the special case:
 
 $$
-\rho_{\Gamma}((u_0,\gamma))
-=
+\rho_{\Gamma}((u_0,\gamma)) =
 \rho^{\Gamma}_{\gamma}(u_0)
 $$
 
@@ -305,8 +297,7 @@ be the resolution-state domain.
 Then:
 
 $$
-\mathrm{Stmt}
-=
+\mathrm{Stmt} =
 \mathcal{E}
 \times
 \mathcal{E}_{rel}
@@ -396,8 +387,7 @@ The symbol $?$ does not encode probability or statistical confidence. It denotes
 A C4 block is an ordered sequence of statements:
 
 $$
-\mathrm{Block}
-=
+\mathrm{Block} =
 \mathrm{Seq}(\mathrm{Stmt})
 $$
 
