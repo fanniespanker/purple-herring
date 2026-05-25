@@ -89,7 +89,7 @@ be the traversal-step domain available in graph $G$.
 A traversal chain over $G$ is:
 
 $$
-\gamma \in \operatorname{Seq}(\mathcal{T}_G)
+\gamma \in \mathrm{Seq}(\mathcal{T}_G)
 $$
 
 A resource selected from $G$ by traversal chain $\gamma$ is written:
@@ -111,7 +111,7 @@ The primary resource universe is therefore:
 $$
 \mathcal{U}
 =
-\{\,G[\gamma] \mid G \in \mathcal{G},\ \gamma \in \operatorname{Seq}(\mathcal{T}_G),\ G[\gamma]\ \text{is defined}\,\}
+\{\,G[\gamma] \mid G \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_G),\ G[\gamma]\ \text{is defined}\,\}
 $$
 
 Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
@@ -199,7 +199,7 @@ $$
 =
 \mathcal{U}
 \times
-\operatorname{Seq}(\mathcal{T})
+\mathrm{Seq}(\mathcal{T})
 $$
 
 A path-like surface expression such as:
@@ -317,7 +317,7 @@ $$
 \times
 \Sigma
 \times
-\operatorname{Option}(\mathcal{E})
+\mathrm{Option}(\mathcal{E})
 $$
 
 An individual statement is written:
@@ -332,7 +332,7 @@ where:
 - $\mathbf{r} \in \mathcal{E}_{rel}$ is the relation-position expression;
 - $\phi \in \Phi$ is polarity;
 - $\sigma \in \Sigma$ is resolution state;
-- $c \in \operatorname{Option}(\mathcal{E})$ is optional context.
+- $c \in \mathrm{Option}(\mathcal{E})$ is optional context.
 
 Source and target are expressions, not necessarily already-resolved resources.
 
@@ -398,7 +398,7 @@ A C4 block is an ordered sequence of statements:
 $$
 \mathrm{Block}
 =
-\operatorname{Seq}(\mathrm{Stmt})
+\mathrm{Seq}(\mathrm{Stmt})
 $$
 
 An individual block is written:
@@ -464,7 +464,7 @@ be canonicalization.
 For a surface language $L$, parsing and canonicalization are separated:
 
 $$
-\operatorname{parse}_{L} : \Sigma_L^* \rightharpoonup AST_L
+\mathrm{parse}_{L} : \Sigma_L^* \rightharpoonup AST_L
 $$
 
 $$
@@ -498,13 +498,13 @@ $$
 be the validation diagnostic function:
 
 $$
-\nu_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \operatorname{Seq}(\mathrm{Diagnostic})
+\nu_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \mathrm{Seq}(\mathrm{Diagnostic})
 $$
 
 A statement or block is valid under $\Gamma$ iff its diagnostic sequence is empty under a strict validation profile:
 
 $$
-\operatorname{valid}_{\Gamma}(X)
+\mathrm{valid}_{\Gamma}(X)
 \iff
 \nu_{\Gamma}(X)=\varnothing
 $$
