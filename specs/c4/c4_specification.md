@@ -1,8 +1,8 @@
-# C4 v0.1.6 Technical Specification
+# C4/Fish Combined Technical Specification v0.1.6
 
 ## 0. Status
 
-C4 v0.1.6 is the current technical specification for the C4 abstract relation model used by the Purple Herring stack.
+C4/Fish v0.1.6 is the current combined technical draft for the C4 abstract relation model, the fish surface language, and Herring Bones scaffolding used by the Purple Herring stack.
 
 C4 expands to:
 
@@ -11,6 +11,24 @@ Contextual Compositional Concept Calculus
 ```
 
 C3TCalc is the former development name of C4 and remains only a historical term in supersession lists, migration notes, and design history.
+
+This combined draft remains the compatibility entry point for the current technical series.
+
+Future drafts SHOULD split this document into separate specifications:
+
+```text
+C4 Core Specification
+Fish Language Specification
+Herring Bones Specification
+```
+
+The intended split is:
+
+- C4 Core defines the abstract relation, resource, assertion, validation, and semantic model.
+- Fish Language defines the canonical machine-parseable and human-readable surface language for C4 expressions.
+- Herring Bones defines standard libraries, relation templates, registries, validation profiles, and ontology scaffolding.
+
+Until that split stabilizes, this combined specification remains normative for the v0.1.x technical series.
 
 Version delta:
 
