@@ -1,6 +1,6 @@
 # CNML Specification v0.5.3 (Draft)
 
-This Purple Herring CNML draft incorporates the current CNML structural-frame, addressing/milestone, discourse, linguistic-system, prosody, affect, fish/C4 integration, and information-integrity revisions.
+This Purple Herring CNML draft incorporates the current CNML structural-frame, addressing/milestone, discourse, linguistic-system, prosody, affect, C4/fish integration, and information-integrity revisions.
 
 ## Foundations
 
@@ -17,6 +17,15 @@ CNML encodes semantic, experiential, structural, temporal, prosodic, and spatial
 Evaluation, rendering, playback, and projection are interpreter-dependent realizations of CNML source structure.
 
 Operational interpretation MAY derive additional structure for rendering or execution purposes, but such derived structure MUST NOT be treated as intrinsic source semantics.
+
+CNML does not require Purple Herring/C4 adoption. CNML documents remain conforming and semantically useful when they use only direct CNML metadata, `<link>` declarations, `<ref>` elements, RDFa-compatible attributes, generic `<data>` blocks, or external metadata resources.
+
+Within the Purple Herring stack, C4 and fish are distinct layers:
+
+- C4 is the abstract relation, resource, assertion, validation, and semantic model.
+- fish is the canonical concrete surface language for authoring C4 expressions.
+
+Fish syntax encodes C4 relations, but C4 itself is not identical to fish syntax. Purple Herring-conformant CNML processors SHOULD support CNML-native `<fish>` blocks. Non-Purple-Herring CNML processors MAY ignore, preserve, warn on, or expose `<fish>` blocks as uninterpreted semantic data according to their processing profile.
 
 ---
 
@@ -166,11 +175,44 @@ author
 date
 identifier
 license
+link
 summary
 synopsis
 ```
 
 Relational, ontological, interpretive, subject, genre, audience, adaptation, parody, support/opposition, portrayal, and thematic metadata SHOULD be represented with fish relation statements.
+
+`<link>` declares an associated resource for the current CNML context. It does not represent visible linked text by default.
+
+`<link>` is distinct from inline `<ref>`:
+
+- `<link>` attaches or declares a resource used by a processor, renderer, validator, edition, accessibility layer, or semantic layer.
+- `<ref>` marks visible or source-level reference content in the authored text.
+
+Common `<link>` attributes include:
+
+```text
+rel       relationship or purpose of the linked resource
+href      external URI, path, or locator
+target    internal CNML target, when not using href
+format    resource format token
+type      media type, when useful
+lang      language scope
+scope     work, chapter, voice, narrator, edition, profile, or evaluator-defined scope
+resource  persistent semantic identity, when different from href
+```
+
+Examples:
+
+```xml
+<link rel="pronunciation-lexicon" format="pls" href="pronunciation.pls" lang="en"/>
+<link rel="segmentation-profile" format="json" href="segmentation.json"/>
+<link rel="c4-registry" format="fish" href="relations.fish"/>
+<link rel="pate-profile" format="pate" href="layout.pate"/>
+<link rel="stylesheet" format="css" href="edition.css"/>
+```
+
+Pronunciation lexicons MAY be attached for rendering, speech synthesis, accessibility, audiobook generation, pronunciation-sensitive analysis, or edition-specific speech profiles. PLS SHOULD be the default interchange format for pronunciation lexicons. CNML processors MAY support evaluator-defined pronunciation lexicon formats through `format`.
 
 Example:
 
@@ -714,6 +756,7 @@ _item1         first list item
 _chat1         first chat/transcript block
 _msg1          first message
 _playback1     first playback block
+_fish1         first CNML fish block
 _sentence1     first derived sentence pseudo-unit
 _word1         first derived word pseudo-unit
 _token1        first derived token pseudo-unit
@@ -747,6 +790,18 @@ Sentence, word, and token segmentation are profile-dependent unless explicitly m
 Derived ordinal selectors are primarily for tooling, generated tables of contents, indexes, reports, edition-specific citations, and fine-grained references into text-bearing content. They SHOULD NOT be treated as durable authored identifiers unless tied to a frozen edition, source snapshot, or selector profile.
 
 Profiles MAY define short aliases such as `_ch1`, `_sc1`, `_p1`, `_s1`, `_w1`, and `_t1`, but canonical generated CNML references SHOULD prefer the long selector forms above.
+
+Within a CNML `<fish>` block, derived `_statementN` selectors identify parsed fish statements encoding C4 relations in source order.
+
+Statement boundaries are determined by fish syntax, typically statement separators such as `;`, not by physical source line breaks. A fish statement that spans multiple visual source lines is still one `_statement`; multiple fish statements on one visual source line are multiple `_statement` units.
+
+Example:
+
+```text
+chapter3._fish1._statement2
+```
+
+This example selects the second parsed fish statement inside the first CNML `<fish>` block under `chapter3`.
 
 Milestones SHOULD be used for durable fine-grained addressing.
 
@@ -843,9 +898,11 @@ CNML distinguishes CNML-native fish relation blocks from generic embedded data b
 <fish>
 ```
 
-`<fish>` embeds Purple Herring / C4 relation statements whose resource-resolution context is the surrounding CNML document.
+`<fish>` embeds fish source text whose resource-resolution context is the surrounding CNML document. The fish source text encodes C4 relation statements.
 
-A `<fish>` element MAY contain one or more fish statements. The element content may be parsed as a C4 school fragment when multiple statements are present.
+A `<fish>` element MAY contain one or more fish statements. The element content may be parsed as a fish school fragment when multiple statements are present.
+
+CNML addresses MAY select `<fish>` blocks with derived ordinal selectors such as `_fish1`. Parsed statements inside a `<fish>` block MAY be selected with derived `_statementN` selectors.
 
 A `<fish>` block MAY address CNML-native resources such as the current structural frame resource, declared anchors or milestone spans, `xml:id`-addressable elements, and evaluator-defined CNML projections.
 
@@ -895,7 +952,7 @@ Fish resource access semantics are CNML-integrated. They are not equivalent to R
 
 `<data>` embeds external data, metadata, relation languages, or serialization formats. The `format` attribute is REQUIRED and identifies the embedded language, notation, or serialization format.
 
-`<data format="fish">` MAY be accepted as a generic embedded-data form, but it is not equivalent to `<fish>` unless an evaluator explicitly grants it the same CNML-native resource access semantics. Authors SHOULD use `<fish>` when Purple Herring/C4 is intended to operate as the CNML-native semantic relation layer.
+`<data format="fish">` MAY be accepted as a generic embedded-data form, but it is not equivalent to `<fish>` unless an evaluator explicitly grants it the same CNML-native resource access semantics. Authors SHOULD use `<fish>` when fish is intended to operate as the CNML-native surface language for C4 relations.
 
 ---
 
@@ -1140,6 +1197,8 @@ The following examples are illustrative and non-normative. They show common targ
 - Explicit `<paragraph>` is the canonical authored paragraph container; `<p>` is a compatibility alias that canonicalizes to `<paragraph>`.
 - `<list>` and `<item>` are core CNML block/content elements.
 - `<heading>` and `<subheading>` are core CNML heading elements; use `n`, not `id`, for authored CNML local address segments.
+- `<link>` declares an associated resource for the current CNML context and does not represent visible linked text by default.
+- Pronunciation lexicons SHOULD use PLS as the default interchange format when attached with `<link rel="pronunciation-lexicon">`.
 - `<work>` is the work-level source/publication frame; `format` identifies the work form, medium, or publication category.
 - `<part>` is a high-level mainmatter structural frame.
 - `<prologue>`, `<interlude>`, and `<epilogue>` are special mainmatter structural frames.
@@ -1152,7 +1211,7 @@ The following examples are illustrative and non-normative. They show common targ
 - `(...)` compresses shared-prefix spans.
 - `%XX` escapes reserved characters inside address expressions.
 - `_` prefixes derived, non-authorial address segments.
-- Derived ordinal selectors SHOULD use readable canonical long forms such as `_chapter1`, `_paragraph1`, `_sentence1`, `_word1`, and `_token1`.
+- Derived ordinal selectors SHOULD use readable canonical long forms such as `_chapter1`, `_paragraph1`, `_fish1`, `_statement1`, `_sentence1`, `_word1`, and `_token1`.
 - `xml:id` remains optional and XML-native; it does not replace CNML path addressing.
 - Derived sentence, word, and token addresses are pseudo-unit addresses and require declared segmentation behavior before they can be considered reproducible.
 - `<s>`, `<w>`, and `<t>` are not canonical CNML elements in this draft.
@@ -1163,7 +1222,9 @@ The following examples are illustrative and non-normative. They show common targ
 - `<ref>` is the preferred generic reference element; `<ref-work>` remains a specialized work/media reference in this draft.
 - `<ordinal>` is a core inline semantic element for ordinal-number content; `value` MAY supply the machine-readable ordinal value when inference from content is ambiguous or unavailable.
 - `<break>` is not yet stabilized as a canonical CNML element; use `<scene>` for structural scene divisions or `<ms/>` for durable boundary positions until this design point is resolved.
-- `<fish>` is the preferred form for CNML-native Purple Herring/C4 relation statements.
+- C4 is the abstract Purple Herring relation and semantic model; fish is the canonical concrete surface language for authoring C4 expressions.
+- CNML does not require Purple Herring/C4 adoption; non-Purple-Herring processors MAY preserve or expose `<fish>` as uninterpreted semantic data.
+- `<fish>` is the preferred CNML-native form for fish source text that encodes C4 relation statements.
 - In `<fish>`, bare `#` resolves to the nearest enclosing structural frame resource by default.
 - In `<fish>`, `+{ancestor}#` explicitly selects the nearest enclosing ancestor of the named element or evaluator-recognized ancestor type.
 - `<data format="fish">` MUST NOT be assumed equivalent to `<fish>` unless an evaluator explicitly grants it CNML-native fish resource access semantics.
