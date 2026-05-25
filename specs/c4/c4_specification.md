@@ -84,11 +84,13 @@ This version includes implementation and ontology scaffolding migrated from earl
 
 C4 defines the abstract graph-native relation model for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
 
-Fish is the canonical concrete surface language for authoring C4 expressions.
+Fish is the canonical machine-parseable and human-readable surface language for authoring, exchanging, parsing, and displaying C4 expressions.
 
 A fish document, fish block, or fish statement encodes C4 relations, but C4 itself is not identical to fish syntax.
 
-C4 is independently useful as a standalone semantic model. Fish is independently useful as a human-readable C4 expression language.
+C4 is independently useful as a standalone semantic model. Fish is independently useful as a readable C4 expression language.
+
+Other C4 serializations MAY exist, including JSON, XML, binary, RDF/graph-native, or implementation-internal encodings. Fish remains the canonical Purple Herring surface language for C4 expressions unless an active profile declares otherwise.
 
 It may be used as:
 
