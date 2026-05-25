@@ -181,6 +181,45 @@ $$
 \eta \in \mathcal{T}
 $$
 
+------------
+
+A traversal step may be written as an edge traversal operator:
+
+$$
+u_{i-1} \overset{\eta_i}{\rightarrow} u_i
+$$
+
+where $u_{i-1},u_i \in \mathcal{U}$ and $\eta_i \in \mathcal{T}$.
+
+A traversal chain
+
+$$
+\gamma=\langle\eta_1,\ldots,\eta_n\rangle
+$$
+
+therefore determines a resource path when there exist resources
+$u_0,\ldots,u_n$ such that:
+
+$$
+u_0
+\overset{\eta_1}{\rightarrow}
+u_1
+\overset{\eta_2}{\rightarrow}
+\cdots
+\overset{\eta_n}{\rightarrow}
+u_n
+$$
+
+In that case:
+
+$$
+\rho^\Gamma_\gamma(u_0)=u_n
+$$
+
+Traversal operators are profile-defined. They MAY correspond to relation-mediated graph traversal, subresource traversal, path-component traversal, prefix-expanded IRI-relative addressing, or other deterministic graph-addressing operations.
+
+-----------
+
 A traversal chain is written:
 
 $$
