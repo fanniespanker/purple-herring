@@ -389,3 +389,182 @@ $$
 
 The symbol $?$ does not encode probability or statistical confidence. It denotes unresolvedness, contextuality, inquiry, or incomplete crystallization.
 
+---
+
+## 9. Blocks
+
+A C4 block is an ordered sequence of statements:
+
+$$
+\mathrm{Block}
+=
+\operatorname{Seq}(\mathrm{Stmt})
+$$
+
+An individual block is written:
+
+$$
+B = \langle P_1,\ldots,P_n\rangle
+$$
+
+Source order is preserved unless an explicit profile defines another ordering or canonicalization policy.
+
+Blocks MAY introduce binding scope, query scope, declaration scope, or local relation-definition scope under the active grammar/profile.
+
+A block MAY itself be treated as a resource when canonicalized.
+
+---
+
+## 10. Statement and Block Resources
+
+C4 statements and blocks are reifiable resources.
+
+Let:
+
+$$
+\iota_P : \mathrm{Stmt} \to \mathcal{U}
+$$
+
+map each canonical statement to its statement-resource identity.
+
+Let:
+
+$$
+\iota_B : \mathrm{Block} \to \mathcal{U}
+$$
+
+map each canonical block to its block-resource identity.
+
+If two surface forms canonicalize to the same statement, they MUST have the same statement-resource identity.
+
+Formally, for a canonicalization function $\kappa$:
+
+$$
+\kappa(a)=\kappa(b)
+\implies
+\iota_P(\kappa(a))=\iota_P(\kappa(b))
+$$
+
+when $\kappa(a),\kappa(b) \in \mathrm{Stmt}$.
+
+Exact surface syntax for addressing a statement-resource or block-resource is deferred beyond this mathematical core.
+
+---
+
+## 11. Canonicalization
+
+Let:
+
+$$
+\kappa
+$$
+
+be canonicalization.
+
+For a surface language $L$, parsing and canonicalization are separated:
+
+$$
+\operatorname{parse}_{L} : \Sigma_L^* \rightharpoonup AST_L
+$$
+
+$$
+\kappa_L : AST_L \rightharpoonup \mathrm{Stmt} \cup \mathrm{Block} \cup \mathcal{E}
+$$
+
+Canonical equivalence is defined over canonical C4 structures:
+
+$$
+a \equiv_{C4} b
+\iff
+\kappa(a)=\kappa(b)
+$$
+
+when both sides are defined.
+
+Fish-specific parsing and canonicalization are instances of this general form, not the definition of C4 itself.
+
+---
+
+## 12. Validation
+
+Validation is profile-relative.
+
+Let:
+
+$$
+\nu_{\Gamma}
+$$
+
+be the validation diagnostic function:
+
+$$
+\nu_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \operatorname{Seq}(\mathrm{Diagnostic})
+$$
+
+A statement or block is valid under $\Gamma$ iff its diagnostic sequence is empty under a strict validation profile:
+
+$$
+\operatorname{valid}_{\Gamma}(X)
+\iff
+\nu_{\Gamma}(X)=\varnothing
+$$
+
+Validation MAY inspect:
+
+- relation-position admissibility;
+- source-position admissibility;
+- target-position admissibility;
+- polarity support;
+- resolution-state support;
+- context admissibility;
+- binding-kind consistency;
+- local declaration availability;
+- loaded Herring Bones modules;
+- ontology/profile constraints;
+- canonicalization policy.
+
+Parsing, canonicalization, and validation are distinct operations.
+
+An unknown relation may parse and canonicalize as a statement while failing validation under a strict profile.
+
+---
+
+## 13. Fish Mapping
+
+Fish maps its surface markers onto C4 Core statement notation as follows:
+
+$$
+\begin{aligned}
+\mathbf{s}\&\mathbf{r}@\mathbf{t}
+&\mapsto
+\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t}) \\
+\mathbf{s}\&?\mathbf{r}@\mathbf{t}
+&\mapsto
+\mathbf{r}^{\varnothing}_{?}(\mathbf{s},\mathbf{t}) \\
+\mathbf{s}\&!\mathbf{r}@\mathbf{t}
+&\mapsto
+\mathbf{r}^{\neg}_{\varnothing}(\mathbf{s},\mathbf{t}) \\
+\mathbf{s}\&?!\mathbf{r}@\mathbf{t}
+&\mapsto
+\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
+\end{aligned}
+$$
+
+Fish source/target terminology MAY use tail/head as surface-language mnemonic terminology.
+
+C4 Core terminology SHOULD use source/target.
+
+---
+
+## 14. Open Questions
+
+The following remain open for future formalization:
+
+- exact recursive definition of $\mathcal{E}$;
+- exact canonical AST schema;
+- exact grammar-defined definition of $\mathcal{E}_{rel}$;
+- exact structure of traversal steps $\eta$;
+- exact contents of resolution environment $\Gamma$;
+- exact relationship between integral named graphs and virtual/projected resources;
+- exact surface syntax for statement-resource and block-resource addressing;
+- exact conformance levels for parsers, canonicalizers, validators, emitters, and profile loaders.
