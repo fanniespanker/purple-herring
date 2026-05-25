@@ -190,13 +190,26 @@ $$
 A traversal step may be written as a traversal operator:
 
 $$
-u_{i-1} \overset{\eta_i}{\rightarrow} u_i
+u_{i-1}\overset{\eta_i}{\rightarrow}u_i
 $$
 
 where $u_{i-1},u_i \in \mathcal{U}$ and $\eta_i \in \mathcal{T}$.
 
-A traversal chain determines a resource path when there exist resources
-$u_0,\ldots,u_n$ such that:
+When discussing resolved statement endpoints, C4 uses $u_s$ and $u_t$ for the resolved source and target resources:
+
+$$
+u_s=\rho_\Gamma(\mathbf{s}), \qquad u_t=\rho_\Gamma(\mathbf{t})
+$$
+
+When discussing traversal chains, C4 uses indexed resources $u_0,\ldots,u_n$:
+
+$$
+u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+$$
+
+This avoids confusing statement source/target notation with traversal-step composition.
+
+A traversal chain determines a resource path when there exist resources $u_0,\ldots,u_n$ such that:
 
 $$
 u_0
@@ -232,7 +245,33 @@ Politics/movements/feminism/radical_feminism
 
 is a surface serialization of a rooted traversal expression, not a primitive string.
 
-Traversal steps are profile-defined. They MAY represent subresource selection, relation-mediated traversal, path-component traversal, prefix-expanded IRI-relative addressing, or other deterministic graph-addressing operations.
+Traversal operators are profile-defined partial resource-resolution operators:
+
+$$
+\eta^\Gamma : \mathcal{U} \rightharpoonup \mathcal{U}
+$$
+
+The traversal-step domain may be partitioned into profile-defined traversal classes:
+
+$$
+\mathcal{T}
+=
+\mathcal{T}_{sub}
+\cup
+\mathcal{T}_{rel}
+\cup
+\mathcal{T}_{path}
+\cup
+\mathcal{T}_{proj}
+\cup
+\cdots
+$$
+
+where $\mathcal{T}_{sub}$ contains subresource-selection operators, $\mathcal{T}_{rel}$ contains relation-mediated traversal operators, $\mathcal{T}_{path}$ contains path-component traversal operators, and $\mathcal{T}_{proj}$ contains projection / mapping traversal operators.
+
+Traversal operators resolve resources. They do not themselves assert C4 statements.
+
+A profile MAY define materialization rules that emit C4 statements corresponding to traversal behavior, but such materialization is profile-defined and not part of C4 Core traversal semantics.
 
 ---
 
