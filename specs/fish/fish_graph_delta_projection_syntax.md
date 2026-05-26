@@ -8,6 +8,8 @@ It defines the initial Fish projection syntax for returning graph-delta result g
 
 Graph-delta projection syntax does not replace C4 graph-native graph-delta semantics.
 
+In Fish/Purple Herring culinary terminology, `fond` is an informal alias for graph-delta projections: the residue/evidence left at the contact surface of comparison, transformation, or materialization. This alias is aesthetic terminology only. The formal C4 term remains graph delta, and the protocol schema names remain `graph_delta_graph` and `graph_delta_summary`.
+
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
 Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
@@ -20,7 +22,7 @@ C4 Core defines graph-delta graph-objects as graph-native objects.
 
 Fish may project graph-delta graph-objects into protocol responses when the client requests a graph-delta result schema.
 
-A Fish graph-delta projection is a response projection of a graph-native result. It MUST NOT be interpreted as replacing the underlying C4 graph-delta object.
+A Fish graph-delta projection, informally a fond projection, is a response projection of a graph-native result. It MUST NOT be interpreted as replacing the underlying C4 graph-delta object.
 
 ---
 
@@ -43,6 +45,15 @@ fish:proto:graph_delta_summary
 ```
 
 is reserved for compact summary projection.
+
+Informal aliases:
+
+```text
+graph_delta_graph     fond graph
+graph_delta_summary   fond summary
+```
+
+These aliases do not define additional protocol schema names.
 
 Boolean fields such as `has_added` or `has_unresolved` SHOULD NOT be part of the default `graph_delta_graph` schema.
 
@@ -339,6 +350,7 @@ The following remain open for future formalization:
 
 - exact internal marking syntax for nodes, edges, relations, and subgraphs;
 - exact standard summary field vocabulary for `graph_delta_summary`;
+- whether `fond_graph` and `fond_summary` should ever become formal protocol aliases or remain informal terminology only;
 - whether `source` and `target` should always be ordered lists rather than repeated relations;
 - whether `added`, `removed`, `modified`, `unchanged`, and `unresolved` should point only to region roots or may also point to marker objects under profile-defined schemas;
 - how to represent per-edge vs per-node vs per-subgraph delta markings;
