@@ -24,7 +24,35 @@ A Fish graph-delta projection is a response projection of a graph-native result.
 
 ---
 
-## 2. Requesting a Graph-Delta Projection
+## 2. Graph vs Summary Result Schemas
+
+Graph result schemas SHOULD return graph roots, graph regions, or projected graph structures.
+
+Summary result schemas MAY return compressed facts, counts, flags, or other compact summary projections.
+
+Therefore:
+
+```fish
+fish:proto:graph_delta_graph
+```
+
+returns graph roots/regions, while:
+
+```fish
+fish:proto:graph_delta_summary
+```
+
+is reserved for compact summary projection.
+
+Boolean fields such as `has_added` or `has_unresolved` SHOULD NOT be part of the default `graph_delta_graph` schema.
+
+If a client wants booleans, counts, or compressed facts, it SHOULD request `fish:proto:graph_delta_summary` or another explicit summary schema.
+
+Status-only responses SHOULD use status enums, not synthetic graph-region booleans.
+
+---
+
+## 3. Requesting a Graph-Delta Projection
 
 A request fish may request a graph-delta result graph using:
 
@@ -46,7 +74,32 @@ fish:id:REQ&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZATION_N
 
 ---
 
-## 3. Generic Result Relation
+## 4. Requesting a Graph-Delta Summary
+
+A request fish may request a compact graph-delta summary using:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:graph_delta_summary;
+```
+
+Example abstract summary response:
+
+```fish
+fish:id:REQ&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZATION_NOT_ATTEMPTED);
+fish:id:REQ&fish:proto:result@fish:id:SUMMARY;
+
+fish:id:SUMMARY&fish:proto:result_type@fish:proto:graph_delta_summary;
+fish:id:SUMMARY&fish:proto:added_count@fish:proto:3;
+fish:id:SUMMARY&fish:proto:removed_count@fish:proto:0;
+fish:id:SUMMARY&fish:proto:modified_count@fish:proto:7;
+fish:id:SUMMARY&fish:proto:unresolved_count@fish:proto:1;
+```
+
+Summary fields are provisional and belong to summary schemas, not to `graph_delta_graph`.
+
+---
+
+## 5. Generic Result Relation
 
 Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
 
@@ -73,7 +126,7 @@ Result-specific semantics live inside the result graph.
 
 ---
 
-## 4. Minimal Graph-Delta Response Shape
+## 6. Minimal Graph-Delta Response Shape
 
 A minimal graph-delta response may use:
 
@@ -100,7 +153,7 @@ The region roots are graph roots/subgraph roots. They may themselves contain arb
 
 ---
 
-## 5. Minimal Delta Region Vocabulary
+## 7. Minimal Delta Region Vocabulary
 
 The initial Fish graph-delta projection vocabulary includes:
 
@@ -116,11 +169,11 @@ fish:proto:unresolved
 
 These are projection relations from the graph-delta result root to projected region roots.
 
-They are not a substitute for C4 graph-native graph-delta semantics.
+They are not booleans, not enums, and not a substitute for C4 graph-native graph-delta semantics.
 
 ---
 
-## 6. Source and Target Regions
+## 8. Source and Target Regions
 
 `fish:proto:source` identifies the projected source-side region or root associated with the graph-delta result.
 
@@ -139,7 +192,7 @@ fish:id:DELTA&fish:proto:target@fish:id:TGT_ROOT;
 
 ---
 
-## 7. Modification Regions
+## 9. Modification Regions
 
 The modification-region relations are:
 
@@ -161,13 +214,17 @@ unchanged   projected region containing unchanged correspondences when requested
 unresolved  projected region containing unresolved correspondences, ambiguity, conflicts, or undecidable mapping results
 ```
 
+These relations point to projected graph region roots.
+
+They do not answer yes/no questions about whether such regions exist.
+
 These regions MAY be omitted when not requested by the result schema.
 
 Omission from the Fish response MUST NOT be interpreted as semantic absence from the underlying C4 graph-delta object unless the negotiated result schema explicitly defines that interpretation.
 
 ---
 
-## 8. Markings Inside Returned Regions
+## 10. Markings Inside Returned Regions
 
 A Fish graph-delta projection MAY represent markings either by:
 
@@ -181,7 +238,7 @@ Detailed internal marking syntax is deferred to a future graph-delta marking syn
 
 ---
 
-## 9. Recursive Delta Projection
+## 11. Recursive Delta Projection
 
 Graph-delta structure may be recursive.
 
@@ -193,7 +250,7 @@ If recursive projection is requested but cannot be fully returned, Fish SHOULD i
 
 ---
 
-## 10. Status Interaction
+## 12. Status Interaction
 
 A graph-delta projection response SHOULD include status unless the negotiated result schema explicitly omits it.
 
@@ -215,7 +272,7 @@ If graph-delta production fails, Fish SHOULD NOT return a successful `graph_delt
 
 ---
 
-## 11. Addressing Result Roots
+## 13. Addressing Result Roots
 
 Graph-delta result roots may be addressed by opaque IDs:
 
@@ -235,7 +292,7 @@ Examples in this draft use short placeholders such as `fish:id:DELTA`; real `fis
 
 ---
 
-## 12. Complete Abstract Example
+## 14. Complete Abstract Example
 
 ```fish
 fish:id:REQ&fish:proto:result_schema@fish:proto:graph_delta_graph;
@@ -257,13 +314,33 @@ This example is abstract. Placeholder IDs such as `REQ`, `DELTA`, `SRC`, and `AD
 
 ---
 
-## 13. Open Questions
+## 15. Complete Abstract Summary Example
+
+```fish
+fish:id:REQ&fish:proto:result_schema@fish:proto:graph_delta_summary;
+
+fish:id:REQ&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZATION_NOT_ATTEMPTED);
+fish:id:REQ&fish:proto:result@fish:id:SUMMARY;
+
+fish:id:SUMMARY&fish:proto:result_type@fish:proto:graph_delta_summary;
+fish:id:SUMMARY&fish:proto:added_count@fish:proto:3;
+fish:id:SUMMARY&fish:proto:removed_count@fish:proto:0;
+fish:id:SUMMARY&fish:proto:modified_count@fish:proto:7;
+fish:id:SUMMARY&fish:proto:unresolved_count@fish:proto:1;
+```
+
+Summary field vocabulary is provisional.
+
+---
+
+## 16. Open Questions
 
 The following remain open for future formalization:
 
 - exact internal marking syntax for nodes, edges, relations, and subgraphs;
+- exact standard summary field vocabulary for `graph_delta_summary`;
 - whether `source` and `target` should always be ordered lists rather than repeated relations;
-- whether `added`, `removed`, `modified`, `unchanged`, and `unresolved` should point to region roots, marker objects, or both;
+- whether `added`, `removed`, `modified`, `unchanged`, and `unresolved` should point only to region roots or may also point to marker objects under profile-defined schemas;
 - how to represent per-edge vs per-node vs per-subgraph delta markings;
 - how recursive source/target marking should be bounded and serialized;
 - how correspondence, ambiguity, and unresolved mapping structures should be projected;
