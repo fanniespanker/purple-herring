@@ -8,6 +8,8 @@ It defines canonical Fish opaque identifier tokens and their preferred prefixed 
 
 Fish IDs are intended for request fish addresses, response references, generated graph-object names, transport-level correlation, and profile-defined opaque addressing.
 
+Protocol/control vocabulary uses the `fish:proto:` namespace path. Opaque generated IDs use `fish:id:` and SHOULD NOT be moved under `fish:proto:`.
+
 ---
 
 ## 1. FishID128 Token
@@ -59,16 +61,16 @@ The raw 22-character token is the encoded ID payload. The prefixed form is the c
 
 ## 3. Prefix Rationale
 
-Fish uses the `fish:` namespace prefix for Fish vocabulary resources such as:
+Fish reserves separate namespace/path forms for generated IDs and protocol/control vocabulary:
 
-```fish
-fish:status
-fish:resultSchema
-fish:diagnostic
-fish:OK
+```text
+fish:id:<FishID128>        opaque generated Fish address
+fish:proto:<name>          Fish protocol/control vocabulary
+fish:proto:(...)           protocol-relative list graph
+fish:<name>                general Fish vocabulary resource
 ```
 
-Opaque generated IDs therefore use the more specific prefix form:
+Opaque generated IDs therefore use:
 
 ```fish
 fish:id:<FishID128>
@@ -80,7 +82,13 @@ rather than:
 fish:<FishID128>
 ```
 
-This preserves `fish:<name>` for named Fish vocabulary resources and avoids collisions between generated IDs and symbolic names.
+or:
+
+```fish
+fish:proto:id:<FishID128>
+```
+
+This preserves `fish:<name>` for named Fish vocabulary resources, preserves `fish:proto:<name>` for protocol/control vocabulary, and avoids collisions between generated IDs and symbolic names.
 
 ---
 
@@ -103,7 +111,7 @@ fish:id:VQ6EAOKbQdSnFkRmVUQAAA
 A status-only response may refer to the request fish by that address:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(OK);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(OK);
 ```
 
 ---
@@ -115,13 +123,13 @@ Fish responses SHOULD refer to the request fish they answer when the response is
 Canonical status-only response form:
 
 ```fish
-<request-fish-address>&fish:status@fish:(<status-enum-1>,<status-enum-2>,...);
+<request-fish-address>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
 
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
 ```
 
 The request fish address provides response correlation without requiring a non-graph protocol envelope field.
@@ -209,12 +217,18 @@ If an address is intended to be globally portable, its profile SHOULD require gl
 
 `fish:id:<FishID128>` is an opaque generated address form.
 
-It is distinct from named Fish vocabulary resources such as:
+It is distinct from named Fish protocol resources such as:
 
 ```fish
-fish:status
-fish:OK
-fish:PERMISSION_DENIED
+fish:proto:status
+fish:proto:OK
+fish:proto:PERMISSION_DENIED
+```
+
+and from general Fish vocabulary resources such as:
+
+```fish
+fish:<name>
 ```
 
 Named resources may have stable symbolic semantics.
