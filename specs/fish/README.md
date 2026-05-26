@@ -17,7 +17,7 @@ Fish may define:
 - transport/interchange conventions;
 - package, registry, and module addressing conventions.
 
-C4 Core remains the abstract graph calculus and semantic substrate. Fish may serialize, negotiate, project, transport, or status-code C4 graph-objects, but Fish protocol projections do not replace C4 graph-native semantics.
+C4 Core remains the minimal abstract graph calculus and semantic substrate needed to explain Fish. Fish may serialize, negotiate, project, transport, or status-code C4 graph-objects, but Fish protocol projections do not replace C4 graph-native semantics.
 
 In Fish/Purple Herring culinary terminology, `fond` is an informal alias for graph-delta projections. This is aesthetic terminology only. The formal C4 term remains graph delta, and protocol names remain `graph_delta_graph` and `graph_delta_summary`.
 
@@ -239,7 +239,7 @@ Materialization-result graph schemas return graph roots/regions. Materialization
 
 File: `fish_profile_negotiation_syntax.md`
 
-Defines graph-native syntax for requesting, accepting, selecting, and reporting active Fish/C4 profiles.
+Defines graph-native syntax for requesting, accepting, selecting, and reporting active Fish profiles.
 
 Profile negotiation controls schema support, schema-trait compatibility, address canonicalization, hash-derived ID generation, status-word layouts, diagnostic disclosure policy, materialization policy, and capability graphs.
 
@@ -316,15 +316,23 @@ Fish namespace conventions
 
 ## Boundary with C4 Core
 
-C4 Core defines graph-native objects and operations such as:
+C4 Core defines the minimal graph-native theory needed by Fish, including:
 
 ```text
+graph-objects
+expressions
+active fields
+statements
+relators
+relation states
+endpoint consumption
 graph-delta production
 materialization
-endpoint-consumption policy
-relator metadata
 materialization-result graph-objects
+no primitive identity
 ```
+
+C4 Core does not define Fish protocol schemas, Fish profiles, status registries, graph-delta projection vocabularies, materialization-result projection vocabularies, diagnostic envelopes, compact encodings, or relator metadata schemas.
 
 Fish defines protocol projections and interchange behavior such as:
 
