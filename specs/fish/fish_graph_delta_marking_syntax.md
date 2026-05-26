@@ -37,11 +37,46 @@ This document defines how markings may appear inside or alongside those returned
 
 ---
 
-## 2. Schema-Controlled Marking Forms
+## 2. Schema Composition and Marking Traits
 
 Fish graph-delta marking projection is schema-controlled.
 
-A result schema MUST define which marking projection form it uses.
+`fish:proto:graph_delta_graph` defines the result kind.
+
+Projection traits define how markings are represented.
+
+Initial graph-delta marking traits:
+
+```fish
+fish:proto:region_root_marking
+fish:proto:direct_marking
+```
+
+A request fish MAY compose a result kind with one or more projection traits using a protocol-relative list:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking);
+```
+
+or:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,direct_marking);
+```
+
+or both:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking,direct_marking);
+```
+
+A composed result-schema list is graph structure. It is not a scalar tuple.
+
+A Fish implementation MUST NOT assume that two composed schema traits are compatible unless the active profile, schema registry, or result-schema graph defines their composition.
+
+---
+
+## 3. Schema-Controlled Marking Forms
 
 Fish supports two initial marking projection forms:
 
@@ -57,11 +92,19 @@ A schema MAY use both forms if it defines how they interact.
 
 Fish implementations MUST NOT assume that region-root containment and direct marking are equivalent unless the active result schema explicitly defines that equivalence.
 
+`fish:proto:graph_delta_graph` alone is a generic graph-delta graph projection. If no marking trait is composed, the active profile MUST define the default marking projection form or reject the request as under-specified.
+
 ---
 
-## 3. Region-Root Marking
+## 4. Region-Root Marking
 
 Region-root marking organizes projected graph material under marking-specific region roots.
+
+A request may ask for this form by composing:
+
+```fish
+fish:proto:(graph_delta_graph,region_root_marking)
+```
 
 Example:
 
@@ -83,9 +126,15 @@ Region-root marking is compact and useful when clients want grouped graph region
 
 ---
 
-## 4. Direct Marking
+## 5. Direct Marking
 
 Direct marking marks returned graph objects explicitly.
+
+A request may ask for this form by composing:
+
+```fish
+fish:proto:(graph_delta_graph,direct_marking)
+```
 
 Initial direct marking relation:
 
@@ -115,7 +164,7 @@ Direct marking is useful when returned graph structure is interleaved, overlappi
 
 ---
 
-## 5. Mark Target Kinds
+## 6. Mark Target Kinds
 
 Direct markings MAY target projected graph objects such as:
 
@@ -134,7 +183,7 @@ A Fish implementation MUST NOT infer that a mark on a region root automatically 
 
 ---
 
-## 6. Multiple Marks
+## 7. Multiple Marks
 
 A graph object MAY have multiple direct marks only if the active schema permits it.
 
@@ -151,7 +200,7 @@ If a schema does not permit multiple marks, multiple marks SHOULD be treated as 
 
 ---
 
-## 7. Ordered Source/Target Marking
+## 8. Ordered Source/Target Marking
 
 Source and target marking may be ordered under some profiles.
 
@@ -170,7 +219,7 @@ A schema that depends on source/target ordering MUST define list semantics and c
 
 ---
 
-## 8. Recursive Marking
+## 9. Recursive Marking
 
 Graph-delta markings may be recursive.
 
@@ -189,7 +238,7 @@ Inheritance MUST NOT be assumed unless specified by the active schema.
 
 ---
 
-## 9. Unchanged and Unresolved Marking
+## 10. Unchanged and Unresolved Marking
 
 `fish:proto:unchanged` is used only when unchanged material is requested by the result schema.
 
@@ -201,7 +250,7 @@ Unresolved markings SHOULD preserve ambiguity rather than forcing a false added/
 
 ---
 
-## 10. Interaction with Summary Schemas
+## 11. Interaction with Summary Schemas
 
 Summary schemas such as:
 
@@ -219,14 +268,21 @@ Graph markings belong to graph result schemas such as:
 fish:proto:graph_delta_graph
 ```
 
+composed with marking traits such as:
+
+```fish
+fish:proto:region_root_marking
+fish:proto:direct_marking
+```
+
 or a profile-defined marked graph schema.
 
 ---
 
-## 11. Example: Region-Root Projection
+## 12. Example: Region-Root Projection
 
 ```fish
-fish:id:REQ&fish:proto:result_schema@fish:proto:graph_delta_graph;
+fish:id:REQ&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking);
 fish:id:REQ&fish:proto:result@fish:id:DELTA;
 
 fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
@@ -240,10 +296,10 @@ This example uses region-root marking only.
 
 ---
 
-## 12. Example: Direct Marking Projection
+## 13. Example: Direct Marking Projection
 
 ```fish
-fish:id:REQ&fish:proto:result_schema@fish:proto:graph_delta_graph;
+fish:id:REQ&fish:proto:result_schema@fish:proto:(graph_delta_graph,direct_marking);
 fish:id:REQ&fish:proto:result@fish:id:DELTA;
 
 fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
@@ -258,9 +314,10 @@ A real response would also include graph structure linking `NODE_A`, `NODE_B`, a
 
 ---
 
-## 13. Example: Combined Projection
+## 14. Example: Combined Projection
 
 ```fish
+fish:id:REQ&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking,direct_marking);
 fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
 fish:id:DELTA&fish:proto:added@fish:id:ADDED_REGION;
 fish:id:NODE_A&fish:proto:delta_mark@fish:proto:added;
@@ -270,7 +327,7 @@ A schema using both region-root and direct marking MUST define whether `NODE_A` 
 
 ---
 
-## 14. Open Questions
+## 15. Open Questions
 
 The following remain open for future formalization:
 
@@ -282,4 +339,5 @@ The following remain open for future formalization:
 - exact ordered source/target region-list syntax;
 - whether `added`, `removed`, `modified`, `unchanged`, and `unresolved` should be relation names, mark objects, or both;
 - how recursive mark inheritance and override should work;
-- how graph-delta marking schemas should be registered as machine-readable Fish graph data.
+- how graph-delta marking traits should be registered as machine-readable Fish graph data;
+- how composed schema traits should be validated, ordered, and rejected when incompatible.
