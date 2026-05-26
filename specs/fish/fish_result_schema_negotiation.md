@@ -104,7 +104,14 @@ Fish MAY define standard protocol result-schema classes such as:
 - `fish:proto:protocol_envelope`;
 - profile-defined result schema.
 
-These classes are protocol conveniences. The normative result schema is the graph-defined schema object or graph region requested by the client.
+Fish MAY also define standard composable schema traits such as:
+
+- `fish:proto:region_root_marking`;
+- `fish:proto:direct_marking`.
+
+Schema traits modify or constrain result schemas. They are not complete result schemas by themselves unless an active profile explicitly defines them as such.
+
+These classes and traits are protocol conveniences. The normative result schema is the graph-defined schema object or graph region requested by the client.
 
 ---
 
@@ -151,7 +158,43 @@ If no result schema is requested, Fish SHOULD use status-only.
 
 ---
 
-## 6. Generic Result Relation
+## 6. Composable Schema Traits
+
+A request may compose a result kind with one or more schema traits.
+
+Example:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking);
+```
+
+or:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,direct_marking);
+```
+
+or both:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking,direct_marking);
+```
+
+A composed schema list is graph structure.
+
+The active profile or schema registry MUST define:
+
+- which list members are result kinds;
+- which list members are traits;
+- whether the traits are compatible with the result kind;
+- whether trait order is significant;
+- what to do when a trait is unsupported, unauthorized, malformed, or incompatible.
+
+Fish implementations MUST validate composed schema lists before performing materialization behavior that may mutate persistent graph state.
+
+---
+
+## 7. Generic Result Relation
 
 Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
 
@@ -174,7 +217,7 @@ fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
 
 ---
 
-## 7. Unsupported or Malformed Result Schemas
+## 8. Unsupported or Malformed Result Schemas
 
 If a requested result schema is unsupported, Fish MUST NOT materialize using that schema.
 
@@ -184,13 +227,15 @@ If a requested result schema is malformed, Fish MUST NOT materialize using that 
 
 Instead, Fish SHOULD return `MALFORMED_RESULT_SCHEMA` as a Fish protocol status enum.
 
+If a composed schema trait is unsupported, unauthorized, malformed, or incompatible, Fish MUST NOT perform mutating materialization.
+
 Unsupported-schema and malformed-schema conditions are protocol/status outcomes. They SHOULD map to graph-native status objects and SHOULD be represented using Fish status enums or status-word projections.
 
 A malformed or unsupported result schema is a request-side/protocol-side failure, not a successful materialization with an empty result.
 
 ---
 
-## 8. Materialization Safety Rule
+## 9. Materialization Safety Rule
 
 A Fish implementation MUST validate requested result schemas before performing materialization behavior that may mutate persistent graph state.
 
@@ -202,7 +247,7 @@ This rule prevents a client from triggering materialization while requesting an 
 
 ---
 
-## 9. Schema Identity
+## 10. Schema Identity
 
 Result schemas SHOULD be graph-identifiable.
 
@@ -221,7 +266,7 @@ Protocol result-schema names SHOULD use `fish:proto:<schema_name>` unless anothe
 
 ---
 
-## 10. Projection Rule
+## 11. Projection Rule
 
 Fish result schemas are projection specifications.
 
@@ -247,7 +292,7 @@ Omission from a Fish response MUST NOT be interpreted as absence from the underl
 
 ---
 
-## 11. Marking Projection
+## 12. Marking Projection
 
 A result-schema graph MAY specify which markings to include in a projected response.
 
@@ -269,7 +314,7 @@ Fish MUST NOT invent omitted markings in a way that contradicts the underlying g
 
 ---
 
-## 12. Fallback Behavior
+## 13. Fallback and Alternative Behavior
 
 A Fish request MAY define acceptable fallback schemas.
 
@@ -279,9 +324,13 @@ If a fallback schema is used, the response SHOULD indicate, at least by status o
 
 If no schema is requested and no profile requires richer output, status-only is the fallback/default response.
 
+Because protocol-relative lists can represent schema composition, profiles MUST disambiguate composed schema lists from alternative-schema lists.
+
+Explicit fallback schemas are preferred when alternatives must be unambiguous.
+
 ---
 
-## 13. Interaction with Status Enums
+## 14. Interaction with Status Enums
 
 The Fish status registry defines the status model, and the Fish status enum registry defines named status enums.
 
@@ -292,6 +341,7 @@ This draft reserves the following conceptual error classes for status enum assig
 - unsupported result schema;
 - malformed result schema;
 - unsupported fallback schema;
+- incompatible schema traits;
 - schema negotiation failed;
 - result schema/profile mismatch.
 
@@ -299,14 +349,14 @@ Exact status-word layout and optional compatibility projections are deferred to 
 
 ---
 
-## 14. Open Questions
+## 15. Open Questions
 
 The following remain open for future formalization:
 
 - concrete compact Fish syntax for requesting result schemas;
 - whether result-schema negotiation is expressed in source syntax, request envelope syntax, graph syntax, or all of these;
 - exact standard graph-object names for status-only, diagnostic graph, patch graph, graph-delta graph, graph-delta summary, materialization-result graph, materialization-result summary, and protocol envelope schemas;
-- exact Fish status enum mappings for unsupported schema and malformed schema;
+- exact Fish status enum mappings for unsupported schema, malformed schema, and incompatible schema traits;
 - whether status-only responses should include a schema identifier when explicitly requested;
 - whether fallback schema use should be represented as a projection/negotiation status or as response metadata;
 - whether result-schema graphs should themselves be validatable by C4 endpoint-policy-like mechanisms;
