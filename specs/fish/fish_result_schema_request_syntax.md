@@ -10,6 +10,8 @@ A result-schema request is graph structure. It tells Fish what projection of a C
 
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
+Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
+
 ---
 
 ## 1. Relationship to Result-Schema Negotiation
@@ -21,13 +23,13 @@ This document defines the initial canonical graph syntax for making such request
 Canonical request relation:
 
 ```fish
-<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
+<request-fish>&fish:proto:result_schema@fish:proto:<schema>;
 ```
 
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:statusOnly;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:status_only;
 ```
 
 If no result schema is requested, Fish SHOULD return the default graph-native status-only response.
@@ -39,15 +41,15 @@ If no result schema is requested, Fish SHOULD return the default graph-native st
 The following protocol result-schema names are reserved as initial standard schema names:
 
 ```text
-fish:proto:statusOnly
-fish:proto:diagnosticSummary
-fish:proto:diagnosticGraph
-fish:proto:diagnosticEnvelope
-fish:proto:patchGraph
-fish:proto:graphDeltaGraph
-fish:proto:materializationResultGraph
-fish:proto:validationResultGraph
-fish:proto:protocolEnvelope
+fish:proto:status_only
+fish:proto:diagnostic_summary
+fish:proto:diagnostic_graph
+fish:proto:diagnostic_envelope
+fish:proto:patch_graph
+fish:proto:graph_delta_graph
+fish:proto:materialization_result_graph
+fish:proto:validation_result_graph
+fish:proto:protocol_envelope
 ```
 
 These names identify protocol projection schemas. They do not replace the underlying C4 graph-native result objects.
@@ -61,7 +63,7 @@ A status-only result schema request asks Fish to return only the graph-native pr
 Request:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:statusOnly;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:status_only;
 ```
 
 Possible response:
@@ -79,19 +81,19 @@ Status-only does not mean scalar-only. The response is still graph structure.
 A diagnostic summary request asks for summarized diagnostic projection:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticSummary;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_summary;
 ```
 
 A diagnostic graph request asks for graph-native diagnostic structure or a projection of it:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_graph;
 ```
 
 A diagnostic envelope request asks for a protocol diagnostic envelope:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticEnvelope;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_envelope;
 ```
 
 Diagnostics are not returned by default unless requested or required by profile.
@@ -103,19 +105,19 @@ Diagnostics are not returned by default unless requested or required by profile.
 A graph-delta result-schema request asks for the graph-delta projection:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:graphDeltaGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:graph_delta_graph;
 ```
 
 A materialization-result graph request asks for the materialization-result graph projection:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:materializationResultGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:materialization_result_graph;
 ```
 
 A patch graph request asks for a patch-like projection, if supported:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:patchGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:patch_graph;
 ```
 
 Patch projections are protocol/profile projections and MUST NOT be treated as replacing graph-delta or materialization-result graph-object semantics unless the active profile explicitly defines that equivalence.
@@ -127,7 +129,7 @@ Patch projections are protocol/profile projections and MUST NOT be treated as re
 A protocol envelope request asks Fish to return a fuller protocol response envelope.
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:protocolEnvelope;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:protocol_envelope;
 ```
 
 A protocol envelope MAY include status, schema used, fallback schema, diagnostics, graph projections, and protocol metadata according to the active profile.
@@ -141,20 +143,20 @@ A protocol envelope is still a Fish graph projection.
 A request fish MAY specify multiple acceptable result schemas using a protocol-relative list:
 
 ```fish
-<request-fish>&fish:proto:resultSchema@fish:proto:(diagnosticGraph,statusOnly);
+<request-fish>&fish:proto:result_schema@fish:proto:(diagnostic_graph,status_only);
 ```
 
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:(diagnosticGraph,statusOnly);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:(diagnostic_graph,status_only);
 ```
 
 The list is graph structure.
 
 The order SHOULD be interpreted as preference order unless the active profile defines otherwise.
 
-In the example above, Fish should try `fish:proto:diagnosticGraph` first and may fall back to `fish:proto:statusOnly` if diagnostic graph projection is unavailable and fallback is permitted.
+In the example above, Fish should try `fish:proto:diagnostic_graph` first and may fall back to `fish:proto:status_only` if diagnostic graph projection is unavailable and fallback is permitted.
 
 ---
 
@@ -165,27 +167,50 @@ A request fish MAY distinguish the primary requested result schema from fallback
 Primary request:
 
 ```fish
-<request-fish>&fish:proto:resultSchema@fish:proto:diagnosticGraph;
+<request-fish>&fish:proto:result_schema@fish:proto:diagnostic_graph;
 ```
 
 Fallback request:
 
 ```fish
-<request-fish>&fish:proto:fallbackResultSchema@fish:proto:(statusOnly);
+<request-fish>&fish:proto:fallback_result_schema@fish:proto:(status_only);
 ```
 
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticGraph;
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:fallbackResultSchema@fish:proto:(statusOnly);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_graph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:fallback_result_schema@fish:proto:(status_only);
 ```
 
 If fallback is used, the response SHOULD indicate fallback when the response schema permits such indication.
 
 ---
 
-## 9. Malformed or Unsupported Schema Requests
+## 9. Generic Result Relation
+
+Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+```
+
+Result-specific typing SHOULD be expressed inside the result graph, preferably on the result root:
+
+```fish
+<result-root>&fish:proto:result_type@fish:proto:<result-schema-name>;
+```
+
+Example graph-delta result reference:
+
+```fish
+fish:id:REQ&fish:proto:result@fish:id:DELTA;
+fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
+```
+
+---
+
+## 10. Malformed or Unsupported Schema Requests
 
 If a requested result schema is malformed, Fish MUST NOT perform mutating materialization using that schema.
 
@@ -207,7 +232,7 @@ These outcomes are request-side/protocol-side failures, not successful materiali
 
 ---
 
-## 10. Schema Identity and Profiles
+## 11. Schema Identity and Profiles
 
 Standard Fish protocol schemas use `fish:proto:<schema>` names.
 
@@ -216,18 +241,18 @@ Profile-defined schemas MAY use profile-defined namespaces or graph addresses.
 Examples:
 
 ```fish
-<request-fish>&fish:proto:resultSchema@profile:myProfile:fullTrace;
+<request-fish>&fish:proto:result_schema@profile:my_profile:full_trace;
 ```
 
 ```fish
-<request-fish>&fish:proto:resultSchema@fish:id:VQ6EAOKbQdSnFkRmVUQAAA;
+<request-fish>&fish:proto:result_schema@fish:id:VQ6EAOKbQdSnFkRmVUQAAA;
 ```
 
 A profile-defined schema MUST still resolve to graph-defined schema semantics under the active profile.
 
 ---
 
-## 11. Safety Rule
+## 12. Safety Rule
 
 A Fish implementation MUST validate requested result schemas and fallback result schemas before performing materialization behavior that may mutate persistent graph state.
 
@@ -237,15 +262,15 @@ Read-only parsing, validation, negotiation, and status production MAY occur in o
 
 ---
 
-## 12. Open Questions
+## 13. Open Questions
 
 The following remain open for future formalization:
 
-- exact grammar for `fish:proto:resultSchema` statements;
+- exact grammar for `fish:proto:result_schema` statements;
 - whether multiple schemas should be represented by a result-schema list or only by explicit fallback relation;
 - whether result-schema lists are always preference-ordered;
-- exact standard semantics of `fish:proto:diagnosticSummary`, `fish:proto:diagnosticGraph`, and `fish:proto:diagnosticEnvelope`;
-- exact standard semantics of `fish:proto:graphDeltaGraph`, `fish:proto:materializationResultGraph`, and `fish:proto:patchGraph`;
+- exact standard semantics of `fish:proto:diagnostic_summary`, `fish:proto:diagnostic_graph`, and `fish:proto:diagnostic_envelope`;
+- exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:materialization_result_graph`, and `fish:proto:patch_graph`;
 - whether result schema negotiation should support quality values, capabilities, or constraints;
 - how schema requests interact with streaming and batch requests;
 - how schema requests interact with authorization/disclosure policy;
