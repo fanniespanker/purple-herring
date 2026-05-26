@@ -49,17 +49,23 @@ Fish protocol/control vocabulary uses:
 fish:proto:<name>
 ```
 
+Protocol/control relation, schema, marker, operation, and policy names SHOULD use snake_case.
+
+Status enum constants SHOULD use SCREAMING_SNAKE_CASE.
+
 Examples:
 
 ```fish
 fish:proto:status
 fish:proto:operation
 fish:proto:payload
-fish:proto:resultSchema
-fish:proto:diagnosticSchema
-fish:proto:materializationPolicy
-fish:proto:statusWord64
-fish:proto:compatCode
+fish:proto:result_schema
+fish:proto:diagnostic_schema
+fish:proto:materialization_policy
+fish:proto:status_word_64
+fish:proto:compat_code
+fish:proto:result_type
+fish:proto:GRAPH_DELTA_PRODUCED
 ```
 
 Protocol/control vocabulary includes relations, markers, schema names, operation names, status enum names, and other protocol-facing objects.
@@ -109,7 +115,30 @@ fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCE
 
 ---
 
-## 6. General Fish Vocabulary
+## 6. Generic Result Convention
+
+Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+```
+
+Result-specific typing SHOULD be expressed inside the result graph, preferably on the result root:
+
+```fish
+<result-root>&fish:proto:result_type@fish:proto:<result-schema-name>;
+```
+
+Example:
+
+```fish
+fish:id:REQ&fish:proto:result@fish:id:DELTA;
+fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
+```
+
+---
+
+## 7. General Fish Vocabulary
 
 The form:
 
@@ -125,7 +154,7 @@ Protocol/control vocabulary SHOULD use `fish:proto:<name>` rather than `fish:<na
 
 ---
 
-## 7. Rationale
+## 8. Rationale
 
 The `fish:proto:` namespace path avoids collisions between protocol/control relations and ordinary Fish or domain vocabulary.
 
@@ -145,7 +174,7 @@ could remain available for ordinary Fish vocabulary or profile-defined semantics
 
 ---
 
-## 8. Open Questions
+## 9. Open Questions
 
 The following remain open for future formalization:
 
