@@ -32,7 +32,7 @@ Fish request envelopes describe what a client asks a Fish/C4 implementation to p
 
 Fish response envelopes describe the protocol projection returned to the client.
 
-A Fish response envelope MAY contain only a status code unless a richer result schema is requested or required.
+A Fish response envelope MAY contain only a status projection unless a richer result schema is requested or required.
 
 ---
 
@@ -45,10 +45,12 @@ Fish SHOULD only return what the client requested.
 If no richer result schema is requested, the default response is:
 
 ```text
-status: <code>
+status: <enum-or-code>
 ```
 
-where `<code>` is a Fish status code projecting a graph-native status object.
+where `<enum-or-code>` is a Fish status projection of a graph-native status object.
+
+The canonical Fish status projection SHOULD be a named status enum or structured status word. Numeric HTTP-like codes MAY be used as compatibility projections.
 
 A status-only response does not exhaust the underlying C4 graph-object semantics.
 
@@ -81,7 +83,7 @@ A request envelope is malformed if its required protocol structure cannot be par
 
 A Fish response envelope MAY contain protocol projections of:
 
-- status code;
+- status enum, status word, or compatibility code;
 - status graph-object reference;
 - result schema used;
 - fallback schema used;
@@ -114,21 +116,25 @@ The recommended validation order is:
 
 If any validation step fails before materialization, Fish MUST NOT perform mutating materialization.
 
-Read-only parsing, validation, negotiation, or status production MAY still occur in order to return an appropriate status code.
+Read-only parsing, validation, negotiation, or status production MAY still occur in order to return an appropriate status enum, status word, or compatibility code.
 
 ---
 
 ## 6. Authentication and Permission Statuses
 
-Fish status codes are protocol projections of graph-native status objects.
+Fish statuses are protocol projections of graph-native status objects.
 
-This draft reserves the following conceptual status meanings for future code registry assignment.
+The primary Fish status forms are named status enums and structured status words.
 
-### 401 Authentication Required
+Numeric HTTP-like codes MAY be supplied as compatibility projections.
 
-`401` is reserved for authentication-required or authentication-failed conditions.
+This draft reserves the following conceptual status meanings for future registry assignment.
 
-Use `401` when the requester has not established an acceptable identity, credential, session, capability, or authentication context.
+### AUTHENTICATION_REQUIRED
+
+`AUTHENTICATION_REQUIRED` is reserved for authentication-required or authentication-failed conditions.
+
+Use `AUTHENTICATION_REQUIRED` when the requester has not established an acceptable identity, credential, session, capability, or authentication context.
 
 Examples include:
 
@@ -138,13 +144,15 @@ Examples include:
 - unauthenticated materialization request;
 - authentication required before permission can be evaluated.
 
-A `401` response means Fish cannot accept or establish the requester sufficiently to proceed with the requested operation.
+An `AUTHENTICATION_REQUIRED` response means Fish cannot accept or establish the requester sufficiently to proceed with the requested operation.
 
-### 403 Permission Denied
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `401`.
 
-`403` is reserved for permission-denied or authorization-prohibited conditions.
+### PERMISSION_DENIED
 
-Use `403` when the request is understood and the requester is known sufficiently, but policy prohibits the requested operation, projection, materialization, graph access, or diagnostic disclosure.
+`PERMISSION_DENIED` is reserved for permission-denied or authorization-prohibited conditions.
+
+Use `PERMISSION_DENIED` when the request is understood and the requester is known sufficiently, but policy prohibits the requested operation, projection, materialization, graph access, or diagnostic disclosure.
 
 Examples include:
 
@@ -157,37 +165,45 @@ Examples include:
 
 If permission validation fails, Fish MUST NOT perform mutating materialization.
 
-A `403` response is a request-side/policy-side failure, not a successful materialization with an empty result.
+A `PERMISSION_DENIED` response is a request-side/policy-side failure, not a successful materialization with an empty result.
+
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `403`.
 
 ---
 
 ## 7. Schema and Profile Validation Statuses
 
-This draft reserves the following conceptual status meanings for future code registry assignment.
+This draft reserves the following conceptual status meanings for future registry assignment.
 
-### 400 Malformed Request
+### MALFORMED_REQUEST
 
-`400` is reserved for malformed Fish request envelopes or malformed protocol structures.
+`MALFORMED_REQUEST` is reserved for malformed Fish request envelopes or malformed protocol structures.
 
-Use `400` when the request cannot be parsed or decoded as a valid Fish request under the active protocol version.
+Use `MALFORMED_REQUEST` when the request cannot be parsed or decoded as a valid Fish request under the active protocol version.
 
-### 404 Requested Graph/Profile/Schema Not Found
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `400`.
 
-`404` is reserved for requested graph, profile, schema, registry entry, or protocol resource not found.
+### REQUESTED_RESOURCE_NOT_FOUND
 
-Use `404` when a referenced object cannot be found or resolved under the active Fish/C4 field and the condition is not better represented as unsupported or unauthorized.
+`REQUESTED_RESOURCE_NOT_FOUND` is reserved for requested graph, profile, schema, registry entry, or protocol resource not found.
 
-### 415 Unsupported Result Schema or Projection
+Use `REQUESTED_RESOURCE_NOT_FOUND` when a referenced object cannot be found or resolved under the active Fish/C4 field and the condition is not better represented as unsupported or unauthorized.
 
-`415` is reserved for unsupported requested result schemas, projection schemas, envelope schemas, or protocol representation schemas.
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `404`.
 
-Use `415` when the requested schema is well-formed enough to identify but is not supported by the active Fish implementation, profile, materializer, or field.
+### UNSUPPORTED_RESULT_SCHEMA
+
+`UNSUPPORTED_RESULT_SCHEMA` is reserved for unsupported requested result schemas, projection schemas, envelope schemas, or protocol representation schemas.
+
+Use `UNSUPPORTED_RESULT_SCHEMA` when the requested schema is well-formed enough to identify but is not supported by the active Fish implementation, profile, materializer, or field.
 
 If a requested result schema is unsupported, Fish MUST NOT perform mutating materialization.
 
-### 422 Semantically Invalid Request
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `415`.
 
-`422` is reserved for well-formed Fish requests that are semantically invalid under the active C4/Fish profile.
+### SEMANTICALLY_INVALID_REQUEST
+
+`SEMANTICALLY_INVALID_REQUEST` is reserved for well-formed Fish requests that are semantically invalid under the active C4/Fish profile.
 
 Examples include:
 
@@ -197,21 +213,25 @@ Examples include:
 - requested schema valid in general but invalid for this operation;
 - profile constraints violated.
 
-### 424 Failed Dependency
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `422`.
 
-`424` is reserved for dependency failures.
+### FAILED_DEPENDENCY
 
-Use `424` when a requested operation cannot proceed because a required prior validation, profile load, schema negotiation, graph resolution, materializer dependency, or field dependency failed.
+`FAILED_DEPENDENCY` is reserved for dependency failures.
+
+Use `FAILED_DEPENDENCY` when a requested operation cannot proceed because a required prior validation, profile load, schema negotiation, graph resolution, materializer dependency, or field dependency failed.
+
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `424`.
 
 ---
 
 ## 8. Conflict and Ambiguity Statuses
 
-This draft reserves the following conceptual status meanings for future code registry assignment.
+This draft reserves the following conceptual status meanings for future registry assignment.
 
-### 409 Conflict or Ambiguous Correspondence
+### CONFLICT_OR_AMBIGUOUS_CORRESPONDENCE
 
-`409` is reserved for conflict or ambiguity conditions.
+`CONFLICT_OR_AMBIGUOUS_CORRESPONDENCE` is reserved for conflict or ambiguity conditions.
 
 Examples include:
 
@@ -221,7 +241,9 @@ Examples include:
 - requested operation conflicts with active graph state;
 - profile-defined conflict.
 
-A `409` response SHOULD preserve ambiguity in graph-native diagnostic or result structures when a richer schema is requested.
+A `CONFLICT_OR_AMBIGUOUS_CORRESPONDENCE` response SHOULD preserve ambiguity in graph-native diagnostic or result structures when a richer schema is requested.
+
+A Fish profile MAY project this enum to an HTTP-like compatibility code such as `409`.
 
 ---
 
@@ -241,7 +263,7 @@ Fish result-schema negotiation determines what the response envelope may include
 
 If the requested result schema is unsupported or malformed, Fish MUST NOT materialize using that schema.
 
-Instead, Fish SHOULD return an unsupported-schema or malformed-schema status code.
+Instead, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA`, `MALFORMED_REQUEST`, or another profile-defined schema-negotiation status.
 
 If no result schema is requested, Fish SHOULD return status-only.
 
@@ -255,13 +277,32 @@ Diagnostic envelopes are returned only when requested, negotiated, required by p
 
 If diagnostics are not requested or required, Fish MAY return only status.
 
-If diagnostics are requested but not permitted, Fish SHOULD return `403` or another profile-defined permission/disclosure status.
+If diagnostics are requested but not permitted, Fish SHOULD return `PERMISSION_DENIED` or another profile-defined permission/disclosure status.
 
 If diagnostics are requested but unavailable, Fish SHOULD return an appropriate unavailable or failed status from the registry.
 
 ---
 
-## 12. Open Questions
+## 12. Compatibility Projection Table
+
+The following HTTP-like numeric projections are optional compatibility mappings, not canonical Fish status semantics.
+
+| Optional compatibility code | Fish status enum |
+|---|---|
+| `400` | `MALFORMED_REQUEST` |
+| `401` | `AUTHENTICATION_REQUIRED` |
+| `403` | `PERMISSION_DENIED` |
+| `404` | `REQUESTED_RESOURCE_NOT_FOUND` |
+| `409` | `CONFLICT_OR_AMBIGUOUS_CORRESPONDENCE` |
+| `415` | `UNSUPPORTED_RESULT_SCHEMA` |
+| `422` | `SEMANTICALLY_INVALID_REQUEST` |
+| `424` | `FAILED_DEPENDENCY` |
+
+Fish profiles MAY define, omit, or replace compatibility projections.
+
+---
+
+## 13. Open Questions
 
 The following remain open for future formalization:
 
@@ -269,8 +310,8 @@ The following remain open for future formalization:
 - concrete Fish syntax for response envelopes;
 - whether Fish envelopes are themselves serialized graph objects, protocol records, or both;
 - exact standard operation/intent names;
-- exact status code names in the registry for 400, 401, 403, 404, 409, 415, 422, and 424;
-- whether 406 should be reserved for unacceptable schema negotiation distinct from 415 unsupported schema;
+- exact named status enum definitions in the registry for malformed request, authentication required, permission denied, resource not found, conflict/ambiguity, unsupported schema, semantically invalid request, and failed dependency;
+- whether 406-like compatibility projection should be reserved for unacceptable schema negotiation distinct from unsupported schema;
 - how Fish envelope validation interacts with streaming requests and responses;
 - how transaction boundaries are represented;
 - how permission policy is represented as graph-native structure;
