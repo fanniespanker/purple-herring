@@ -1,4 +1,4 @@
-# Fish Status-Code Registry v0.1.0 Draft
+# Fish Status Registry v0.1.0 Draft
 
 ## Status
 
@@ -6,17 +6,30 @@ This document is a draft Fish protocol specification.
 
 Fish is the C4 syntax, protocol, and interchange layer for Purple Herring.
 
-This registry defines protocol-level status-code conventions for projecting graph-native C4 status objects into compact Fish responses.
+This registry defines protocol-level status conventions for projecting graph-native C4 status objects into compact Fish responses.
 
-Fish status codes do not replace C4 graph-native semantics.
+Fish statuses do not replace C4 graph-native semantics.
 
-A Fish status code identifies, references, or projects a graph-native status object associated with a C4 graph-object such as:
+A Fish status identifies, references, or projects a graph-native status object associated with a C4 graph-object such as:
 
 - a graph-delta object;
 - a materialization-result object;
 - a validation diagnostic object;
 - a protocol response object;
 - a profile-defined result object.
+
+The canonical Fish status model is not an HTTP-style decimal code table.
+
+The canonical model is:
+
+```text
+graph-native status object
+  -> structured status word / status bit-vector
+  -> named status enum
+  -> optional numeric/textual protocol projection
+```
+
+Numeric HTTP-like codes MAY be provided as compatibility projections, but they are not the canonical semantic representation of Fish status.
 
 ---
 
@@ -38,9 +51,9 @@ for materialization-result graph-objects.
 
 C4 Core does not define numeric status codes, protocol envelopes, transport-level response formats, or default materialization-result schemas.
 
-Fish MAY project C4 graph-native statuses into numeric status codes.
+Fish MAY project C4 graph-native statuses into structured status words, named status enums, numeric status codes, or textual status labels.
 
-A Fish status code is therefore a protocol identifier for a graph-defined status. It is not the status itself.
+A Fish status projection is therefore a protocol identifier for graph-defined status. It is not the status itself.
 
 ---
 
@@ -48,7 +61,7 @@ A Fish status code is therefore a protocol identifier for a graph-defined status
 
 Fish MAY define a status-only response as the default minimal response form for materialization, validation, graph-delta production, or protocol requests.
 
-A status-only response contains only enough protocol information to communicate the status-code projection of a graph-native result.
+A status-only response contains only enough protocol information to communicate the status projection of a graph-native result.
 
 A status-only response does not exhaust the C4 graph-object semantics of the underlying result.
 
@@ -58,7 +71,7 @@ $$
 \mathbf{m}_{\mathfrak{F}}(\xi_\Delta)=\xi_\mu
 $$
 
-Fish MAY return only a status code projecting the status of:
+Fish MAY return only a status projection of:
 
 $$
 \xi_\mu\in\Xi_\mu
@@ -83,131 +96,263 @@ Negotiated result schemas MAY include:
 - protocol envelope;
 - profile-defined result schema.
 
-If no richer schema is negotiated, a Fish implementation MAY return a status-only response, provided the status code maps to a graph-native status object.
+If no richer schema is negotiated, a Fish implementation MAY return a status-only response, provided the status projection maps to a graph-native status object.
 
 Negotiation syntax is not defined in this draft.
 
 ---
 
-## 4. Code Structure
+## 4. Status Word Model
 
-Fish status codes are numeric protocol identifiers.
+A Fish status word is a compact structured projection of a graph-native status object.
 
-This draft reserves broad status-code families but does not yet define the complete code registry.
+A status word MAY be represented as:
 
-Exact codes within each family are provisional until the Fish protocol syntax and negotiation model are stabilized.
+- a bit-vector;
+- a boolean-field record;
+- a compact binary word;
+- a named enum expansion;
+- a profile-defined status graph projection.
 
-A Fish status code SHOULD be interpreted only in the context of:
+The exact wire representation is not fixed by this draft.
+
+The purpose of the status word is to represent multiple status dimensions without forcing all outcomes into a single flat decimal registry.
+
+A status word SHOULD be interpretable only in the context of:
 
 - active Fish protocol version;
 - active C4 profile;
 - active materialization, validation, or graph-delta profile;
-- negotiated result schema, if any.
+- negotiated result schema, if any;
+- profile-defined status-word layout, if any.
 
 ---
 
-## 5. Reserved Status-Code Families
+## 5. Recommended Status Dimensions
 
-Fish status-code families are inspired by HTTP-style numeric organization, but their semantics are Fish/C4-specific.
+A Fish status word SHOULD be able to project, when relevant, dimensions such as:
+
+- protocol severity;
+- request parse/shape validity;
+- authentication state;
+- permission/authorization state;
+- result-schema negotiation state;
+- active profile compatibility;
+- C4 validation state;
+- graph-delta production state;
+- materialization state;
+- mutation state;
+- result projection state;
+- diagnostic availability/disclosure state;
+- final/provisional state;
+- profile-defined state.
+
+This draft does not require all status words to include all dimensions.
+
+A profile MAY define a smaller or larger status-word layout.
+
+---
+
+## 6. Suggested Boolean / Bit Fields
+
+The following fields are suggested for early Fish status-word profiles.
+
+They are provisional and not yet a mandatory wire layout.
+
+### Request Fields
+
+- `request_present`
+- `request_parsed`
+- `request_malformed`
+- `request_wellformed`
+
+### Authentication and Permission Fields
+
+- `auth_required`
+- `auth_accepted`
+- `auth_failed`
+- `permission_granted`
+- `permission_denied`
+
+### Schema Negotiation Fields
+
+- `schema_requested`
+- `schema_accepted`
+- `schema_malformed`
+- `schema_unsupported`
+- `fallback_schema_used`
+
+### Profile and Validation Fields
+
+- `profile_accepted`
+- `profile_unsupported`
+- `c4_valid`
+- `c4_invalid`
+- `validation_unresolved`
+
+### Delta and Materialization Fields
+
+- `delta_produced`
+- `delta_failed`
+- `materialization_not_attempted`
+- `materialization_rejected`
+- `materialization_succeeded`
+- `materialization_failed`
+- `mutation_applied`
+- `no_mutation`
+- `partial_materialization`
+
+### Result Projection and Diagnostic Fields
+
+- `projection_succeeded`
+- `projection_failed`
+- `diagnostics_available`
+- `diagnostics_requested`
+- `diagnostics_withheld`
+- `diagnostics_unavailable`
+- `result_truncated`
+
+### Finality Fields
+
+- `provisional`
+- `final`
+
+---
+
+## 7. Named Status Enums
+
+A Fish status enum is a stable symbolic projection of a status word or graph-native status object.
+
+Examples of named status enums include:
+
+```text
+PERMISSION_DENIED
+AUTHENTICATION_REQUIRED
+UNSUPPORTED_RESULT_SCHEMA
+MALFORMED_RESULT_SCHEMA
+MATERIALIZED_MUTATION_APPLIED
+MATERIALIZED_NO_MUTATION
+GRAPH_DELTA_PRODUCED
+VALIDATION_FAILED
+UNRESOLVED_COMPARISON
+INTERNAL_MATERIALIZER_FAILURE
+```
+
+Named enums SHOULD be defined by their status-word semantics, not by decimal number alone.
+
+For example:
+
+```text
+PERMISSION_DENIED =
+  request_wellformed
+  auth_accepted
+  permission_denied
+  materialization_not_attempted
+  final
+```
+
+```text
+UNSUPPORTED_RESULT_SCHEMA =
+  request_wellformed
+  schema_requested
+  schema_unsupported
+  materialization_not_attempted
+  final
+```
+
+```text
+MATERIALIZED_MUTATION_APPLIED =
+  request_wellformed
+  permission_granted
+  schema_accepted
+  delta_produced
+  materialization_succeeded
+  mutation_applied
+  final
+```
+
+```text
+MATERIALIZED_NO_MUTATION =
+  request_wellformed
+  permission_granted
+  schema_accepted
+  delta_produced
+  materialization_succeeded
+  no_mutation
+  final
+```
+
+A profile MAY define additional enum names.
+
+---
+
+## 8. Numeric and HTTP-Like Compatibility Projections
+
+Fish MAY define numeric protocol codes as compatibility projections.
+
+Numeric codes MAY resemble HTTP-style families such as `2xx`, `4xx`, or `5xx`, but the canonical Fish status semantics are the graph-native status object and status word.
+
+A numeric code SHOULD map to a named status enum and a status-word definition.
+
+For example, a Fish profile MAY map:
+
+```text
+403 -> PERMISSION_DENIED
+415 -> UNSUPPORTED_RESULT_SCHEMA
+422 -> VALIDATION_FAILED
+```
+
+Such mappings are compatibility projections and protocol conveniences.
+
+They MUST NOT replace graph-native status objects or status-word semantics.
+
+---
+
+## 9. Reserved Numeric Projection Families
+
+Fish numeric projection families are optional, compatibility-oriented, and inspired by HTTP-style organization.
+
+Their semantics are Fish/C4-specific.
 
 ### 1xx Informational / In-Progress / Partial Metadata
 
 The `1xx` family is reserved for informational, provisional, in-progress, or metadata-only responses.
 
-Possible meanings include:
-
-- request accepted but not fully processed;
-- partial status available;
-- negotiation information returned;
-- continuation or streaming response metadata;
-- profile-defined informational response.
-
 ### 2xx Successful / Materialized / Equivalent / Accepted
 
 The `2xx` family is reserved for successful Fish/C4 protocol outcomes.
-
-Possible meanings include:
-
-- graph-delta production succeeded;
-- materialization succeeded;
-- validation succeeded;
-- no material difference found;
-- graph structures accepted as unchanged/equivalent under active policy;
-- status-only response succeeded;
-- profile-defined success.
 
 ### 3xx Correspondence / Projection / Negotiation Redirection
 
 The `3xx` family is reserved for correspondence, projection, negotiation, or alternate-representation outcomes.
 
-Possible meanings include:
-
-- result available under another negotiated schema;
-- projection used;
-- correspondence established under a non-default policy;
-- resource, profile, or schema relocated;
-- client should renegotiate result schema;
-- profile-defined redirection or projection response.
-
 ### 4xx Request / Input / Validation / Policy Issue
 
-The `4xx` family is reserved for request-side, input-side, validation, profile, or policy issues.
-
-Possible meanings include:
-
-- invalid Fish syntax;
-- invalid C4 structure;
-- unsupported profile requested;
-- endpoint consumption failed;
-- relator-position validation failed;
-- relation-state incompatibility;
-- unresolved or ambiguous comparison policy;
-- materialization prohibited by policy;
-- schema negotiation failed due to client request;
-- profile-defined client/input failure.
+The `4xx` family is reserved for request-side, input-side, validation, profile, permission, or policy issues.
 
 ### 5xx Field / Materializer / Evaluator / Server Failure
 
 The `5xx` family is reserved for field-side, materializer-side, evaluator-side, implementation-side, or server-side failures.
 
-Possible meanings include:
-
-- active field unavailable;
-- materializer failure;
-- graph-delta production failure;
-- internal evaluator failure;
-- registry failure;
-- storage failure;
-- implementation limit exceeded;
-- profile-defined server/materializer failure.
-
 ### 6xx Reserved for Profile-Defined Extensions
 
 The `6xx` family is reserved for profile-defined or implementation-defined extensions.
-
-Profiles using `6xx` codes MUST define how those codes map to graph-native status objects.
 
 ### 7xx Reserved for Experimental Extensions
 
 The `7xx` family is reserved for experimental, unstable, or pre-standard Fish extensions.
 
-Experimental codes MUST NOT be treated as portable without an explicit profile declaration.
-
 ### 8xx Reserved for Private / Vendor / Local Extensions
 
 The `8xx` family is reserved for private, vendor, local, or implementation-specific status codes.
-
-Private codes MUST NOT be assumed portable across Fish implementations.
 
 ### 9xx Reserved for Catastrophic / Out-of-Band / Meta-Protocol Conditions
 
 The `9xx` family is reserved for catastrophic, out-of-band, meta-protocol, or implementation-defined emergency conditions.
 
-Use of `9xx` codes SHOULD be rare and SHOULD be specified by protocol profiles.
-
 ---
 
-## 6. Minimal Core Marking Correspondence
+## 10. Minimal Core Marking Correspondence
 
 C4 graph-delta minimal markings are:
 
@@ -217,27 +362,17 @@ C4 graph-delta minimal markings are:
 - unchanged;
 - unresolved.
 
-Fish MAY define status codes that project graph-delta roots or subregions bearing these markings.
+Fish MAY define status enums or status words that project graph-delta roots or subregions bearing these markings.
 
-The following conceptual mappings are reserved but not yet assigned exact codes:
-
-| C4 marking / result | Fish family tendency |
-|---|---|
-| unchanged | `2xx` |
-| added | `2xx` or `3xx` depending on context |
-| removed | `2xx` or `3xx` depending on context |
-| modified | `2xx`, `3xx`, or `4xx` depending on policy and request context |
-| unresolved | `4xx` or `1xx` depending on whether the response is final |
-
-Exact code assignment is deferred.
+Exact enum and numeric projection assignment is deferred.
 
 ---
 
-## 7. Status Codes Are Projections
+## 11. Status Projections Are Not C4 Semantics
 
-A Fish implementation returning a numeric status code SHOULD be able to identify the graph-native status object or status relation that the code projects.
+A Fish implementation returning a status word, named enum, numeric code, or textual status SHOULD be able to identify the graph-native status object or status relation that the projection represents.
 
-A Fish status code MUST NOT be treated as replacing:
+A Fish status projection MUST NOT be treated as replacing:
 
 $$
 \xi_\Delta\in\Xi_\Delta
@@ -251,38 +386,40 @@ $$
 
 when the corresponding C4 graph-object is required by the negotiated schema.
 
-If a response is status-only, the status code is a compact protocol projection of a graph-native result whose full graph structure may be omitted from the response.
+If a response is status-only, the status projection is a compact protocol projection of a graph-native result whose full graph structure may be omitted from the response.
 
 ---
 
-## 8. Registry Requirements
+## 12. Registry Requirements
 
-A Fish status-code registry entry SHOULD define:
+A Fish status registry entry SHOULD define:
 
-- numeric code;
-- symbolic name;
-- family;
+- symbolic enum name;
+- graph-native status object or status relation projected by the enum;
+- status-word fields or bit-vector semantics;
+- optional numeric compatibility code;
+- optional textual label;
 - short description;
-- graph-native status object or status relation projected by the code;
-- whether the code is final or provisional;
-- whether the code is valid for graph-delta production, materialization, validation, negotiation, or protocol transport;
-- whether the code permits or requires a richer result schema;
+- whether the status is final or provisional;
+- whether the status is valid for graph-delta production, materialization, validation, negotiation, or protocol transport;
+- whether the status permits or requires a richer result schema;
 - profile constraints, if any.
 
-Registry entries SHOULD avoid encoding semantics that belong in C4 graph structure.
+Registry entries SHOULD avoid encoding semantics that belong only in C4 graph structure.
 
 ---
 
-## 9. Open Questions
+## 13. Open Questions
 
 The following remain open for future formalization:
 
 - exact Fish syntax for status-only responses;
 - exact Fish syntax for result-schema negotiation;
-- whether Fish should use three-digit numeric codes exclusively;
-- whether `0xx` should be reserved for local/null/uncomputed statuses or avoided entirely;
-- exact standard codes for success, no material difference, materialization prohibited, unresolved comparison, validation failure, and internal materializer failure;
-- whether graph-delta markings should receive dedicated codes or only result roots should;
-- how Fish status codes should reference graph-native status objects in serialized form;
-- how Fish profiles should register extension codes;
-- whether status-code registries should be machine-readable Fish graph documents.
+- exact mandatory status-word bit layout, if any;
+- whether Fish should define a canonical binary status word or only named enum projections;
+- whether HTTP-like numeric projections should be required, optional, or profile-specific;
+- exact standard enum definitions for success, no material difference, materialization prohibited, unresolved comparison, validation failure, unsupported schema, malformed schema, permission denied, and internal materializer failure;
+- whether graph-delta markings should receive dedicated status enums or only result roots should;
+- how Fish status projections should reference graph-native status objects in serialized form;
+- how Fish profiles should register extension enums, bit fields, and numeric compatibility projections;
+- whether status registries should be machine-readable Fish graph documents.
