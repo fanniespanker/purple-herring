@@ -31,7 +31,6 @@ The intended split is:
 Until that split stabilizes, this combined specification remains normative for the v0.1.x technical series.
 
 Version delta:
-<<<<<<< HEAD
 
 ```text
 previous: v0.1.5
@@ -99,75 +98,6 @@ This version includes implementation and ontology scaffolding migrated from earl
 
 ---
 
-=======
-
-```text
-previous: v0.1.5
-current:  v0.1.6
-delta:    +0.0.1
-```
-
-This version supersedes the following C3TCalc / C4 drafts for technical purposes:
-
-- C3TCalc v0.1 Standalone Specification (Draft)
-- C3TCalc v0.1.1 Specification
-- C3TCalc v0.1.2 Technical Specification
-- C3TCalc v0.1.3 Merged Technical Specification
-
-The synchronized lay-facing companion is:
-
-```text
-C4 for Non-Pescatarians v0.1
-```
-
-Former title:
-
-```text
-C3TCalc for Non-Pisces v0.1.4
-```
-
-Version policy:
-
-```text
-Intentional content patch to the C4 technical specification: +0.0.1
-Pure typo / formatting correction with no interpretive effect: no version bump required
-C4 for Non-Pescatarians uses only major/minor versions and tracks the corresponding C4 language line. For example, C4 for Non-Pescatarians v0.1 explains the C4 v0.1.x technical series.
-```
-
-This version preserves the current fish surface-language decisions for authoring C4 expressions:
-
-- a complete fish is itself a first-class resource;
-- ordinary fish use `&` as the tail marker;
-- unresolved and negative relation states are tail-mode modifiers: `&?`, `&!`, `&?!`;
-- `_` is anonymous resource binding;
-- `*X` is named scoped binding introduction;
-- `$X` is query / return binding;
-- relations are positional templates, e.g. `is_[owner]_of`;
-- canonical lists are comma-separated `ListExpr` values;
-- schools / fish blocks use `{ ... }`;
-- `fuse` and `aggregate` are ordinary relation templates, not primitive operators;
-- old bracketed parameter lists are removed from canonical syntax;
-- relation-chain syntax is reserved future-valid syntax but unimplemented in v0.1.6.
-
-This version includes implementation and ontology scaffolding migrated from earlier drafts:
-
-- Unicode identifier rules;
-- literal and percent-escape rules;
-- Base64 typed literal codecs;
-- reverse-oriented fish surface syntax;
-- strict mode vs diagnostic mode;
-- inverse relation semantics;
-- parser core vs ontology/template library separation;
-- relation template metadata;
-- local declarations and gradual formalization;
-- ontology definition profile;
-- storage and indexing notes;
-- implementation locks and CLI shape;
-- historical notes from C3TCalc v0.1 to C4 v0.1.6.
-
----
-
->>>>>>> ee53d52977c5dcff052b82b4fdbfc3ffe4e17969
 ## 1. Purpose
 
 C4 defines the abstract graph-native relation model for deterministic semantic relations, graph patterns, scoped bindings, query bindings, context grounding, typed declarations, local relation definitions, ontology-defined relation templates, and canonical graph-expression serialization.
@@ -265,7 +195,6 @@ mdo:Movements/antifascism
 ### 3.2 Fish
 
 A **fish** is a complete surface expression that encodes a C4 relation.
-<<<<<<< HEAD
 
 Canonical anatomy:
 
@@ -281,23 +210,6 @@ tail
   @ head
 ```
 
-=======
-
-Canonical anatomy:
-
-```text
-tail&relation@head
-```
-
-Teaching/display anatomy:
-
-```text
-tail
-  & relation
-  @ head
-```
-
->>>>>>> ee53d52977c5dcff052b82b4fdbfc3ffe4e17969
 A fish has:
 
 - a tail resource/expression;
