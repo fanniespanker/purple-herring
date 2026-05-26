@@ -82,6 +82,8 @@ Git note options:
 USAGE
 }
 
+die() { echo "error: $*" >&2; exit 1; }
+
 parse_args() {
   while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -96,7 +98,7 @@ parse_args() {
       --pending-dir|--pending) shift; [[ "$#" -gt 0 ]] || die "--pending-dir requires a directory"; PENDING_DIR="$1"; CLI_PENDING_DIR=1 ;;
       --applied-dir|--applied) shift; [[ "$#" -gt 0 ]] || die "--applied-dir requires a directory"; APPLIED_DIR="$1"; CLI_APPLIED_DIR=1 ;;
       --failed-dir|--failed) shift; [[ "$#" -gt 0 ]] || die "--failed-dir requires a directory"; FAILED_DIR="$1"; CLI_FAILED_DIR=1 ;;
-      --checklist|--checklist-yaml) shift; [[ "$#" -gt 0 ]] || die "$1 requires a path"; CHECKLIST="$1"; CLI_CHECKLIST=1 ;;
+      --checklist|--checklist-yaml) shift; [[ "$#" -gt 0 ]] || die "--checklist requires a path"; CHECKLIST="$1"; CLI_CHECKLIST=1 ;;
       --checklist-tsv) shift; [[ "$#" -gt 0 ]] || die "--checklist-tsv requires a path"; TSV_CHECKLIST="$1"; CLI_TSV_CHECKLIST=1 ;;
       --id-number-length|--id-width) shift; [[ "$#" -gt 0 ]] || die "--id-number-length requires a number"; ID_NUMBER_LENGTH="$1" ;;
       --no-notes) CREATE_NOTES=0; PUSH_NOTES=0 ;;
@@ -109,8 +111,6 @@ parse_args() {
     shift
   done
 }
-
-die() { echo "error: $*" >&2; exit 1; }
 
 trim() {
   local s="$1"
@@ -346,12 +346,13 @@ checklist_yaml_to_tsv() {
     function trim(s){ sub(/^[[:space:]]+/,"",s); sub(/[[:space:]]+$/,"",s); return s }
     function unq(s){ s=trim(s); if (s ~ /^".*"$/){ sub(/^"/,"",s); sub(/"$/,"",s); gsub(/\\"/,"\"",s); gsub(/\\\\/,"\\",s) } return s }
     BEGIN { OFS="\t"; print "patch_id","patch_file","status","applied_at","sha256","description" }
-    match($0, /^[[:space:]]{2}"?([0-9]+)"?:[[:space:]]*$/, m) {
+    /^[[:space:]]{2}"?[0-9]+"?:[[:space:]]*$/ {
       if (id != "") print id, file, status, at, hash, desc
-      id=m[1]; file=status=at=hash=desc=""; next
+      line=$0; gsub(/^[[:space:]]+/,"",line); sub(/:.*/,"",line); gsub(/"/,"",line)
+      id=line; file=status=at=hash=desc=""; next
     }
-    id != "" && match($0, /^[[:space:]]{4}([A-Za-z_][A-Za-z0-9_]*):[[:space:]]*(.*)$/, m) {
-      key=m[1]; val=unq(m[2])
+    id != "" && /^[[:space:]]{4}[A-Za-z_][A-Za-z0-9_]*:[[:space:]]*/ {
+      line=$0; sub(/^[[:space:]]+/,"",line); key=line; sub(/:.*/,"",key); val=line; sub(/^[^:]*:[[:space:]]*/,"",val); val=unq(val)
       if (key=="patch_file" || key=="file") file=val
       else if (key=="status") status=val
       else if (key=="applied_at") at=val
