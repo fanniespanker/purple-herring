@@ -19,6 +19,8 @@ Fish may define:
 
 C4 Core remains the abstract graph calculus and semantic substrate. Fish may serialize, negotiate, project, transport, or status-code C4 graph-objects, but Fish protocol projections do not replace C4 graph-native semantics.
 
+In Fish/Purple Herring culinary terminology, `fond` is an informal alias for graph-delta projections. This is aesthetic terminology only. The formal C4 term remains graph delta, and protocol names remain `graph_delta_graph` and `graph_delta_summary`.
+
 ---
 
 ## Naming Convention
@@ -187,6 +189,8 @@ fish:proto:direct_marking
 File: `fish_graph_delta_projection_syntax.md`
 
 Defines Fish projection syntax for graph-delta result graphs and graph-delta summaries.
+
+Graph-delta projections are informally called fond projections.
 
 Graph-delta graph projections use the generic result convention:
 
