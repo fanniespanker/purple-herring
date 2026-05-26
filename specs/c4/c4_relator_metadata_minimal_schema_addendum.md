@@ -68,7 +68,9 @@ A minimally conforming relator graph-object SHOULD expose the following as graph
 2. source endpoint-consumption policy selection;
 3. target endpoint-consumption policy selection;
 4. relation-state compatibility or state-handling semantics;
-5. graph-delta production semantics or a pointer to graph-delta production behavior.
+5. graph-delta production semantics or a pointer to graph-delta production behavior;
+6. materialization expectations for graph-deltas produced through the relator, when such expectations are defined;
+7. graph-delta extension schema references, when the relator produces deltas requiring structure beyond the C4 Core minimum.
 
 These roles are graph-defined. They are not enum primitives, non-graph fields, external lists, protocol codes, or fixed tuple axes.
 
@@ -209,7 +211,7 @@ but such projections are derived from graph-defined relator metadata, not primit
 
 ## Graph-Delta Production Semantics
 
-<!-- FOLLOWING SECTION: Relator Denotation and Graph-Delta Objects -->
+<!-- FOLLOWING SECTION: Relator Materialization Expectations and Delta Extension Schema -->
 
 A relator graph-object SHOULD define, or be associated with, graph-delta production semantics.
 
@@ -255,6 +257,48 @@ Such categories may be represented as graph metadata, graph-delta object structu
 
 <!-- PRECEDING SECTION: Graph-Delta Production Semantics -->
 
+## Relator Materialization Expectations and Delta Extension Schema
+
+<!-- FOLLOWING SECTION: Profile-Defined Relator Metadata Schema -->
+
+Relators do not directly mutate persistent graph state in C4 Core.
+
+Relators participate in graph-delta production. Materializers interpret graph-delta objects. Persistent graph mutation, when it occurs, is materializer behavior.
+
+A relator graph-object MAY define or reference materialization expectations for graph-deltas produced through that relator.
+
+Materialization expectations MAY indicate, as graph metadata, that produced graph-deltas are intended to be:
+
+- denotational only;
+- materialization allowed;
+- materialization required;
+- materialization prohibited;
+- profile-defined.
+
+These categories are graph metadata, profile classes, or implementation normal forms. They are not primitive C4 Core tuple axes.
+
+A relator graph-object MAY also define or reference a graph-delta extension schema for graph-deltas it produces.
+
+A graph-delta extension schema describes additional graph structure that graph-deltas produced through the relator MAY or MUST expose beyond the C4 Core graph-delta minimum.
+
+For example, a relator-specific graph-delta extension schema may define:
+
+- relator-specific status graph-objects;
+- relator-specific difference markings;
+- materialization requirements;
+- validation diagnostics;
+- construction records;
+- query-result regions;
+- projection metadata;
+- provenance requirements;
+- profile-defined extension regions.
+
+Such extension schemas MUST preserve the C4 Core graph-delta minimum when claiming C4 graph-delta conformance. They MUST NOT replace graph-delta graph structure with non-graph payloads.
+
+---
+
+<!-- PRECEDING SECTION: Relator Materialization Expectations and Delta Extension Schema -->
+
 ## Profile-Defined Relator Metadata Schema
 
 <!-- FOLLOWING SECTION: Minimal Schema Summary -->
@@ -270,6 +314,8 @@ Profile-defined details include, but are not limited to:
 - how relation-state compatibility is represented;
 - how member interpretation is represented;
 - how relator behavior participates in graph-delta production;
+- how materialization expectations are represented;
+- how relator-specific graph-delta extension schemas are represented;
 - whether relator metadata is stored on the relator object, profile object, library object, or active field;
 - how validators expose relator admissibility and state compatibility;
 - how compilers cache relator metadata and endpoint-policy lookup.
@@ -290,11 +336,13 @@ A minimally conforming C4 relator metadata profile SHOULD represent the followin
 - source endpoint-consumption policy selection;
 - target endpoint-consumption policy selection;
 - relation-state compatibility or state-handling behavior;
-- graph-delta production semantics or a reference to graph-delta production behavior.
+- graph-delta production semantics or a reference to graph-delta production behavior;
+- materialization expectations, when defined;
+- graph-delta extension schema references, when defined.
 
-C4 Core does not require every relator graph-object to contain every possible behavior, constraint, diagnostic, materialization, or optimization structure.
+C4 Core does not require every relator graph-object to contain every possible behavior, constraint, diagnostic, materialization, extension-schema, or optimization structure.
 
-However, when a profile claims C4 relator metadata minimal-schema conformance, the relator-position admissibility, endpoint policy selection, state handling, and graph-delta production behavior it emits SHOULD be represented as graph structure using the semantics defined above.
+However, when a profile claims C4 relator metadata minimal-schema conformance, the relator-position admissibility, endpoint policy selection, state handling, graph-delta production behavior, materialization expectations, and delta extension schema references it emits SHOULD be represented as graph structure using the semantics defined above.
 
 ---
 
@@ -318,6 +366,8 @@ The validation section SHOULD distinguish relator-position admissibility, endpoi
 
 The graph-delta production section SHOULD state that statement-derived delta production is controlled partly by graph-defined relator metadata.
 
+The materialization section SHOULD state that relators do not directly mutate persistent graph state in C4 Core; materialization is the stage that may mutate graph state.
+
 The core spec SHOULD avoid defining primitive relator-kind tuple axes unless a future profile explicitly introduces them as implementation normal forms.
 
 ---
@@ -336,4 +386,6 @@ The following remain open for future formalization:
 - whether relation-state compatibility should have standard graph-object names;
 - whether common member interpretations should be standardized in a C4 profile;
 - whether graph-delta production behavior should be represented as a policy object, relator class, callable graph object, or profile-defined evaluator hook;
-- how Fish should serialize relator metadata, relator validation failures, and relator-state incompatibility.
+- whether materialization expectation categories should be standardized in a C4 profile;
+- how relator-specific graph-delta extension schemas should compose with graph-delta minimal schema;
+- how Fish should serialize relator metadata, relator validation failures, relator-state incompatibility, materialization expectations, and relator-specific delta extensions.
