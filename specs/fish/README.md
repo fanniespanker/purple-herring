@@ -6,6 +6,7 @@ Fish may define:
 
 - surface serialization for C4 graph structures;
 - protocol request/response framing;
+- Fish namespace conventions;
 - Fish ID and address syntax;
 - status registries and compatibility status-code projections;
 - named status enums and status-word / bit-vector projections;
@@ -22,7 +23,20 @@ C4 Core remains the abstract graph calculus and semantic substrate. Fish may ser
 
 ## Current Drafts
 
-### 1. Fish ID and Address Syntax
+### 1. Fish Namespace Conventions
+
+File: `fish_namespace_conventions.md`
+
+Defines the initial namespace/path conventions:
+
+```text
+fish:id:<FishID128>        opaque generated Fish address
+fish:proto:<name>          Fish protocol/control vocabulary
+fish:proto:(...)           protocol-relative list graph
+fish:<name>                general Fish vocabulary resource
+```
+
+### 2. Fish ID and Address Syntax
 
 File: `fish_id_and_address_syntax.md`
 
@@ -34,7 +48,7 @@ fish:id:<FishID128>
 
 Fish IDs provide addressability and correlation, not primitive C4 identity.
 
-### 2. Fish Status Registry
+### 3. Fish Status Registry
 
 File: `fish_status_registry.md`
 
@@ -51,7 +65,7 @@ graph-native status object
 
 HTTP-like numeric codes are treated as optional compatibility projections, not as canonical Fish semantics.
 
-### 3. Fish Status Enum Registry
+### 4. Fish Status Enum Registry
 
 File: `fish_status_enum_registry.md`
 
@@ -66,7 +80,7 @@ Each enum entry may define:
 - valid contexts;
 - materialization safety rule, where relevant.
 
-### 4. Fish Status-Only Response Syntax
+### 5. Fish Status-Only Response Syntax
 
 File: `fish_status_only_response_syntax.md`
 
@@ -75,12 +89,12 @@ Defines canonical graph-native status-only responses.
 Default status-only responses are Fish graph statements, not scalar tokens:
 
 ```fish
-<request-fish>&fish:status@fish:(<status-enum-1>,<status-enum-2>,...);
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
 
 Bare enum tokens and base64 status-word tokens are compact transport projections, not the canonical graph-native response form.
 
-### 5. Fish Result-Schema Negotiation
+### 6. Fish Result-Schema Negotiation
 
 File: `fish_result_schema_negotiation.md`
 
@@ -94,7 +108,7 @@ A result schema is graph-defined. It describes what subgraphs to return, how to 
 
 Unsupported or malformed result schemas MUST NOT trigger mutating materialization.
 
-### 6. Fish Diagnostic Envelopes
+### 7. Fish Diagnostic Envelopes
 
 File: `fish_diagnostic_envelopes.md`
 
@@ -102,7 +116,15 @@ Defines diagnostic envelopes as requested or profile-required protocol projectio
 
 Diagnostics are not automatic. If diagnostics are not requested or required, Fish may return status-only.
 
-### 7. Fish Request/Response Envelopes
+### 8. Fish Request Fish Syntax
+
+File: `fish_request_fish_syntax.md`
+
+Defines request fish as graph-addressable Fish/C4 graph objects representing protocol requests.
+
+Request fish use `fish:proto:` protocol/control relations and are answered by graph-native status responses.
+
+### 9. Fish Request/Response Envelopes
 
 File: `fish_request_response_envelopes.md`
 
@@ -120,24 +142,28 @@ The current recommended reading order is:
 
 ```text
 1. README.md
-2. fish_id_and_address_syntax.md
-3. fish_status_registry.md
-4. fish_status_enum_registry.md
-5. fish_status_only_response_syntax.md
-6. fish_result_schema_negotiation.md
-7. fish_diagnostic_envelopes.md
-8. fish_request_response_envelopes.md
+2. fish_namespace_conventions.md
+3. fish_id_and_address_syntax.md
+4. fish_status_registry.md
+5. fish_status_enum_registry.md
+6. fish_status_only_response_syntax.md
+7. fish_result_schema_negotiation.md
+8. fish_diagnostic_envelopes.md
+9. fish_request_fish_syntax.md
+10. fish_request_response_envelopes.md
 ```
 
 Conceptual dependency order:
 
 ```text
-Fish ID/address syntax
+Fish namespace conventions
+  -> Fish ID/address syntax
   -> status model
   -> named enum registry
   -> status-only graph response syntax
   -> result-schema negotiation
   -> diagnostic projection
+  -> request fish syntax
   -> request/response envelope
 ```
 
@@ -158,11 +184,14 @@ materialization-result graph-objects
 Fish defines protocol projections and interchange behavior such as:
 
 ```text
+Fish namespace conventions
 FishID128 and fish:id:<FishID128> addresses
+fish:proto:<name> protocol/control vocabulary
 status-only graph responses
 named status enums
 status-word/bit-vector projections
 optional numeric compatibility codes
+request fish syntax
 request/response envelopes
 result-schema negotiation
 diagnostic envelopes
@@ -177,7 +206,6 @@ Fish projections may summarize, serialize, transport, or negotiate C4 graph-obje
 
 Likely next Fish tasks:
 
-- define concrete Fish request-fish syntax;
 - define concrete Fish syntax for request/response envelopes;
 - define concrete Fish syntax for result-schema requests;
 - decide whether status-word fields use a mandatory bit layout or remain profile-defined;
