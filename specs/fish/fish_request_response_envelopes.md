@@ -12,6 +12,8 @@ Fish envelopes are protocol structures. They may project, request, negotiate, se
 
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
+Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -83,8 +85,8 @@ Canonical request fish relations SHOULD use `fish:proto:` protocol/control vocab
 
 ```fish
 <request-fish>&fish:proto:operation@fish:proto:<operation>;
-<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
-<request-fish>&fish:proto:materializationPolicy@fish:proto:<policy>;
+<request-fish>&fish:proto:result_schema@fish:proto:<schema>;
+<request-fish>&fish:proto:materialization_policy@fish:proto:<policy>;
 ```
 
 The exact Fish surface syntax for request envelopes is deferred.
@@ -101,6 +103,7 @@ A Fish response envelope MAY contain protocol projections of:
 - status graph-object reference;
 - result schema used;
 - fallback schema used;
+- result graph root references;
 - graph-delta projection;
 - materialization-result projection;
 - diagnostic envelope;
@@ -108,6 +111,13 @@ A Fish response envelope MAY contain protocol projections of:
 - validation-result projection;
 - profile negotiation metadata;
 - protocol-defined response metadata.
+
+Returned result graph roots SHOULD be connected using the generic result relation:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+<result-root>&fish:proto:result_type@fish:proto:<result-schema-name>;
+```
 
 If the negotiated response schema is status-only, the response envelope SHOULD contain only the graph-native status projection and any minimal protocol metadata required by the active Fish profile.
 
