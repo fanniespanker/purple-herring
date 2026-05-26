@@ -49,6 +49,7 @@ fish:proto:patch_graph
 fish:proto:graph_delta_graph
 fish:proto:graph_delta_summary
 fish:proto:materialization_result_graph
+fish:proto:materialization_result_summary
 fish:proto:validation_result_graph
 fish:proto:protocol_envelope
 ```
@@ -123,6 +124,12 @@ A materialization-result graph request asks for the materialization-result graph
 
 ```fish
 fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:materialization_result_graph;
+```
+
+A materialization-result summary request asks for a compact materialization-result summary projection:
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:materialization_result_summary;
 ```
 
 A patch graph request asks for a patch-like projection, if supported:
@@ -281,7 +288,7 @@ The following remain open for future formalization:
 - whether multiple schemas should be represented by a result-schema list or only by explicit fallback relation;
 - whether result-schema lists are always preference-ordered;
 - exact standard semantics of `fish:proto:diagnostic_summary`, `fish:proto:diagnostic_graph`, and `fish:proto:diagnostic_envelope`;
-- exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:graph_delta_summary`, `fish:proto:materialization_result_graph`, and `fish:proto:patch_graph`;
+- exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:graph_delta_summary`, `fish:proto:materialization_result_graph`, `fish:proto:materialization_result_summary`, and `fish:proto:patch_graph`;
 - whether result schema negotiation should support quality values, capabilities, or constraints;
 - how schema requests interact with streaming and batch requests;
 - how schema requests interact with authorization/disclosure policy;
