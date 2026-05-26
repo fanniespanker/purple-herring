@@ -99,6 +99,7 @@ Fish MAY define standard protocol result-schema classes such as:
 - `fish:proto:graph_delta_graph`;
 - `fish:proto:graph_delta_summary`;
 - `fish:proto:materialization_result_graph`;
+- `fish:proto:materialization_result_summary`;
 - `fish:proto:validation_result_graph`;
 - `fish:proto:protocol_envelope`;
 - profile-defined result schema.
@@ -129,6 +130,10 @@ fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_gr
 
 ```fish
 fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:graph_delta_summary;
+```
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:materialization_result_summary;
 ```
 
 A future Fish syntax draft MAY define additional compact forms.
@@ -300,7 +305,7 @@ The following remain open for future formalization:
 
 - concrete compact Fish syntax for requesting result schemas;
 - whether result-schema negotiation is expressed in source syntax, request envelope syntax, graph syntax, or all of these;
-- exact standard graph-object names for status-only, diagnostic graph, patch graph, graph-delta graph, graph-delta summary, materialization-result graph, and protocol envelope schemas;
+- exact standard graph-object names for status-only, diagnostic graph, patch graph, graph-delta graph, graph-delta summary, materialization-result graph, materialization-result summary, and protocol envelope schemas;
 - exact Fish status enum mappings for unsupported schema and malformed schema;
 - whether status-only responses should include a schema identifier when explicitly requested;
 - whether fallback schema use should be represented as a projection/negotiation status or as response metadata;
