@@ -208,7 +208,7 @@ Graph-delta production is denotational. Materialization is interpretive/processi
 
 ## Materialization Result Schema
 
-<!-- FOLLOWING SECTION: Protocol Projection -->
+<!-- FOLLOWING SECTION: Fish Materialization Result Negotiation -->
 
 C4 Core defines the materialization-result graph-object subdomain:
 
@@ -237,6 +237,34 @@ Such schemas MUST remain graph-native if they claim C4 materialization-result co
 ---
 
 <!-- PRECEDING SECTION: Materialization Result Schema -->
+
+## Fish Materialization Result Negotiation
+
+<!-- FOLLOWING SECTION: Protocol Projection -->
+
+C4 Core does not define a default materialization-result schema.
+
+Protocols such as Fish MAY define negotiated materialization-result schemas.
+
+A client and materializer MAY negotiate whether a materialization response is projected as:
+
+- status-only;
+- diagnostic graph;
+- patch graph;
+- graph-delta graph;
+- materialization-result graph;
+- protocol envelope;
+- profile-defined result schema.
+
+Fish MAY define its default materialization response as status-only.
+
+A status-only response is a protocol projection of a materialization-result graph-object. The numeric status code identifies or refers to a graph-native status object; it does not replace the materialization-result graph-object in C4 semantics.
+
+Negotiation of materialization-result schemas belongs to Fish or another protocol/profile layer, not to C4 Core.
+
+---
+
+<!-- PRECEDING SECTION: Fish Materialization Result Negotiation -->
 
 ## Protocol Projection
 
@@ -284,7 +312,7 @@ The relator metadata section SHOULD state that relators participate in graph-del
 
 The graph-delta section SHOULD state that graph-deltas may describe potential mutation but mutation occurs only, if at all, through materialization.
 
-Fish or another protocol layer SHOULD define numeric materialization status codes and protocol envelopes separately from C4 Core.
+Fish or another protocol layer SHOULD define numeric materialization status codes, protocol envelopes, and negotiated materialization-result schemas separately from C4 Core.
 
 ---
 
@@ -302,4 +330,5 @@ The following remain open for future formalization:
 - whether materialization should be allowed to return multiple materialization-result graph-objects or a result graph containing multiple result regions;
 - how mutating materializers should represent before/after state without assuming primitive identity;
 - how materialization provenance should refer to the active field $\mathfrak{F}$;
-- how Fish protocol status-code registries should reference materialization-result graph-objects.
+- how Fish protocol status-code registries should reference materialization-result graph-objects;
+- how Fish clients and materializers should negotiate richer result schemas beyond status-only responses.
