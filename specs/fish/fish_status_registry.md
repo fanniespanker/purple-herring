@@ -10,6 +10,8 @@ This registry defines protocol-level status conventions for projecting graph-nat
 
 Fish statuses do not replace C4 graph-native semantics.
 
+Protocol/control vocabulary, including status enum graph-objects, uses the `fish:proto:` namespace path.
+
 A Fish status identifies, references, or projects a graph-native status object associated with a C4 graph-object such as:
 
 - a graph-delta object;
@@ -61,7 +63,13 @@ A Fish status projection is therefore a protocol identifier for graph-defined st
 
 Fish MAY define a status-only response as the default minimal response form for materialization, validation, graph-delta production, or protocol requests.
 
-A status-only response contains only enough protocol information to communicate the status projection of a graph-native result.
+A status-only response contains only enough protocol graph structure to communicate the status projection of a graph-native result.
+
+The canonical graph-native status-only response form is:
+
+```fish
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
+```
 
 A status-only response does not exhaust the C4 graph-object semantics of the underlying result.
 
@@ -87,18 +95,18 @@ Fish clients and materializers MAY negotiate richer result schemas.
 
 Negotiated result schemas MAY include:
 
-- status-only;
-- diagnostic graph;
-- patch graph;
-- graph-delta graph;
-- materialization-result graph;
-- validation-result graph;
-- protocol envelope;
+- `fish:proto:statusOnly`;
+- `fish:proto:diagnosticGraph`;
+- `fish:proto:patchGraph`;
+- `fish:proto:graphDeltaGraph`;
+- `fish:proto:materializationResultGraph`;
+- `fish:proto:validationResultGraph`;
+- `fish:proto:protocolEnvelope`;
 - profile-defined result schema.
 
 If no richer schema is negotiated, a Fish implementation MAY return a status-only response, provided the status projection maps to a graph-native status object.
 
-Negotiation syntax is not defined in this draft.
+Negotiation syntax is not fully defined in this draft.
 
 ---
 
@@ -223,19 +231,21 @@ They are provisional and not yet a mandatory wire layout.
 
 A Fish status enum is a stable symbolic projection of a status word or graph-native status object.
 
+Status enum graph-objects SHOULD live under `fish:proto:`.
+
 Examples of named status enums include:
 
 ```text
-PERMISSION_DENIED
-AUTHENTICATION_REQUIRED
-UNSUPPORTED_RESULT_SCHEMA
-MALFORMED_RESULT_SCHEMA
-MATERIALIZED_MUTATION_APPLIED
-MATERIALIZED_NO_MUTATION
-GRAPH_DELTA_PRODUCED
-VALIDATION_FAILED
-UNRESOLVED_COMPARISON
-INTERNAL_MATERIALIZER_FAILURE
+fish:proto:PERMISSION_DENIED
+fish:proto:AUTHENTICATION_REQUIRED
+fish:proto:UNSUPPORTED_RESULT_SCHEMA
+fish:proto:MALFORMED_RESULT_SCHEMA
+fish:proto:MATERIALIZED_MUTATION_APPLIED
+fish:proto:MATERIALIZED_NO_MUTATION
+fish:proto:GRAPH_DELTA_PRODUCED
+fish:proto:VALIDATION_FAILED
+fish:proto:UNRESOLVED_COMPARISON
+fish:proto:INTERNAL_MATERIALIZER_FAILURE
 ```
 
 Named enums SHOULD be defined by their status-word semantics, not by decimal number alone.
@@ -243,7 +253,7 @@ Named enums SHOULD be defined by their status-word semantics, not by decimal num
 For example:
 
 ```text
-PERMISSION_DENIED =
+fish:proto:PERMISSION_DENIED =
   request_wellformed
   auth_accepted
   permission_denied
@@ -252,7 +262,7 @@ PERMISSION_DENIED =
 ```
 
 ```text
-UNSUPPORTED_RESULT_SCHEMA =
+fish:proto:UNSUPPORTED_RESULT_SCHEMA =
   request_wellformed
   schema_requested
   schema_unsupported
@@ -261,7 +271,7 @@ UNSUPPORTED_RESULT_SCHEMA =
 ```
 
 ```text
-MATERIALIZED_MUTATION_APPLIED =
+fish:proto:MATERIALIZED_MUTATION_APPLIED =
   request_wellformed
   permission_granted
   schema_accepted
@@ -272,7 +282,7 @@ MATERIALIZED_MUTATION_APPLIED =
 ```
 
 ```text
-MATERIALIZED_NO_MUTATION =
+fish:proto:MATERIALIZED_NO_MUTATION =
   request_wellformed
   permission_granted
   schema_accepted
@@ -297,9 +307,9 @@ A numeric code SHOULD map to a named status enum and a status-word definition.
 For example, a Fish profile MAY map:
 
 ```text
-403 -> PERMISSION_DENIED
-415 -> UNSUPPORTED_RESULT_SCHEMA
-422 -> VALIDATION_FAILED
+403 -> fish:proto:PERMISSION_DENIED
+415 -> fish:proto:UNSUPPORTED_RESULT_SCHEMA
+422 -> fish:proto:VALIDATION_FAILED
 ```
 
 Such mappings are compatibility projections and protocol conveniences.
