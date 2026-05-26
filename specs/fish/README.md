@@ -21,6 +21,31 @@ C4 Core remains the abstract graph calculus and semantic substrate. Fish may ser
 
 ---
 
+## Naming Convention
+
+Fish protocol/control vocabulary uses the `fish:proto:` namespace path.
+
+Protocol relation, schema, operation, marker, and policy names use snake_case.
+
+Status enum constants use SCREAMING_SNAKE_CASE.
+
+Examples:
+
+```fish
+fish:proto:result_schema
+fish:proto:fallback_result_schema
+fish:proto:materialization_policy
+fish:proto:diagnostic_schema
+fish:proto:status_word_64
+fish:proto:compat_code
+fish:proto:result_type
+fish:proto:GRAPH_DELTA_PRODUCED
+```
+
+Opaque generated IDs remain under `fish:id:` and SHOULD NOT be moved under `fish:proto:`.
+
+---
+
 ## Current Drafts
 
 ### 1. Fish Namespace Conventions
@@ -34,6 +59,13 @@ fish:id:<FishID128>        opaque generated Fish address
 fish:proto:<name>          Fish protocol/control vocabulary
 fish:proto:(...)           protocol-relative list graph
 fish:<name>                general Fish vocabulary resource
+```
+
+It also defines the generic result convention:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+<result-root>&fish:proto:result_type@fish:proto:<result-schema-name>;
 ```
 
 ### 2. Fish ID and Address Syntax
@@ -74,6 +106,7 @@ Defines the initial named Fish status enums, including success, graph-delta prod
 Each enum entry may define:
 
 - symbolic enum name;
+- canonical graph name under `fish:proto:`;
 - short meaning;
 - provisional status-word fields;
 - optional numeric compatibility projection;
@@ -108,7 +141,27 @@ A result schema is graph-defined. It describes what subgraphs to return, how to 
 
 Unsupported or malformed result schemas MUST NOT trigger mutating materialization.
 
-### 7. Fish Diagnostic Envelopes
+### 7. Fish Result-Schema Request Syntax
+
+File: `fish_result_schema_request_syntax.md`
+
+Defines canonical graph-native syntax for requesting result schemas from a request fish:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:<schema>;
+```
+
+Initial standard schema names include:
+
+```fish
+fish:proto:status_only
+fish:proto:diagnostic_graph
+fish:proto:graph_delta_graph
+fish:proto:materialization_result_graph
+fish:proto:protocol_envelope
+```
+
+### 8. Fish Diagnostic Envelopes
 
 File: `fish_diagnostic_envelopes.md`
 
@@ -116,7 +169,7 @@ Defines diagnostic envelopes as requested or profile-required protocol projectio
 
 Diagnostics are not automatic. If diagnostics are not requested or required, Fish may return status-only.
 
-### 8. Fish Request Fish Syntax
+### 9. Fish Request Fish Syntax
 
 File: `fish_request_fish_syntax.md`
 
@@ -124,7 +177,7 @@ Defines request fish as graph-addressable Fish/C4 graph objects representing pro
 
 Request fish use `fish:proto:` protocol/control relations and are answered by graph-native status responses.
 
-### 9. Fish Request/Response Envelopes
+### 10. Fish Request/Response Envelopes
 
 File: `fish_request_response_envelopes.md`
 
@@ -148,9 +201,10 @@ The current recommended reading order is:
 5. fish_status_enum_registry.md
 6. fish_status_only_response_syntax.md
 7. fish_result_schema_negotiation.md
-8. fish_diagnostic_envelopes.md
-9. fish_request_fish_syntax.md
-10. fish_request_response_envelopes.md
+8. fish_result_schema_request_syntax.md
+9. fish_diagnostic_envelopes.md
+10. fish_request_fish_syntax.md
+11. fish_request_response_envelopes.md
 ```
 
 Conceptual dependency order:
@@ -162,6 +216,7 @@ Fish namespace conventions
   -> named enum registry
   -> status-only graph response syntax
   -> result-schema negotiation
+  -> result-schema request syntax
   -> diagnostic projection
   -> request fish syntax
   -> request/response envelope
@@ -194,6 +249,7 @@ optional numeric compatibility codes
 request fish syntax
 request/response envelopes
 result-schema negotiation
+result-schema request syntax
 diagnostic envelopes
 protocol-level safety rules
 ```
@@ -206,10 +262,9 @@ Fish projections may summarize, serialize, transport, or negotiate C4 graph-obje
 
 Likely next Fish tasks:
 
-- define concrete Fish syntax for request/response envelopes;
-- define concrete Fish syntax for result-schema requests;
+- define graph-delta result graph projection syntax using `fish:proto:result` and `fish:proto:result_type`;
+- define materialization-result graph projection syntax;
 - decide whether status-word fields use a mandatory bit layout or remain profile-defined;
 - make the status enum registry machine-readable as Fish graph data;
-- define graph-delta projection formats;
 - define patch/projection formats;
 - define profile negotiation syntax.
