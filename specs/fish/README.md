@@ -175,6 +175,13 @@ fish:proto:materialization_result_summary
 fish:proto:protocol_envelope
 ```
 
+Composable schema traits include:
+
+```fish
+fish:proto:region_root_marking
+fish:proto:direct_marking
+```
+
 ### 8. Fish Graph-Delta Projection Syntax
 
 File: `fish_graph_delta_projection_syntax.md`
@@ -190,7 +197,26 @@ Graph-delta graph projections use the generic result convention:
 
 Graph-delta graph schemas return graph roots/regions. Graph-delta summary schemas return compact summary projections.
 
-### 9. Fish Materialization-Result Projection Syntax
+### 9. Fish Graph-Delta Marking Syntax
+
+File: `fish_graph_delta_marking_syntax.md`
+
+Defines schema-controlled marking forms for graph-delta graph projections.
+
+The base result kind remains:
+
+```fish
+fish:proto:graph_delta_graph
+```
+
+and marking behavior is selected with composable traits such as:
+
+```fish
+fish:proto:(graph_delta_graph,region_root_marking)
+fish:proto:(graph_delta_graph,direct_marking)
+```
+
+### 10. Fish Materialization-Result Projection Syntax
 
 File: `fish_materialization_result_projection_syntax.md`
 
@@ -205,7 +231,7 @@ Materialization-result graph projections use the generic result convention:
 
 Materialization-result graph schemas return graph roots/regions. Materialization-result summary schemas return compact summary projections.
 
-### 10. Fish Diagnostic Envelopes
+### 11. Fish Diagnostic Envelopes
 
 File: `fish_diagnostic_envelopes.md`
 
@@ -213,7 +239,7 @@ Defines diagnostic envelopes as requested or profile-required protocol projectio
 
 Diagnostics are not automatic. If diagnostics are not requested or required, Fish may return status-only.
 
-### 11. Fish Request Fish Syntax
+### 12. Fish Request Fish Syntax
 
 File: `fish_request_fish_syntax.md`
 
@@ -221,7 +247,7 @@ Defines request fish as graph-addressable Fish/C4 graph objects representing pro
 
 Request fish use `fish:proto:` protocol/control relations and are answered by graph-native status responses.
 
-### 12. Fish Request/Response Envelopes
+### 13. Fish Request/Response Envelopes
 
 File: `fish_request_response_envelopes.md`
 
@@ -247,10 +273,11 @@ The current recommended reading order is:
 7. fish_result_schema_negotiation.md
 8. fish_result_schema_request_syntax.md
 9. fish_graph_delta_projection_syntax.md
-10. fish_materialization_result_projection_syntax.md
-11. fish_diagnostic_envelopes.md
-12. fish_request_fish_syntax.md
-13. fish_request_response_envelopes.md
+10. fish_graph_delta_marking_syntax.md
+11. fish_materialization_result_projection_syntax.md
+12. fish_diagnostic_envelopes.md
+13. fish_request_fish_syntax.md
+14. fish_request_response_envelopes.md
 ```
 
 Conceptual dependency order:
@@ -264,6 +291,7 @@ Fish namespace conventions
   -> result-schema negotiation
   -> result-schema request syntax
   -> graph-delta projection syntax
+  -> graph-delta marking syntax
   -> materialization-result projection syntax
   -> diagnostic projection
   -> request fish syntax
@@ -300,6 +328,7 @@ request/response envelopes
 result-schema negotiation
 result-schema request syntax
 graph-delta projection syntax
+graph-delta marking syntax
 materialization-result projection syntax
 diagnostic envelopes
 protocol-level safety rules
@@ -313,7 +342,6 @@ Fish projections may summarize, serialize, transport, or negotiate C4 graph-obje
 
 Likely next Fish tasks:
 
-- define graph-delta internal marking syntax;
 - decide whether status-word fields use a mandatory bit layout or remain profile-defined;
 - make the status enum registry machine-readable as Fish graph data;
 - define patch/projection formats;
