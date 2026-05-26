@@ -12,6 +12,8 @@ Fish result-schema negotiation does not replace C4 graph-native semantics.
 
 A Fish result schema is a graph object or graph-defined schema describing what subgraphs to return, how to organize them, and what markings to preserve or apply in the projected response.
 
+Protocol/control vocabulary uses the `fish:proto:` namespace path.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -44,13 +46,11 @@ If a Fish request does not explicitly request a richer result schema, Fish SHOUL
 
 Fish SHOULD only return what the client requested.
 
-The default Fish response is therefore minimal:
+The default Fish response is therefore a graph-native status-only response:
 
-```text
-status: <code>
+```fish
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
-
-where `<code>` is a Fish status code projecting a graph-native status object.
 
 A status-only response does not exhaust the C4 graph-object semantics of the underlying result.
 
@@ -82,15 +82,15 @@ Result schemas SHOULD be addressable or otherwise identifiable as graph objects.
 
 ## 4. Negotiated Schema Classes
 
-Fish MAY define standard result-schema classes such as:
+Fish MAY define standard protocol result-schema classes such as:
 
-- status-only;
-- diagnostic graph;
-- patch graph;
-- graph-delta graph;
-- materialization-result graph;
-- validation-result graph;
-- protocol envelope;
+- `fish:proto:statusOnly`;
+- `fish:proto:diagnosticGraph`;
+- `fish:proto:patchGraph`;
+- `fish:proto:graphDeltaGraph`;
+- `fish:proto:materializationResultGraph`;
+- `fish:proto:validationResultGraph`;
+- `fish:proto:protocolEnvelope`;
 - profile-defined result schema.
 
 These classes are protocol conveniences. The normative result schema is the graph-defined schema object or graph region requested by the client.
@@ -101,9 +101,25 @@ These classes are protocol conveniences. The normative result schema is the grap
 
 A Fish client MAY request a richer result schema by including a result-schema graph or a reference to a result-schema graph in the request.
 
-This draft does not yet define concrete Fish surface syntax for result-schema requests.
+Canonical request-fish form:
 
-A future Fish syntax draft SHOULD define how a client expresses:
+```fish
+<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
+```
+
+Examples:
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:statusOnly;
+```
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticGraph;
+```
+
+A future Fish syntax draft MAY define additional compact forms.
+
+A future Fish schema draft SHOULD define how a client expresses:
 
 - requested result schema;
 - acceptable fallback schemas;
@@ -120,13 +136,13 @@ If no result schema is requested, Fish SHOULD use status-only.
 
 If a requested result schema is unsupported, Fish MUST NOT materialize using that schema.
 
-Instead, Fish SHOULD return an unsupported-schema error status code.
+Instead, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA` as a Fish protocol status enum.
 
 If a requested result schema is malformed, Fish MUST NOT materialize using that schema.
 
-Instead, Fish SHOULD return a malformed-schema error status code.
+Instead, Fish SHOULD return `MALFORMED_RESULT_SCHEMA` as a Fish protocol status enum.
 
-Unsupported-schema and malformed-schema conditions are protocol/status outcomes. They SHOULD map to graph-native status objects and SHOULD be represented by Fish status codes in the `4xx` family unless a profile defines otherwise.
+Unsupported-schema and malformed-schema conditions are protocol/status outcomes. They SHOULD map to graph-native status objects and SHOULD be represented using Fish status enums or status-word projections.
 
 A malformed or unsupported result schema is a request-side/protocol-side failure, not a successful materialization with an empty result.
 
@@ -158,6 +174,8 @@ A result schema may be identified by:
 - a profile-defined schema reference.
 
 String identifiers MAY be used by Fish syntax, but they SHOULD resolve to graph-defined schema objects under the active Fish/C4 profile.
+
+Protocol result-schema names SHOULD use `fish:proto:<schema-name>` unless another profile namespace is explicitly selected.
 
 ---
 
@@ -213,7 +231,7 @@ Fish MUST NOT invent omitted markings in a way that contradicts the underlying g
 
 A Fish request MAY define acceptable fallback schemas.
 
-If no acceptable requested or fallback schema is supported, Fish SHOULD return an unsupported-schema status.
+If no acceptable requested or fallback schema is supported, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA`.
 
 If a fallback schema is used, the response SHOULD indicate, at least by status or protocol metadata, that a fallback projection was returned.
 
@@ -221,13 +239,13 @@ If no schema is requested and no profile requires richer output, status-only is 
 
 ---
 
-## 12. Interaction with Status Codes
+## 12. Interaction with Status Enums
 
-The Fish status-code registry defines protocol status codes.
+The Fish status registry defines the status model, and the Fish status enum registry defines named status enums.
 
-Result-schema negotiation failures SHOULD use Fish status codes rather than attempting materialization.
+Result-schema negotiation failures SHOULD use Fish status enums rather than attempting materialization.
 
-This draft reserves the following conceptual error classes for future code assignment:
+This draft reserves the following conceptual error classes for status enum assignment:
 
 - unsupported result schema;
 - malformed result schema;
@@ -235,7 +253,7 @@ This draft reserves the following conceptual error classes for future code assig
 - schema negotiation failed;
 - result schema/profile mismatch.
 
-Exact numeric code assignment is deferred to the Fish status-code registry.
+Exact status-word layout and optional compatibility projections are deferred to the Fish status registry and status enum registry.
 
 ---
 
@@ -243,12 +261,12 @@ Exact numeric code assignment is deferred to the Fish status-code registry.
 
 The following remain open for future formalization:
 
-- concrete Fish syntax for requesting result schemas;
+- concrete compact Fish syntax for requesting result schemas;
 - whether result-schema negotiation is expressed in source syntax, request envelope syntax, graph syntax, or all of these;
 - exact standard graph-object names for status-only, diagnostic graph, patch graph, graph-delta graph, materialization-result graph, and protocol envelope schemas;
-- exact numeric Fish status codes for unsupported schema and malformed schema;
-- whether status-only responses should include a schema identifier;
-- whether fallback schema use should be represented as a `3xx` projection/negotiation status or as response metadata;
+- exact Fish status enum mappings for unsupported schema and malformed schema;
+- whether status-only responses should include a schema identifier when explicitly requested;
+- whether fallback schema use should be represented as a projection/negotiation status or as response metadata;
 - whether result-schema graphs should themselves be validatable by C4 endpoint-policy-like mechanisms;
 - how Fish schema negotiation interacts with streaming responses;
 - how Fish schema negotiation interacts with mutating materializers and transactional safety.
