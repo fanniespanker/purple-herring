@@ -22,7 +22,7 @@ C4 Core uses serialization-neutral terminology.
 | block | school |
 | source | tail |
 | target | head |
-| statement mode | tail-mode marker |
+| statement state | tail-mode marker |
 
 A Fish fish is the Fish-language surface form of one C4 statement.
 
@@ -451,62 +451,59 @@ when $G_j[\gamma]$ is defined.
 
 ## 8. Statement Domain
 
-A C4 statement is a complete directed relation expression.
+A C4 statement is a complete directed relation expression with an attached relation-resolution state.
 
 Let:
 
 $$
-\mathcal{E}_{rel} \subseteq \mathcal{E}
+\Psi
 $$
 
-be the subset of expressions admissible in relation position by grammar.
+be the domain of C4 relation-resolution states.
 
-Profile-relative relation validity is separate from syntactic relation-position admissibility.
+C4 relation-resolution states are non-probabilistic. They preserve relation-state resolution, non-resolution, and superposition without requiring ranking, weighting, likelihood assignment, or forced collapse. Profiles MAY define weighted, probabilistic, preferential, or collapse procedures, but such structures are not part of C4 Core.
 
-Let:
-
-$$
-\Phi = \{\varnothing,\neg\}
-$$
-
-be the polarity domain, and:
+At minimum, $\Psi$ contains the distinguished states:
 
 $$
-\Sigma = \{\varnothing,?\}
+\psi_\top,\psi_\bot,\psi_\star \in \Psi
 $$
 
-be the resolution-state domain.
+where:
 
-Then:
+- $\psi_\top$ is the resolved affirmative state;
+- $\psi_\bot$ is the resolved negative state;
+- $\psi_\star$ is the generic unresolved / uncollapsed / superposed state.
+
+The statement domain is:
 
 $$
-\mathrm{Stmt} =
+\mathrm{Stmt}
+=
 \mathcal{E}
-\times
-\mathcal{E}_{rel}
 \times
 \mathcal{E}
 \times
-\Phi
+\mathcal{E}
 \times
-\Sigma
-\times
-\mathrm{Option}(\mathcal{E})
+\Psi
 $$
 
 An individual statement is written:
 
 $$
-P = (\mathbf{s},\mathbf{r},\mathbf{t},\phi,\sigma,c)
+P = (\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
 $$
 
 where:
 
-- $\mathbf{s},\mathbf{t} \in \mathcal{E}$ are source and target expressions;
-- $\mathbf{r} \in \mathcal{E}_{rel}$ is the relation-position expression;
-- $\phi \in \Phi$ is polarity;
-- $\sigma \in \Sigma$ is resolution state;
-- $c \in \mathrm{Option}(\mathcal{E})$ is optional context.
+- $\mathbf{s},\mathbf{r},\mathbf{t} \in \mathcal{E}$;
+- $\mathbf{s}$ is the source expression;
+- $\mathbf{r}$ is the relation-position expression;
+- $\mathbf{t}$ is the target expression;
+- $\psi_k \in \Psi$ is the relation-resolution state.
+
+Relations are expressions. Relation-position validity is not enforced by membership in a separate primitive expression subset. Instead, relation-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
 
 Source and target are expressions, not necessarily already-resolved resources.
 
@@ -524,50 +521,53 @@ with $u_s,u_t \in \mathcal{U}$.
 
 ---
 
-## 9. Statement Mode Notation
+## 9. Relation-State Application Notation
 
-C4 Core represents relation application as:
-
-$$
-\mathbf{r}^{\phi}_{\sigma}(\mathbf{s},\mathbf{t})
-$$
-
-The default positive resolved case is abbreviated:
+C4 Core writes relation-state application as:
 
 $$
-\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t})
+\psi_k : \mathbf{r}(\mathbf{s},\mathbf{t})
+$$
+
+where $\psi_k \in \Psi$ and `:` is the C4 Core relation-state application operator.
+
+The operator `:` applies a relation-resolution state to the relation application $\mathbf{r}(\mathbf{s},\mathbf{t})$. It is not Fish prefix syntax, namespace syntax, type annotation, ratio notation, or ordinary punctuation.
+
+The statement tuple:
+
+$$
+P = (\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+$$
+
+may therefore be written:
+
+$$
+P \equiv \psi_k : \mathbf{r}(\mathbf{s},\mathbf{t})
+$$
+
+The resolved affirmative state is abbreviated:
+
+$$
+\psi_\top : \mathbf{r}(\mathbf{s},\mathbf{t})
 \equiv
 \mathbf{r}(\mathbf{s},\mathbf{t})
 $$
 
-Mode interpretations are:
+The resolved negative state is interpreted as:
 
 $$
-\begin{aligned}
-\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t})
-&\equiv
-\mathbf{r}(\mathbf{s},\mathbf{t}) \\
-\mathbf{r}^{\varnothing}_{?}(\mathbf{s},\mathbf{t})
-&\equiv
-\mathsf{Unres}(\mathbf{r}(\mathbf{s},\mathbf{t})) \\
-\mathbf{r}^{\neg}_{\varnothing}(\mathbf{s},\mathbf{t})
-&\equiv
-\neg \mathbf{r}(\mathbf{s},\mathbf{t}) \\
-\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
-&\equiv
-\mathsf{Unres}(\neg \mathbf{r}(\mathbf{s},\mathbf{t}))
-\end{aligned}
+\psi_\bot : \mathbf{r}(\mathbf{s},\mathbf{t})
+\equiv
+\neg\mathbf{r}(\mathbf{s},\mathbf{t})
 $$
 
-The unresolved negative case is explicitly not equivalent to negating an unresolved positive case:
+The generic unresolved state:
 
 $$
-\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
-\not\equiv
-\neg \mathsf{Unres}(\mathbf{r}(\mathbf{s},\mathbf{t}))
+\psi_\star : \mathbf{r}(\mathbf{s},\mathbf{t})
 $$
 
-The symbol $?$ does not encode probability or statistical confidence. It denotes unresolvedness, contextuality, inquiry, or incomplete crystallization.
+preserves unresolved non-probabilistic superposition over the relation application.
 
 ---
 
@@ -625,6 +625,16 @@ $$
 $$
 
 when $\kappa(a),\kappa(b) \in \mathrm{Stmt}$.
+
+Context, provenance, source attribution, modality, temporal validity, and related qualifiers are not primitive slots of $P$. They SHOULD be represented as ordinary C4 statements about the statement-resource $\iota_P(P)$.
+
+For example, contextualization may be represented as:
+
+$$
+P_c=(\iota_P(P),\mathbf{r}_{ctx},\mathbf{c},\psi_\top)
+$$
+
+where $\mathbf{r}_{ctx},\mathbf{c}\in\mathcal{E}$.
 
 Exact surface syntax for addressing a statement-resource or block-resource is deferred beyond this mathematical core.
 
@@ -688,14 +698,30 @@ $$
 \nu_{\Gamma}(X)=\varnothing
 $$
 
+For a statement:
+
+$$
+P=(\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+$$
+
+strict validation MAY require:
+
+$$
+\mathrm{RelOk}_\Gamma(\mathbf{r})
+\land
+\mathrm{SrcOk}_\Gamma(\mathbf{s},\mathbf{r})
+\land
+\mathrm{TgtOk}_\Gamma(\mathbf{t},\mathbf{r})
+\land
+\mathrm{StateOk}_\Gamma(\psi_k,\mathbf{r})
+$$
+
 Validation MAY inspect:
 
 - relation-position admissibility;
 - source-position admissibility;
 - target-position admissibility;
-- polarity support;
-- resolution-state support;
-- context admissibility;
+- relation-state support;
 - binding-kind consistency;
 - local declaration availability;
 - loaded Herring Bones modules;
@@ -710,24 +736,25 @@ An unknown relation may parse and canonicalize as a statement while failing vali
 
 ## 14. Fish Mapping
 
-Fish maps its surface markers onto C4 Core statement notation as follows:
+Fish maps its surface markers onto C4 Core relation-state notation as follows:
 
 $$
 \begin{aligned}
 \mathbf{s}\&\mathbf{r}@\mathbf{t}
 &\mapsto
-\mathbf{r}^{\varnothing}_{\varnothing}(\mathbf{s},\mathbf{t}) \\
+\psi_\top : \mathbf{r}(\mathbf{s},\mathbf{t}) \\
 \mathbf{s}\&?\mathbf{r}@\mathbf{t}
 &\mapsto
-\mathbf{r}^{\varnothing}_{?}(\mathbf{s},\mathbf{t}) \\
+\psi_\star : \mathbf{r}(\mathbf{s},\mathbf{t}) \\
 \mathbf{s}\&!\mathbf{r}@\mathbf{t}
 &\mapsto
-\mathbf{r}^{\neg}_{\varnothing}(\mathbf{s},\mathbf{t}) \\
-\mathbf{s}\&?!\mathbf{r}@\mathbf{t}
-&\mapsto
-\mathbf{r}^{\neg}_{?}(\mathbf{s},\mathbf{t})
+\psi_\bot : \mathbf{r}(\mathbf{s},\mathbf{t})
 \end{aligned}
 $$
+
+The Fish marker `?` is surface syntax only. It is not a C4 Core mathematical symbol. In the default Fish mapping, it serializes the generic unresolved state $\psi_\star$.
+
+The Fish combined marker `?!` is provisionally reserved for an unresolved negative-oriented relation state, but its exact C4 Core mapping is deferred until the structure of refined unresolved states in $\Psi$ is formalized.
 
 Fish source/target terminology MAY use tail/head as surface-language mnemonic terminology.
 
@@ -741,9 +768,10 @@ The following remain open for future formalization:
 
 - exact recursive definition of $\mathcal{E}$;
 - exact canonical AST schema;
-- exact grammar-defined definition of $\mathcal{E}_{rel}$;
 - exact structure of traversal steps $\eta$;
 - exact contents of resolution environment $\Gamma$;
+- exact internal structure of the relation-state domain $\Psi$;
+- exact mapping of Fish `?!` into refined unresolved relation states;
 - exact relationship between graph names, locator profiles, and integral named graphs;
 - exact relationship between integral named graphs and virtual/projected resources;
 - exact surface syntax for statement-resource and block-resource addressing;
