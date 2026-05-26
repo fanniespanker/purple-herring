@@ -1,0 +1,24 @@
+diff --git a/docs/patch-runner-design.md b/docs/patch-runner-design.md
+--- a/docs/patch-runner-design.md
++++ b/docs/patch-runner-design.md
+@@ -21,3 +21,19 @@ Hexadecimal patch IDs are intentionally not supported.
+ ## Validation Principle
+ 
+ Use Git exit codes for applicability decisions. Show Git output to humans, but do not parse it for control flow.
++
++## Patch Metadata
++
++Patch-runner metadata may appear as leading comments before the first `diff --git` line.
++
++Repeated single-value fields are preferred over comma-separated lists.
++
++Example:
++
++```text
++# patch-runner: depends-on=000001
++# patch-runner: depends-on=000002
++```
++
++Dependencies are guardrails, not a package-manager solver.
++
++Patch IDs define intended order. A patch should not depend on a later patch ID.
