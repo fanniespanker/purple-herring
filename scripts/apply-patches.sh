@@ -6,7 +6,8 @@ PATCH_ROOT="patches.d"
 PENDING_DIR="$PATCH_ROOT/pending"
 APPLIED_DIR="$PATCH_ROOT/applied"
 FAILED_DIR="$PATCH_ROOT/failed"
-CHECKLIST="$PATCH_ROOT/patches_checklist.tsv"
+CHECKLIST="$PATCH_ROOT/patches_checklist.yaml"
+LEGACY_TSV_CHECKLIST="$PATCH_ROOT/patches_checklist.tsv"
 
 usage() {
   cat <<'USAGE'
@@ -73,7 +74,9 @@ require_clean_tree() {
 init_dirs() {
   mkdir -p "$PENDING_DIR" "$APPLIED_DIR" "$FAILED_DIR"
   if [[ ! -f "$CHECKLIST" ]]; then
-    printf 'patch_id\tpatch_file\tstatus\tapplied_at\tcommit_sha\tsha256\tdescription\n' > "$CHECKLIST"
+    cat > "$CHECKLIST" <<'YAML'
+patches: []
+YAML
   fi
 }
 
@@ -101,16 +104,67 @@ patch_desc_from_path() {
 
 is_applied() {
   local id="$1"
-  [[ -f "$CHECKLIST" ]] && awk -F '\t' -v id="$id" 'NR>1 && $1==id && $3=="applied" { found=1 } END { exit found ? 0 : 1 }' "$CHECKLIST"
+  python3 - "$CHECKLIST" "$id" <<'PY'
+import sys
+from pathlib import Path
+import yaml
+
+path = Path(sys.argv[1])
+patch_id = sys.argv[2]
+if not path.exists():
+    raise SystemExit(1)
+
+data = yaml.safe_load(path.read_text()) or {}
+for row in data.get("patches", []):
+    if str(row.get("id", "")) == patch_id and row.get("status") == "applied":
+        raise SystemExit(0)
+raise SystemExit(1)
+PY
 }
 
-append_or_replace_checklist_row() {
-  local id="$1" file="$2" status="$3" applied_at="$4" commit_sha="$5" hash="$6" desc="$7"
-  local tmp
-  tmp="$(mktemp)"
-  awk -F '\t' -v OFS='\t' -v id="$id" 'NR==1 { print; next } $1!=id { print }' "$CHECKLIST" > "$tmp"
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$id" "$file" "$status" "$applied_at" "$commit_sha" "$hash" "$desc" >> "$tmp"
-  mv "$tmp" "$CHECKLIST"
+upsert_checklist_entry() {
+  local id="$1" file="$2" status="$3" applied_at="$4" hash="$5" desc="$6"
+  python3 - "$CHECKLIST" "$id" "$file" "$status" "$applied_at" "$hash" "$desc" <<'PY'
+import sys
+from pathlib import Path
+import yaml
+
+path = Path(sys.argv[1])
+entry = {
+    "id": sys.argv[2],
+    "file": sys.argv[3],
+    "status": sys.argv[4],
+    "applied_at": sys.argv[5],
+    "sha256": sys.argv[6],
+    "description": sys.argv[7],
+}
+
+data = yaml.safe_load(path.read_text()) if path.exists() else None
+if not isinstance(data, dict):
+    data = {}
+patches = data.get("patches")
+if not isinstance(patches, list):
+    patches = []
+
+patches = [row for row in patches if str(row.get("id", "")) != entry["id"]]
+patches.append(entry)
+patches.sort(key=lambda row: str(row.get("id", "")))
+data["patches"] = patches
+
+path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
+PY
+}
+
+add_patch_note() {
+  local commit_sha="$1" id="$2" applied_path="$3" hash="$4" applied_at="$5" desc="$6"
+  if ! git notes add -f -m "patch_id=$id
+commit_sha=$commit_sha
+patch_file=$applied_path
+patch_sha256=$hash
+applied_at=$applied_at
+description=$desc" "$commit_sha" >/dev/null 2>&1; then
+    echo "warning: failed to write git note for patch $id" >&2
+  fi
 }
 
 pending_patches() {
@@ -142,7 +196,7 @@ apply_one_patch() {
   if ! git apply --check "$patch"; then
     mkdir -p "$FAILED_DIR"
     mv "$patch" "$FAILED_DIR/$(basename "$patch")"
-    append_or_replace_checklist_row "$id" "$FAILED_DIR/$(basename "$patch")" "failed" "" "" "$hash" "$desc"
+    upsert_checklist_entry "$id" "$FAILED_DIR/$(basename "$patch")" "failed" "" "$hash" "$desc"
     git add "$CHECKLIST" "$FAILED_DIR/$(basename "$patch")" || true
     git commit -m "Record failed patch $id" || true
     echo "error: patch failed check and was moved to $FAILED_DIR" >&2
@@ -156,24 +210,26 @@ apply_one_patch() {
   mv "$patch" "$applied_path"
 
   applied_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  append_or_replace_checklist_row "$id" "$applied_path" "applied" "$applied_at" "PENDING_COMMIT" "$hash" "$desc"
+  upsert_checklist_entry "$id" "$applied_path" "applied" "$applied_at" "$hash" "$desc"
 
   git add -A
   commit_msg="Apply patch $id: $desc"
   git commit -m "$commit_msg"
   commit_sha="$(git rev-parse HEAD)"
+  add_patch_note "$commit_sha" "$id" "$applied_path" "$hash" "$applied_at" "$desc"
 
-  append_or_replace_checklist_row "$id" "$applied_path" "applied" "$applied_at" "$commit_sha" "$hash" "$desc"
-  git add "$CHECKLIST"
-  git commit --amend --no-edit
-
-  echo "applied: $id -> $(git rev-parse HEAD)"
+  echo "applied: $id -> $commit_sha"
+  echo "note: git notes are local unless pushed with: git push origin refs/notes/commits"
 }
 
 main() {
   require_repo_root
   require_python_yaml
   init_dirs
+
+  if [[ -f "$LEGACY_TSV_CHECKLIST" ]]; then
+    echo "note: legacy TSV checklist still exists at $LEGACY_TSV_CHECKLIST; YAML checklist is authoritative"
+  fi
 
   mapfile -t patches < <(pending_patches)
   if [[ "${#patches[@]}" -eq 0 ]]; then
