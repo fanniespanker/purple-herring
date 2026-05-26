@@ -289,13 +289,13 @@ $$
 ((\mathbf{A},\mathbf{B}),\mathbf{C})
 $$
 
-A decomposing endpoint-consumption policy decomposes a list by one structural level by default. Thus:
+The endpoint view $\mathrm{Members}_1$ views a list by one structural level by default. Thus:
 
 $$
 (\mathbf{A},(\mathbf{B},\mathbf{C}),\mathbf{D})
 $$
 
-has first-level arity $3$, not $4$, unless a profile or relator explicitly defines recursive decomposition.
+has first-level arity $3$, not $4$, under $\mathrm{Members}_1$. Recursive flattening requires a profile-defined endpoint view.
 
 ---
 
@@ -618,22 +618,22 @@ $$
 a profile may define an endpoint-consumption policy:
 
 $$
-\Pi_\Gamma(\mathbf{r},p)=(A,D,W)
+\Pi_\Gamma(\mathbf{r},p)=(V,A,W)
 $$
 
 where:
 
 $$
+V\in\mathcal{V}_{consume}^{\Gamma}
+$$
+
+is the endpoint view,
+
+$$
 A\subseteq\mathbb{N}
 $$
 
-is the allowed arity set,
-
-$$
-D\in\{\mathrm{Atomic},\mathrm{Decomposed}\}
-$$
-
-is the endpoint argument type, and:
+is the allowed arity set over that view, and:
 
 $$
 W\in\{\mathrm{Ordered},\mathrm{Unordered}\}
@@ -641,17 +641,47 @@ $$
 
 is the order interpretation.
 
+An endpoint view is a partial function that selects a finite sequence of endpoint expressions from one endpoint expression:
+
+$$
+V:\mathcal{E}\rightharpoonup\mathrm{Seq}(\mathcal{E})
+$$
+
+C4 Core defines at least the following endpoint views:
+
+$$
+\mathrm{Whole}(\mathbf{e})=\langle\mathbf{e}\rangle
+$$
+
+and:
+
+$$
+\mathrm{Members}_1((\mathbf{e}_1,\ldots,\mathbf{e}_n))=\langle\mathbf{e}_1,\ldots,\mathbf{e}_n\rangle
+$$
+
+where $\mathrm{Members}_1$ is defined on list expressions.
+
+Profiles MAY define additional endpoint views such as recursive leaves, labeled-role views, projections, filters, or profile-specific structural views.
+
 The default endpoint-consumption policy is:
 
 $$
-\Pi_\Gamma(\mathbf{r},p)=(\{1\},\mathrm{Atomic},\mathrm{Unordered})
+\Pi_\Gamma(\mathbf{r},p)=(\mathrm{Whole},\{1\},\mathrm{Unordered})
 $$
 
 when no more specific policy is defined.
 
-If $D=\mathrm{Atomic}$, the endpoint must resolve to one object.
+For an endpoint expression $\mathbf{e}$, the arity checked by endpoint consumption is:
 
-If $D=\mathrm{Decomposed}$, the endpoint is decomposed into members. For list expressions, decomposition is one structural level by default; nested lists remain members unless a profile or relator explicitly defines recursive decomposition.
+$$
+|V(\mathbf{e})|
+$$
+
+and consumption is admissible only if:
+
+$$
+|V(\mathbf{e})|\in A
+$$
 
 If $W=\mathrm{Ordered}$, member order is semantically significant.
 
@@ -660,19 +690,19 @@ If $W=\mathrm{Unordered}$, member order is not semantically significant, though 
 Examples of named endpoint-consumption bundles include:
 
 $$
-\mathrm{AtomicEndpoint}:=(\{1\},\mathrm{Atomic},\mathrm{Unordered})
+\mathrm{WholeEndpoint}:=(\mathrm{Whole},\{1\},\mathrm{Unordered})
 $$
 
 $$
-\mathrm{UnorderedList}_{\ge 1}:=(\mathbb{N}_{\ge 1},\mathrm{Decomposed},\mathrm{Unordered})
+\mathrm{UnorderedMembers}_{\ge 1}:=(\mathrm{Members}_1,\mathbb{N}_{\ge 1},\mathrm{Unordered})
 $$
 
 $$
-\mathrm{OrderedTriple}:=(\{3\},\mathrm{Decomposed},\mathrm{Ordered})
+\mathrm{OrderedTriple}:=(\mathrm{Members}_1,\{3\},\mathrm{Ordered})
 $$
 
 $$
-\mathrm{OrderedList}_{\ge 0}:=(\mathbb{N}_{\ge 0},\mathrm{Decomposed},\mathrm{Ordered})
+\mathrm{OrderedMembers}_{\ge 0}:=(\mathrm{Members}_1,\mathbb{N}_{\ge 0},\mathrm{Ordered})
 $$
 
 Named bundles are profile/library conveniences. C4 Core defines the orthogonal policy axes, not a closed inheritance hierarchy of relator classes.
