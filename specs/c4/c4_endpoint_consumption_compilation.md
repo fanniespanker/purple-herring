@@ -6,13 +6,19 @@ This document is a draft addendum to the C4 Mathematical Core v0.1.6.
 
 It extends the endpoint-consumption policy model defined in `specs/c4/c4_mathematical_core.md` without replacing the core specification text.
 
-This addendum SHOULD be incorporated into the C4 Mathematical Core after the section currently titled `Endpoint Consumption Policies`.
+The body of this addendum is formatted as whole insertable sections. Each insertable section includes comments naming the intended preceding and following C4 Mathematical Core sections.
 
 ---
 
-## 1. Dependency on Endpoint Consumption Policies
+<!-- PRECEDING SECTION: 11. Endpoint Consumption Policies -->
 
-This addendum assumes the C4 Core endpoint-consumption policy form:
+## 12. Endpoint Consumption Compilation
+
+<!-- FOLLOWING SECTION: 13. Relation-State Application Notation -->
+
+Endpoint-consumption policies MAY be normalized and compiled into endpoint-consumption closures.
+
+This section assumes the C4 Core endpoint-consumption policy form:
 
 $$
 \Pi_\Gamma(\mathbf{r},p)=(V,A,W)
@@ -46,11 +52,7 @@ $$
 
 where $\mathrm{Members}_1$ is defined on list expressions.
 
----
-
-## 2. Policy Normalization
-
-Endpoint-consumption policies MAY be normalized before validation, compilation, or execution.
+### 12.1 Policy Normalization
 
 Let:
 
@@ -94,9 +96,7 @@ $$
 
 Profiles MAY define additional named bundles and corresponding normalization rules.
 
----
-
-## 3. Consumed Endpoint Forms
+### 12.2 Consumed Endpoint Forms
 
 Let:
 
@@ -135,9 +135,7 @@ $$
 
 then the consumed endpoint form may be canonically reordered, hashed, indexed, or compared without semantic dependence on source order. Source order MAY still be preserved separately for provenance, diagnostics, or round-tripping.
 
----
-
-## 4. Compiled Endpoint-Consumption Closures
+### 12.3 Compiled Endpoint-Consumption Closures
 
 A compiled endpoint-consumption closure is written:
 
@@ -187,9 +185,7 @@ $$
 
 The closure is partial. It is undefined if the view is undefined, the arity check fails, required expression resolution fails, or profile-relative endpoint-consumption validation fails.
 
----
-
-## 5. Optimization Permissions
+### 12.4 Optimization Permissions
 
 Implementations MAY cache, fuse, specialize, lazily evaluate, or prevalidate compiled endpoint-consumption closures, provided canonical behavior is preserved.
 
@@ -225,9 +221,7 @@ $$
 
 an implementation may check first-level member count before resolving any member expressions.
 
----
-
-## 6. Relator Application with Compiled Consumption
+### 12.5 Relator Application with Compiled Consumption
 
 A relator application MAY be modeled using compiled endpoint-consumption closures:
 
@@ -247,9 +241,7 @@ $$
 
 The canonical statement remains expression-level. Endpoint-consumed forms are derived semantic or operational forms, not replacement syntax for the statement.
 
----
-
-## 7. Denotation and Materialization Separation
+### 12.6 Denotation and Materialization Separation
 
 Endpoint consumption is distinct from materialization.
 
@@ -261,12 +253,47 @@ Thus a relator may consume a decomposed endpoint, denote a structured relation a
 
 ---
 
-## 8. Open Integration Notes
+<!-- PRECEDING SECTION: 18. Validation -->
 
-This addendum should eventually be integrated into the C4 Mathematical Core by:
+## 19. Integration Notes for Endpoint Consumption Compilation
 
-- inserting Sections 2–7 after `Endpoint Consumption Policies`;
-- renumbering following sections;
-- adding `endpoint-consumption closure compilation` to validation and implementation conformance notes;
-- preserving the distinction between endpoint consumption, relator semantics, relation-state semantics, and materialization;
-- keeping the canonical statement tuple unchanged.
+<!-- FOLLOWING SECTION: 20. Open Questions -->
+
+When this addendum is incorporated into the C4 Mathematical Core, the following integration edits SHOULD be applied.
+
+The section currently titled `Relation-State Application Notation` SHOULD be renumbered after `Endpoint Consumption Compilation`.
+
+Validation SHOULD mention endpoint-consumption closure compilation where relevant, while preserving the distinction among:
+
+- endpoint consumption;
+- relator semantics;
+- relation-state semantics;
+- denotation;
+- materialization.
+
+Conformance notes SHOULD permit implementations to normalize, cache, fuse, specialize, lazily evaluate, or prevalidate endpoint-consumption closures, provided canonical behavior is preserved.
+
+The canonical statement tuple MUST remain unchanged:
+
+$$
+P=(\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+$$
+
+Endpoint-consumed forms are derived semantic or operational forms; they are not replacement syntax for statements.
+
+---
+
+<!-- PRECEDING SECTION: 19. Integration Notes for Endpoint Consumption Compilation -->
+
+## 20. Open Questions for Endpoint Consumption Compilation
+
+<!-- FOLLOWING SECTION: End of addendum / C4 Mathematical Core open questions -->
+
+The following remain open for future formalization:
+
+- whether $\mathcal{C}$ should be subdivided into ordered, unordered, unresolved, partially resolved, and profile-defined consumed endpoint forms;
+- whether closure compilation should be described only as an implementation permission or as a normative semantic phase;
+- whether profile-defined endpoint views require a separate conformance level;
+- whether materialization should be formalized as a function from denotations to derived statements, graph patches, indexes, or all of these;
+- whether consumed endpoint forms should be reifiable as C4 objects;
+- whether endpoint-consumption closures should be cacheable across resolution environments or only within a fixed $\Gamma$.
