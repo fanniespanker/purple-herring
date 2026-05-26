@@ -8,6 +8,21 @@ Fish status enums are stable symbolic projections of graph-native status objects
 
 Fish status enums do not replace C4 graph-native semantics.
 
+Protocol status enum graph-objects SHOULD live under the `fish:proto:` namespace path.
+
+In canonical Fish graph syntax, an enum token inside `fish:proto:(...)` resolves relative to `fish:proto:`. For example:
+
+```fish
+fish:proto:(OK,GRAPH_DELTA_PRODUCED)
+```
+
+resolves to a list containing:
+
+```text
+fish:proto:OK
+fish:proto:GRAPH_DELTA_PRODUCED
+```
+
 The canonical status chain is:
 
 ```text
@@ -17,7 +32,7 @@ graph-native status object
   -> optional numeric/textual protocol projection
 ```
 
-This document defines an initial registry of named Fish status enums.
+This document defines an initial registry of named Fish protocol status enums.
 
 ---
 
@@ -26,6 +41,7 @@ This document defines an initial registry of named Fish status enums.
 A Fish status enum registry entry SHOULD define:
 
 - enum name;
+- canonical graph name under `fish:proto:`;
 - short meaning;
 - status-word fields;
 - optional numeric compatibility projection;
@@ -34,6 +50,18 @@ A Fish status enum registry entry SHOULD define:
 - notes.
 
 The status-word fields listed in this draft are provisional and may be refined by a future status-word layout specification.
+
+Unless otherwise stated, a heading such as:
+
+```text
+### PERMISSION_DENIED
+```
+
+has canonical graph name:
+
+```text
+fish:proto:PERMISSION_DENIED
+```
 
 ---
 
