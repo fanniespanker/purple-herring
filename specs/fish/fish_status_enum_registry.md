@@ -201,6 +201,35 @@ Notes: Richer schemas SHOULD preserve unresolved graph-native structures when re
 
 ## 4. Materialization Statuses
 
+### MATERIALIZATION_NOT_ATTEMPTED
+
+Meaning: materialization did not occur.
+
+Status-word fields:
+
+```text
+materialization_not_attempted
+final
+```
+
+Optional compatibility projection: profile-defined.
+
+Valid contexts:
+
+- request validation failure;
+- authentication or permission failure;
+- result-schema negotiation failure;
+- graph-delta production failure;
+- validation failure;
+- status-only graph-delta production response;
+- profile-defined preflight response.
+
+Materialization safety: mutating materialization MUST NOT occur when this enum is returned as a final status.
+
+Notes: This enum is useful in status traces to distinguish failure before materialization from attempted materialization failure.
+
+---
+
 ### MATERIALIZED_NO_MUTATION
 
 Meaning: materialization succeeded and produced a materialization-result graph-object without mutating persistent graph state.
