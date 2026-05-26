@@ -1,0 +1,38 @@
+diff --git a/patches.d/README.md b/patches.d/README.md
+new file mode 100644
+--- /dev/null
++++ b/patches.d/README.md
+@@ -0,0 +1,32 @@
++# Patch Queue Layout
++
++`patches.d/` stores patch-runner queue artifacts.
++
++Directory names may vary by directory profile, but the semantic roles stay the same.
++
++## Directory Profiles
++
++| Role | Config key | Piscine | Sane | Terse |
++|---|---|---|---|---|
++| pending intake | `pending_dir` | `caught` | `pending` | `in` |
++| applied successfully | `applied_dir` | `purchased` | `applied` | `done` |
++| valid but failed to apply | `failed_dir` | `the_one_that_got_away` | `failed` | `fail` |
++| malformed artifact | `malformed_dir` | `garum_jar` | `malformed` | `bad` |
++| already applied | `overfished_dir` | `overfished` | `already_applied` | `dupe` |
++| intentionally skipped | `skipped_dir` | `catch_and_release` | `skipped` | `skip` |
++| runner scratch | `tmp_dir` | `.tmp` | `.tmp` | `.tmp` |
++
++## Rules
++
++Config keys are semantic and stable.
++
++Directory values may be piscine, sane, terse, or explicitly configured.
++
++Checklist status values should remain sober:
++
++- `applied`
++- `failed`
++- `malformed`
++- `already-applied`
++- `skipped`
++
++The scratch directory should be ignored by Git before the runner uses it.
