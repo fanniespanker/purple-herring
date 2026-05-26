@@ -14,6 +14,8 @@ A Fish result schema is a graph object or graph-defined schema describing what s
 
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
+Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -84,13 +86,13 @@ Result schemas SHOULD be addressable or otherwise identifiable as graph objects.
 
 Fish MAY define standard protocol result-schema classes such as:
 
-- `fish:proto:statusOnly`;
-- `fish:proto:diagnosticGraph`;
-- `fish:proto:patchGraph`;
-- `fish:proto:graphDeltaGraph`;
-- `fish:proto:materializationResultGraph`;
-- `fish:proto:validationResultGraph`;
-- `fish:proto:protocolEnvelope`;
+- `fish:proto:status_only`;
+- `fish:proto:diagnostic_graph`;
+- `fish:proto:patch_graph`;
+- `fish:proto:graph_delta_graph`;
+- `fish:proto:materialization_result_graph`;
+- `fish:proto:validation_result_graph`;
+- `fish:proto:protocol_envelope`;
 - profile-defined result schema.
 
 These classes are protocol conveniences. The normative result schema is the graph-defined schema object or graph region requested by the client.
@@ -104,17 +106,17 @@ A Fish client MAY request a richer result schema by including a result-schema gr
 Canonical request-fish form:
 
 ```fish
-<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
+<request-fish>&fish:proto:result_schema@fish:proto:<schema>;
 ```
 
 Examples:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:statusOnly;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:status_only;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:diagnostic_graph;
 ```
 
 A future Fish syntax draft MAY define additional compact forms.
@@ -132,7 +134,30 @@ If no result schema is requested, Fish SHOULD use status-only.
 
 ---
 
-## 6. Unsupported or Malformed Result Schemas
+## 6. Generic Result Relation
+
+Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+```
+
+Result-specific typing SHOULD be expressed inside the result graph, preferably on the result root:
+
+```fish
+<result-root>&fish:proto:result_type@fish:proto:<result-schema-name>;
+```
+
+Example:
+
+```fish
+fish:id:REQ&fish:proto:result@fish:id:DELTA;
+fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
+```
+
+---
+
+## 7. Unsupported or Malformed Result Schemas
 
 If a requested result schema is unsupported, Fish MUST NOT materialize using that schema.
 
@@ -148,7 +173,7 @@ A malformed or unsupported result schema is a request-side/protocol-side failure
 
 ---
 
-## 7. Materialization Safety Rule
+## 8. Materialization Safety Rule
 
 A Fish implementation MUST validate requested result schemas before performing materialization behavior that may mutate persistent graph state.
 
@@ -160,7 +185,7 @@ This rule prevents a client from triggering materialization while requesting an 
 
 ---
 
-## 8. Schema Identity
+## 9. Schema Identity
 
 Result schemas SHOULD be graph-identifiable.
 
@@ -175,11 +200,11 @@ A result schema may be identified by:
 
 String identifiers MAY be used by Fish syntax, but they SHOULD resolve to graph-defined schema objects under the active Fish/C4 profile.
 
-Protocol result-schema names SHOULD use `fish:proto:<schema-name>` unless another profile namespace is explicitly selected.
+Protocol result-schema names SHOULD use `fish:proto:<schema_name>` unless another profile namespace is explicitly selected.
 
 ---
 
-## 9. Projection Rule
+## 10. Projection Rule
 
 Fish result schemas are projection specifications.
 
@@ -205,7 +230,7 @@ Omission from a Fish response MUST NOT be interpreted as absence from the underl
 
 ---
 
-## 10. Marking Projection
+## 11. Marking Projection
 
 A result-schema graph MAY specify which markings to include in a projected response.
 
@@ -227,7 +252,7 @@ Fish MUST NOT invent omitted markings in a way that contradicts the underlying g
 
 ---
 
-## 11. Fallback Behavior
+## 12. Fallback Behavior
 
 A Fish request MAY define acceptable fallback schemas.
 
@@ -239,7 +264,7 @@ If no schema is requested and no profile requires richer output, status-only is 
 
 ---
 
-## 12. Interaction with Status Enums
+## 13. Interaction with Status Enums
 
 The Fish status registry defines the status model, and the Fish status enum registry defines named status enums.
 
@@ -257,7 +282,7 @@ Exact status-word layout and optional compatibility projections are deferred to 
 
 ---
 
-## 13. Open Questions
+## 14. Open Questions
 
 The following remain open for future formalization:
 
