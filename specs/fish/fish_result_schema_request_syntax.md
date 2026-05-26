@@ -54,11 +54,20 @@ fish:proto:validation_result_graph
 fish:proto:protocol_envelope
 ```
 
+The following protocol result-schema trait names are reserved as initial standard composable traits:
+
+```text
+fish:proto:region_root_marking
+fish:proto:direct_marking
+```
+
 Graph schemas SHOULD return graph roots, graph regions, or projected graph structures.
 
 Summary schemas MAY return compressed facts, counts, flags, or other compact summary projections.
 
-These names identify protocol projection schemas. They do not replace the underlying C4 graph-native result objects.
+Trait names modify or constrain a result schema. They are not complete result schemas by themselves unless an active profile explicitly defines them as such.
+
+These names identify protocol projection schemas and schema traits. They do not replace the underlying C4 graph-native result objects.
 
 ---
 
@@ -114,6 +123,16 @@ A graph-delta result-schema request asks for the graph-delta graph projection:
 fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:graph_delta_graph;
 ```
 
+A graph-delta request may compose the graph-delta graph result kind with marking traits:
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking);
+```
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:(graph_delta_graph,direct_marking);
+```
+
 A graph-delta summary request asks for a compact graph-delta summary projection:
 
 ```fish
@@ -156,29 +175,50 @@ A protocol envelope is still a Fish graph projection.
 
 ---
 
-## 7. Multiple Acceptable Result Schemas
+## 7. Composable Result Schemas
 
-A request fish MAY specify multiple acceptable result schemas using a protocol-relative list:
+A result-schema request MAY compose a result kind with one or more schema traits using a protocol-relative list.
+
+Example:
+
+```fish
+<request-fish>&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking,direct_marking);
+```
+
+In a composed schema list:
+
+- the result kind identifies the primary result projection;
+- traits modify or constrain the projection;
+- the list is graph structure, not a scalar tuple;
+- trait compatibility is schema/profile-defined.
+
+A Fish implementation MUST validate that all composed schema members are supported and mutually compatible before performing mutating materialization.
+
+If any composed schema member is malformed, unsupported, unauthorized, or incompatible, Fish MUST NOT perform mutating materialization.
+
+---
+
+## 8. Multiple Acceptable Result Schemas
+
+A request fish MAY specify multiple acceptable result schemas using a protocol-relative list only when the active profile interprets the list as alternatives.
+
+Example:
 
 ```fish
 <request-fish>&fish:proto:result_schema@fish:proto:(diagnostic_graph,status_only);
 ```
 
-Example:
-
-```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:(diagnostic_graph,status_only);
-```
-
 The list is graph structure.
 
-The order SHOULD be interpreted as preference order unless the active profile defines otherwise.
+The order SHOULD be interpreted as preference order for alternative schemas only when the active profile defines the list as alternatives.
 
-In the example above, Fish should try `fish:proto:diagnostic_graph` first and may fall back to `fish:proto:status_only` if diagnostic graph projection is unavailable and fallback is permitted.
+Because protocol-relative lists can also represent schema composition, a profile MUST disambiguate alternative-schema lists from composed-schema lists.
+
+Explicit fallback schemas are preferred when alternatives must be unambiguous.
 
 ---
 
-## 8. Explicit Fallback Result Schemas
+## 9. Explicit Fallback Result Schemas
 
 A request fish MAY distinguish the primary requested result schema from fallback schemas.
 
@@ -205,7 +245,7 @@ If fallback is used, the response SHOULD indicate fallback when the response sch
 
 ---
 
-## 9. Generic Result Relation
+## 10. Generic Result Relation
 
 Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
 
@@ -228,7 +268,7 @@ fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
 
 ---
 
-## 10. Malformed or Unsupported Schema Requests
+## 11. Malformed or Unsupported Schema Requests
 
 If a requested result schema is malformed, Fish MUST NOT perform mutating materialization using that schema.
 
@@ -250,7 +290,7 @@ These outcomes are request-side/protocol-side failures, not successful materiali
 
 ---
 
-## 11. Schema Identity and Profiles
+## 12. Schema Identity and Profiles
 
 Standard Fish protocol schemas use `fish:proto:<schema>` names.
 
@@ -270,7 +310,7 @@ A profile-defined schema MUST still resolve to graph-defined schema semantics un
 
 ---
 
-## 12. Safety Rule
+## 13. Safety Rule
 
 A Fish implementation MUST validate requested result schemas and fallback result schemas before performing materialization behavior that may mutate persistent graph state.
 
@@ -280,15 +320,17 @@ Read-only parsing, validation, negotiation, and status production MAY occur in o
 
 ---
 
-## 13. Open Questions
+## 14. Open Questions
 
 The following remain open for future formalization:
 
 - exact grammar for `fish:proto:result_schema` statements;
+- how to distinguish composed schema lists from alternative-schema lists in compact syntax;
 - whether multiple schemas should be represented by a result-schema list or only by explicit fallback relation;
-- whether result-schema lists are always preference-ordered;
+- whether result-schema lists are always preference-ordered when interpreted as alternatives;
 - exact standard semantics of `fish:proto:diagnostic_summary`, `fish:proto:diagnostic_graph`, and `fish:proto:diagnostic_envelope`;
 - exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:graph_delta_summary`, `fish:proto:materialization_result_graph`, `fish:proto:materialization_result_summary`, and `fish:proto:patch_graph`;
+- exact standard semantics and compatibility rules for `fish:proto:region_root_marking` and `fish:proto:direct_marking`;
 - whether result schema negotiation should support quality values, capabilities, or constraints;
 - how schema requests interact with streaming and batch requests;
 - how schema requests interact with authorization/disclosure policy;
