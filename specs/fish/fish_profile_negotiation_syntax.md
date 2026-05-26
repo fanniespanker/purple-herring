@@ -4,9 +4,9 @@
 
 This document is a draft Fish protocol and syntax specification.
 
-It defines initial graph-native syntax for requesting, accepting, selecting, and reporting active Fish/C4 profiles.
+It defines initial graph-native syntax for requesting, accepting, selecting, and reporting active Fish profiles.
 
-Profile negotiation does not replace C4 graph-native semantics.
+Fish profile negotiation does not replace C4 graph-native semantics.
 
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
@@ -36,7 +36,7 @@ A Fish profile may define:
 - transport constraints;
 - profile-defined vocabulary.
 
-A request fish may therefore need to state which profile it requests or which profiles it can accept.
+A request fish may therefore need to state which Fish profile it requests or which Fish profiles it can accept.
 
 ---
 
@@ -63,7 +63,7 @@ Profile names SHOULD use snake_case when symbolic.
 
 ## 3. Requested Profile
 
-A request fish MAY request a specific active profile using:
+A request fish MAY request a specific active Fish profile using:
 
 ```fish
 <request-fish>&fish:proto:profile@<profile>;
@@ -75,7 +75,7 @@ Example:
 fish:id:REQ&fish:proto:profile@fish:proto:default_profile;
 ```
 
-A requested profile is a request for the implementation to process the request under that profile.
+A requested profile is a request for the implementation to process the request under that Fish profile.
 
 If the requested profile is unsupported, unauthorized, malformed, or incompatible with the requested operation, Fish MUST NOT perform mutating materialization.
 
@@ -83,7 +83,7 @@ If the requested profile is unsupported, unauthorized, malformed, or incompatibl
 
 ## 4. Acceptable Profiles
 
-A request fish MAY list acceptable profiles using:
+A request fish MAY list acceptable Fish profiles using:
 
 ```fish
 <request-fish>&fish:proto:accept_profile@fish:proto:(<profile-1>,<profile-2>,...);
@@ -105,7 +105,7 @@ If no acceptable profile can be selected, Fish SHOULD return an appropriate prof
 
 ## 5. Active Profile Reporting
 
-A Fish response SHOULD report the active profile when:
+A Fish response SHOULD report the active Fish profile when:
 
 - the request offered multiple acceptable profiles;
 - the active profile affects result-schema interpretation;
@@ -133,7 +133,7 @@ If the requested result schema is strict status-only, active profile reporting M
 
 ## 6. Profile and Result-Schema Compatibility
 
-Profiles determine which result schemas and schema traits are supported.
+Fish profiles determine which result schemas and schema traits are supported.
 
 A profile SHOULD define support and compatibility for schemas such as:
 
@@ -160,13 +160,13 @@ A composed request such as:
 fish:id:REQ&fish:proto:result_schema@fish:proto:(graph_delta_graph,region_root_marking,direct_marking);
 ```
 
-MUST be validated under the selected profile before any mutating materialization occurs.
+MUST be validated under the selected Fish profile before any mutating materialization occurs.
 
 ---
 
 ## 7. Profile Capability Graphs
 
-A profile MAY expose a capability graph describing supported schemas, traits, operations, policies, and encodings.
+A Fish profile MAY expose a capability graph describing supported schemas, traits, operations, policies, and encodings.
 
 Possible profile capability relations include:
 
@@ -207,7 +207,7 @@ A profile that supports deterministic hash-derived IDs from `fish:addr:(...)` MU
 - truncation length;
 - Base64URL projection rules.
 
-If a request requires deterministic ID interoperability and no shared canonicalization profile is selected, Fish SHOULD return a profile-negotiation or canonicalization failure status rather than pretending the IDs are interoperable.
+If a request requires deterministic ID interoperability and no shared Fish canonicalization profile is selected, Fish SHOULD return a profile-negotiation or canonicalization failure status rather than pretending the IDs are interoperable.
 
 ---
 
@@ -269,7 +269,7 @@ A request may still include a request-level materialization policy:
 <request-fish>&fish:proto:materialization_policy@fish:proto:read_only;
 ```
 
-The selected profile determines how that request-level policy is interpreted and whether it is admissible.
+The selected Fish profile determines how that request-level policy is interpreted and whether it is admissible.
 
 ---
 
