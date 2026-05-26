@@ -169,11 +169,27 @@ Initial standard schema names include:
 fish:proto:status_only
 fish:proto:diagnostic_graph
 fish:proto:graph_delta_graph
+fish:proto:graph_delta_summary
 fish:proto:materialization_result_graph
 fish:proto:protocol_envelope
 ```
 
-### 8. Fish Diagnostic Envelopes
+### 8. Fish Graph-Delta Projection Syntax
+
+File: `fish_graph_delta_projection_syntax.md`
+
+Defines Fish projection syntax for graph-delta result graphs and graph-delta summaries.
+
+Graph-delta graph projections use the generic result convention:
+
+```fish
+<request-fish>&fish:proto:result@<result-root>;
+<result-root>&fish:proto:result_type@fish:proto:graph_delta_graph;
+```
+
+Graph-delta graph schemas return graph roots/regions. Graph-delta summary schemas return compact summary projections.
+
+### 9. Fish Diagnostic Envelopes
 
 File: `fish_diagnostic_envelopes.md`
 
@@ -181,7 +197,7 @@ Defines diagnostic envelopes as requested or profile-required protocol projectio
 
 Diagnostics are not automatic. If diagnostics are not requested or required, Fish may return status-only.
 
-### 9. Fish Request Fish Syntax
+### 10. Fish Request Fish Syntax
 
 File: `fish_request_fish_syntax.md`
 
@@ -189,7 +205,7 @@ Defines request fish as graph-addressable Fish/C4 graph objects representing pro
 
 Request fish use `fish:proto:` protocol/control relations and are answered by graph-native status responses.
 
-### 10. Fish Request/Response Envelopes
+### 11. Fish Request/Response Envelopes
 
 File: `fish_request_response_envelopes.md`
 
@@ -214,9 +230,10 @@ The current recommended reading order is:
 6. fish_status_only_response_syntax.md
 7. fish_result_schema_negotiation.md
 8. fish_result_schema_request_syntax.md
-9. fish_diagnostic_envelopes.md
-10. fish_request_fish_syntax.md
-11. fish_request_response_envelopes.md
+9. fish_graph_delta_projection_syntax.md
+10. fish_diagnostic_envelopes.md
+11. fish_request_fish_syntax.md
+12. fish_request_response_envelopes.md
 ```
 
 Conceptual dependency order:
@@ -229,6 +246,7 @@ Fish namespace conventions
   -> status-only graph response syntax
   -> result-schema negotiation
   -> result-schema request syntax
+  -> graph-delta projection syntax
   -> diagnostic projection
   -> request fish syntax
   -> request/response envelope
@@ -263,6 +281,7 @@ request fish syntax
 request/response envelopes
 result-schema negotiation
 result-schema request syntax
+graph-delta projection syntax
 diagnostic envelopes
 protocol-level safety rules
 ```
@@ -275,7 +294,6 @@ Fish projections may summarize, serialize, transport, or negotiate C4 graph-obje
 
 Likely next Fish tasks:
 
-- define graph-delta result graph projection syntax using `fish:proto:result` and `fish:proto:result_type`;
 - define materialization-result graph projection syntax;
 - decide whether status-word fields use a mandatory bit layout or remain profile-defined;
 - make the status enum registry machine-readable as Fish graph data;
