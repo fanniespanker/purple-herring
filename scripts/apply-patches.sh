@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MODE="${1:---check}"
+MODE="--check"
+CREATE_NOTES=1
+PUSH_NOTES=1
+FORCE_TSV=0
 PATCH_ROOT="patches.d"
 PENDING_DIR="$PATCH_ROOT/pending"
 APPLIED_DIR="$PATCH_ROOT/applied"
 FAILED_DIR="$PATCH_ROOT/failed"
-CHECKLIST="$PATCH_ROOT/patches_checklist.yaml"
-LEGACY_TSV_CHECKLIST="$PATCH_ROOT/patches_checklist.tsv"
+YAML_CHECKLIST="$PATCH_ROOT/patches_checklist.yaml"
+TSV_CHECKLIST="$PATCH_ROOT/patches_checklist.tsv"
+CHECKLIST=""
+CHECKLIST_FORMAT=""
 
 usage() {
   cat <<'USAGE'
-usage: scripts/apply-patches.sh [--check|--apply]
+usage: scripts/apply-patches.sh [--check|--apply] [options]
 
 Applies pending repository patches from patches.d/pending in lexical order.
 
@@ -20,16 +25,29 @@ Patch filenames SHOULD begin with a 6-digit ordinal:
   000001-example.patch
 
 Modes:
-  --check   verify pending patches without applying them
-  --apply   apply pending patches, commit each patch, move it to applied/, and update checklist
+  --check          verify pending patches without applying them
+  --apply          apply pending patches, commit each patch, move it to applied/, and update checklist
+
+Options:
+  --fallback-tsv   use patches_checklist.tsv instead of YAML without prompting
+  --no-notes       do not create git notes for patch commits
+  --no-push-notes  create local git notes, but do not push refs/notes/commits
 USAGE
 }
 
-case "$MODE" in
-  --check|--apply) ;;
-  -h|--help) usage; exit 0 ;;
-  *) usage >&2; exit 2 ;;
-esac
+parse_args() {
+  while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+      --check|--apply) MODE="$1" ;;
+      --fallback-tsv) FORCE_TSV=1 ;;
+      --no-notes) CREATE_NOTES=0; PUSH_NOTES=0 ;;
+      --no-push-notes) PUSH_NOTES=0 ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage >&2; exit 2 ;;
+    esac
+    shift
+  done
+}
 
 require_repo_root() {
   if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
@@ -45,22 +63,41 @@ require_repo_root() {
   fi
 }
 
-require_python_yaml() {
-  if ! command -v python3 >/dev/null 2>&1; then
-    echo "error: python3 not found" >&2
-    echo "hint: scripts/setup-patch-tools-debian.sh --install" >&2
-    exit 1
-  fi
-
-  if ! python3 - <<'PY' >/dev/null 2>&1
+python_yaml_available() {
+  command -v python3 >/dev/null 2>&1 && python3 - <<'PY' >/dev/null 2>&1
 import yaml
 PY
-  then
-    echo "error: Python package 'yaml' could not be imported" >&2
-    echo "hint: install PyYAML, or on Debian/WSL run:" >&2
-    echo "      scripts/setup-patch-tools-debian.sh --install" >&2
-    exit 1
+}
+
+choose_checklist_backend() {
+  if [[ "$FORCE_TSV" -eq 1 ]]; then
+    CHECKLIST_FORMAT="tsv"
+    CHECKLIST="$TSV_CHECKLIST"
+    return 0
   fi
+
+  if python_yaml_available; then
+    CHECKLIST_FORMAT="yaml"
+    CHECKLIST="$YAML_CHECKLIST"
+    return 0
+  fi
+
+  echo "warning: python3 + PyYAML are not available; YAML checklist support is unavailable" >&2
+  echo "hint: scripts/setup-patch-tools-debian.sh --install" >&2
+
+  if [[ -t 0 ]]; then
+    read -r -p "Use TSV fallback checklist for this run? [y/N] " answer
+    case "$answer" in
+      y|Y|yes|YES)
+        CHECKLIST_FORMAT="tsv"
+        CHECKLIST="$TSV_CHECKLIST"
+        return 0
+        ;;
+    esac
+  fi
+
+  echo "error: cannot continue without YAML support or TSV fallback" >&2
+  exit 1
 }
 
 require_clean_tree() {
@@ -73,10 +110,17 @@ require_clean_tree() {
 
 init_dirs() {
   mkdir -p "$PENDING_DIR" "$APPLIED_DIR" "$FAILED_DIR"
-  if [[ ! -f "$CHECKLIST" ]]; then
-    cat > "$CHECKLIST" <<'YAML'
+
+  if [[ "$CHECKLIST_FORMAT" == "yaml" ]]; then
+    if [[ ! -f "$CHECKLIST" ]]; then
+      cat > "$CHECKLIST" <<'YAML'
 patches: []
 YAML
+    fi
+  else
+    if [[ ! -f "$CHECKLIST" ]]; then
+      printf 'patch_id\tpatch_file\tstatus\tapplied_at\tsha256\tdescription\n' > "$CHECKLIST"
+    fi
   fi
 }
 
@@ -102,7 +146,7 @@ patch_desc_from_path() {
   echo "$stem" | sed -E 's/^[0-9]{6}-//; s/-/ /g'
 }
 
-is_applied() {
+is_applied_yaml() {
   local id="$1"
   python3 - "$CHECKLIST" "$id" <<'PY'
 import sys
@@ -122,7 +166,21 @@ raise SystemExit(1)
 PY
 }
 
-upsert_checklist_entry() {
+is_applied_tsv() {
+  local id="$1"
+  [[ -f "$CHECKLIST" ]] && awk -F '\t' -v id="$id" 'NR>1 && $1==id && $3=="applied" { found=1 } END { exit found ? 0 : 1 }' "$CHECKLIST"
+}
+
+is_applied() {
+  local id="$1"
+  if [[ "$CHECKLIST_FORMAT" == "yaml" ]]; then
+    is_applied_yaml "$id"
+  else
+    is_applied_tsv "$id"
+  fi
+}
+
+upsert_checklist_entry_yaml() {
   local id="$1" file="$2" status="$3" applied_at="$4" hash="$5" desc="$6"
   python3 - "$CHECKLIST" "$id" "$file" "$status" "$applied_at" "$hash" "$desc" <<'PY'
 import sys
@@ -155,8 +213,30 @@ path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
 PY
 }
 
+upsert_checklist_entry_tsv() {
+  local id="$1" file="$2" status="$3" applied_at="$4" hash="$5" desc="$6"
+  local tmp
+  tmp="$(mktemp)"
+  awk -F '\t' -v OFS='\t' -v id="$id" 'NR==1 { print; next } $1!=id { print }' "$CHECKLIST" > "$tmp"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$id" "$file" "$status" "$applied_at" "$hash" "$desc" >> "$tmp"
+  mv "$tmp" "$CHECKLIST"
+}
+
+upsert_checklist_entry() {
+  if [[ "$CHECKLIST_FORMAT" == "yaml" ]]; then
+    upsert_checklist_entry_yaml "$@"
+  else
+    upsert_checklist_entry_tsv "$@"
+  fi
+}
+
 add_patch_note() {
   local commit_sha="$1" id="$2" applied_path="$3" hash="$4" applied_at="$5" desc="$6"
+
+  if [[ "$CREATE_NOTES" -ne 1 ]]; then
+    return 0
+  fi
+
   if ! git notes add -f -m "patch_id=$id
 commit_sha=$commit_sha
 patch_file=$applied_path
@@ -164,6 +244,23 @@ patch_sha256=$hash
 applied_at=$applied_at
 description=$desc" "$commit_sha" >/dev/null 2>&1; then
     echo "warning: failed to write git note for patch $id" >&2
+  fi
+}
+
+push_notes_if_needed() {
+  if [[ "$CREATE_NOTES" -ne 1 || "$PUSH_NOTES" -ne 1 ]]; then
+    return 0
+  fi
+
+  if ! git remote get-url origin >/dev/null 2>&1; then
+    echo "warning: git notes were created locally, but no origin remote exists" >&2
+    return 0
+  fi
+
+  echo "push: refs/notes/commits"
+  if ! git push origin refs/notes/commits; then
+    echo "warning: failed to push git notes" >&2
+    echo "hint: retry with: git push origin refs/notes/commits" >&2
   fi
 }
 
@@ -219,17 +316,15 @@ apply_one_patch() {
   add_patch_note "$commit_sha" "$id" "$applied_path" "$hash" "$applied_at" "$desc"
 
   echo "applied: $id -> $commit_sha"
-  echo "note: git notes are local unless pushed with: git push origin refs/notes/commits"
 }
 
 main() {
+  parse_args "$@"
   require_repo_root
-  require_python_yaml
+  choose_checklist_backend
   init_dirs
 
-  if [[ -f "$LEGACY_TSV_CHECKLIST" ]]; then
-    echo "note: legacy TSV checklist still exists at $LEGACY_TSV_CHECKLIST; YAML checklist is authoritative"
-  fi
+  echo "checklist: $CHECKLIST_FORMAT ($CHECKLIST)"
 
   mapfile -t patches < <(pending_patches)
   if [[ "${#patches[@]}" -eq 0 ]]; then
@@ -255,6 +350,7 @@ main() {
   for patch in "${patches[@]}"; do
     apply_one_patch "$patch"
   done
+  push_notes_if_needed
 }
 
-main
+main "$@"
