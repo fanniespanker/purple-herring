@@ -10,6 +10,8 @@ A status-only response is a protocol projection of graph-native C4 status struct
 
 A Fish response is itself graph-structured. Status-only means that the returned graph contains only the requested status relation/subgraph, not that the response is a non-graph scalar token.
 
+Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
+
 ---
 
 ## 1. Relationship to Fish Status Model
@@ -210,7 +212,7 @@ A profile defining base64 status-word shorthand MUST specify:
 Example abstract form:
 
 ```fish
-REQUEST&fish:proto:statusWord64@fish:proto:<base64-status-token>;
+REQUEST&fish:proto:status_word_64@fish:proto:<base64-status-token>;
 ```
 
 A status-word shorthand MAY be returned instead of the status-list form only when explicitly requested by a result schema or required by the active Fish profile.
@@ -241,7 +243,7 @@ Example:
 
 ```fish
 REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED);
-REQUEST&fish:proto:compatCode@fish:proto:403;
+REQUEST&fish:proto:compat_code@fish:proto:403;
 ```
 
 This is not the default status-only response.
@@ -260,11 +262,11 @@ Example abstract graph form:
 
 ```fish
 REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
-REQUEST&fish:proto:statusFlag@fish:proto:request_wellformed;
-REQUEST&fish:proto:statusFlag@fish:proto:auth_accepted;
-REQUEST&fish:proto:statusFlag@fish:proto:permission_denied;
-REQUEST&fish:proto:statusFlag@fish:proto:materialization_not_attempted;
-REQUEST&fish:proto:statusFlag@fish:proto:final;
+REQUEST&fish:proto:status_flag@fish:proto:request_wellformed;
+REQUEST&fish:proto:status_flag@fish:proto:auth_accepted;
+REQUEST&fish:proto:status_flag@fish:proto:permission_denied;
+REQUEST&fish:proto:status_flag@fish:proto:materialization_not_attempted;
+REQUEST&fish:proto:status_flag@fish:proto:final;
 ```
 
 This is not the default status-only response.
@@ -280,6 +282,8 @@ If no result schema is requested, Fish SHOULD return the default graph-native st
 If a result schema explicitly requests a status-only response, Fish SHOULD return the default graph-native status-only response unless the requested schema specifies a bare enum shorthand, keyed form, compatibility-code form, status-word expansion, base64 status-word shorthand, or profile-defined status projection.
 
 If a richer result schema is requested and accepted, Fish MAY return graph-delta projections, materialization-result projections, diagnostic envelopes, protocol envelopes, or other requested content according to that schema.
+
+Returned result graph roots SHOULD be connected with `fish:proto:result`; result-specific typing SHOULD be represented inside the result graph using `fish:proto:result_type`.
 
 Unsupported or malformed result schemas MUST NOT trigger mutating materialization.
 
