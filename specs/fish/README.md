@@ -39,10 +39,13 @@ fish:proto:diagnostic_schema
 fish:proto:status_word_64
 fish:proto:compat_code
 fish:proto:result_type
+fish:proto:canonical_addr
 fish:proto:GRAPH_DELTA_PRODUCED
 ```
 
 Opaque generated IDs remain under `fish:id:` and SHOULD NOT be moved under `fish:proto:`.
+
+Structured address tuples use `fish:addr:(...)`.
 
 ---
 
@@ -55,7 +58,8 @@ File: `fish_namespace_conventions.md`
 Defines the initial namespace/path conventions:
 
 ```text
-fish:id:<FishID128>        opaque generated Fish address
+fish:id:<FishID128>        opaque generated Fish ID/address
+fish:addr:(...)            structured Fish address tuple
 fish:proto:<name>          Fish protocol/control vocabulary
 fish:proto:(...)           protocol-relative list graph
 fish:<name>                general Fish vocabulary resource
@@ -72,13 +76,21 @@ It also defines the generic result convention:
 
 File: `fish_id_and_address_syntax.md`
 
-Defines `FishID128`, the canonical unpadded Base64URL encoding for 128-bit opaque Fish IDs, and the prefixed address form:
+Defines `FishID128`, the canonical unpadded Base64URL encoding for 128-bit opaque Fish IDs, and the prefixed opaque address form:
 
 ```fish
 fish:id:<FishID128>
 ```
 
-Fish IDs provide addressability and correlation, not primitive C4 identity.
+Also defines structured address tuples:
+
+```fish
+fish:addr:("natalie","purple-herring.fanniespanker.com",A,A,F)
+```
+
+and deterministic hash-derived Fish IDs from canonical `fish:addr:(...)` bytes.
+
+Fish IDs and structured addresses provide addressability and correlation, not primitive C4 identity.
 
 ### 3. Fish Status Registry
 
@@ -241,6 +253,7 @@ Fish defines protocol projections and interchange behavior such as:
 ```text
 Fish namespace conventions
 FishID128 and fish:id:<FishID128> addresses
+structured fish:addr:(...) address tuples
 fish:proto:<name> protocol/control vocabulary
 status-only graph responses
 named status enums
