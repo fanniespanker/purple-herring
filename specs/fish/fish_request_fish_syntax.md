@@ -8,6 +8,8 @@ It defines the initial graph-native syntax model for request fish: Fish graph ob
 
 A request fish is not merely an envelope record. It is a graph-addressable Fish/C4 graph object that may be referenced by responses, diagnostics, graph-delta objects, materialization-result objects, and protocol projections.
 
+Protocol/control vocabulary uses the `fish:proto:` namespace path.
+
 ---
 
 ## 1. Relationship to Fish IDs and Responses
@@ -21,7 +23,7 @@ fish:id:<FishID128>
 Fish status-only response syntax defines graph-native response statements such as:
 
 ```fish
-<request-fish>&fish:status@fish:(<status-enum-1>,<status-enum-2>,...);
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
 
 Therefore, a request fish SHOULD be addressable by a Fish address, and a response SHOULD refer to the request fish it answers.
@@ -29,7 +31,7 @@ Therefore, a request fish SHOULD be addressable by a Fish address, and a respons
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(OK);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(OK);
 ```
 
 ---
@@ -68,9 +70,9 @@ A minimally useful request fish SHOULD have:
 Abstract shape:
 
 ```fish
-<request-fish>&fish:operation@fish:<operation>;
-<request-fish>&fish:payload@<payload-graph-or-source>;
-<request-fish>&fish:resultSchema@fish:<schema>;
+<request-fish>&fish:proto:operation@fish:proto:<operation>;
+<request-fish>&fish:proto:payload@<payload-graph-or-source>;
+<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
 ```
 
 The exact operation vocabulary and payload syntax are profile-defined until the Fish operation registry is specified.
@@ -104,19 +106,19 @@ A request fish SHOULD indicate operation or intent using graph structure.
 Example abstract forms:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:operation@fish:validate;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:operation@fish:proto:validate;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:operation@fish:produceDelta;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:operation@fish:proto:produceDelta;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:operation@fish:materialize;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:operation@fish:proto:materialize;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:operation@fish:projectResult;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:operation@fish:proto:projectResult;
 ```
 
 Operation names shown here are provisional.
@@ -142,7 +144,7 @@ Possible payload forms include:
 Example abstract form:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:payload@fish:id:a2F0Z3JhcGhwYXlsb2FkMQ;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:payload@fish:id:a2F0Z3JhcGhwYXlsb2FkMQ;
 ```
 
 This draft does not define literal source-text embedding syntax.
@@ -156,13 +158,13 @@ A request fish MAY request a result schema using graph structure.
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:resultSchema@fish:statusOnly;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:statusOnly;
 ```
 
 Another example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:resultSchema@fish:diagnosticGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:resultSchema@fish:proto:diagnosticGraph;
 ```
 
 If no result schema is requested, Fish SHOULD return the default graph-native status-only response.
@@ -178,15 +180,15 @@ A request fish MAY include materialization policy preferences or constraints.
 Example abstract forms:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:materializationPolicy@fish:readOnly;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:materializationPolicy@fish:proto:readOnly;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:materializationPolicy@fish:allowMutation;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:materializationPolicy@fish:proto:allowMutation;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:materializationPolicy@fish:prohibitMutation;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:materializationPolicy@fish:proto:prohibitMutation;
 ```
 
 Policy names shown here are provisional.
@@ -202,11 +204,11 @@ A request fish MAY request diagnostic disclosure or diagnostic schemas.
 Example:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:diagnosticSchema@fish:diagnosticSummary;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:diagnosticSchema@fish:proto:diagnosticSummary;
 ```
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:diagnosticSchema@fish:diagnosticGraph;
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:diagnosticSchema@fish:proto:diagnosticGraph;
 ```
 
 Diagnostics are not returned by default unless requested or required by profile.
@@ -220,19 +222,19 @@ A response SHOULD reference the request fish it answers.
 For status-only response:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
 ```
 
 For permission failure:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 For malformed result schema:
 
 ```fish
-fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:status@fish:(MALFORMED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(MALFORMED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 ---
