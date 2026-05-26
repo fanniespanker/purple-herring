@@ -47,10 +47,15 @@ fish:proto:diagnostic_graph
 fish:proto:diagnostic_envelope
 fish:proto:patch_graph
 fish:proto:graph_delta_graph
+fish:proto:graph_delta_summary
 fish:proto:materialization_result_graph
 fish:proto:validation_result_graph
 fish:proto:protocol_envelope
 ```
+
+Graph schemas SHOULD return graph roots, graph regions, or projected graph structures.
+
+Summary schemas MAY return compressed facts, counts, flags, or other compact summary projections.
 
 These names identify protocol projection schemas. They do not replace the underlying C4 graph-native result objects.
 
@@ -102,10 +107,16 @@ Diagnostics are not returned by default unless requested or required by profile.
 
 ## 5. Graph-Delta and Materialization Result Requests
 
-A graph-delta result-schema request asks for the graph-delta projection:
+A graph-delta result-schema request asks for the graph-delta graph projection:
 
 ```fish
 fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:graph_delta_graph;
+```
+
+A graph-delta summary request asks for a compact graph-delta summary projection:
+
+```fish
+fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:result_schema@fish:proto:graph_delta_summary;
 ```
 
 A materialization-result graph request asks for the materialization-result graph projection:
@@ -270,7 +281,7 @@ The following remain open for future formalization:
 - whether multiple schemas should be represented by a result-schema list or only by explicit fallback relation;
 - whether result-schema lists are always preference-ordered;
 - exact standard semantics of `fish:proto:diagnostic_summary`, `fish:proto:diagnostic_graph`, and `fish:proto:diagnostic_envelope`;
-- exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:materialization_result_graph`, and `fish:proto:patch_graph`;
+- exact standard semantics of `fish:proto:graph_delta_graph`, `fish:proto:graph_delta_summary`, `fish:proto:materialization_result_graph`, and `fish:proto:patch_graph`;
 - whether result schema negotiation should support quality values, capabilities, or constraints;
 - how schema requests interact with streaming and batch requests;
 - how schema requests interact with authorization/disclosure policy;
