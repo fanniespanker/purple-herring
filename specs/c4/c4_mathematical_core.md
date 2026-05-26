@@ -21,11 +21,14 @@ C4 Core uses serialization-neutral terminology.
 | statement | serialized relation statement |
 | block | serialized statement block |
 | source | left/source endpoint |
+| relator | relation-position connector/template/operator |
 | target | right/target endpoint |
 | relation-state | surface statement-state marker |
 | object | resolved addressable resource |
 
 C4 Core MUST NOT require surface-language terminology for its abstract definitions.
+
+A **relator** is an expression occupying relation position in a C4 statement. It determines the semantic relation, connector, template, or relational operation applied between a source expression and a target expression under a relation-state.
 
 ---
 
@@ -530,15 +533,15 @@ where:
 
 - $\mathbf{s},\mathbf{r},\mathbf{t} \in \mathcal{E}$;
 - $\mathbf{s}$ is the source expression;
-- $\mathbf{r}$ is the relation-position expression;
+- $\mathbf{r}$ is the relator expression;
 - $\mathbf{t}$ is the target expression;
 - $\psi_k \in \Psi$ is the relation state.
 
-Relations are expressions. Relation-position validity is not enforced by membership in a separate primitive expression subset. Instead, relation-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
+The relator expression occupies relation position. Relator-position validity is not enforced by membership in a separate primitive expression subset. Instead, relator-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
 
-Source, relation, and target are expressions, not necessarily already-resolved objects.
+Source, relator, and target are expressions, not necessarily already-resolved objects.
 
-When source, relation, and target resolution succeed, the resolved objects may be written:
+When source, relator, and target resolution succeed, the resolved objects may be written:
 
 $$
 o_s=\Gamma(\mathbf{s})
@@ -556,7 +559,107 @@ with $o_s,o_r,o_t \in \mathcal{O}$.
 
 ---
 
-## 10. Relation-State Application Notation
+## 10. Endpoint Consumption Policies
+
+A structured expression in source or target position remains one expression at the statement level. C4 Core does not automatically expand list expressions into multiple statements.
+
+For a relator expression $\mathbf{r}$ and endpoint position:
+
+$$
+p\in\{source,target\}
+$$
+
+a profile may define an endpoint-consumption policy:
+
+$$
+\Pi_\Gamma(\mathbf{r},p)\in\mathcal{P}_{consume}
+$$
+
+where $\mathcal{P}_{consume}$ is the domain of endpoint-consumption policies.
+
+A consumption policy is a finite composition of primitive endpoint-consumption behaviors.
+
+C4 Core defines the following primitive behaviors:
+
+$$
+\mathcal{B}_{consume}^{core}
+=
+\{
+\mathrm{Atomic},
+\mathrm{Structured},
+\mathrm{Preserve},
+\mathrm{Decompose},
+\mathrm{Each},
+\mathrm{Candidate},
+\mathrm{Collective},
+\mathrm{ArgList},
+\mathrm{Frame},
+\mathrm{Ordered},
+\mathrm{Unordered},
+\mathrm{DenoteOnly},
+\mathrm{Materialize}
+\}
+$$
+
+Their meanings are:
+
+- $\mathrm{Atomic}$: the endpoint must resolve to one object.
+- $\mathrm{Structured}$: the endpoint may remain structured.
+- $\mathrm{Preserve}$: a structured endpoint is consumed as one structure.
+- $\mathrm{Decompose}$: a structured endpoint may be inspected through its members.
+- $\mathrm{Each}$: members are interpreted distributively.
+- $\mathrm{Candidate}$: members are interpreted as unresolved alternatives.
+- $\mathrm{Collective}$: members participate collectively.
+- $\mathrm{ArgList}$: members are interpreted as ordered arguments.
+- $\mathrm{Frame}$: members fill frame roles.
+- $\mathrm{Ordered}$: source order is semantically significant.
+- $\mathrm{Unordered}$: source order is not semantically significant, though source order MAY still be preserved for canonicalization, provenance, or diagnostics.
+- $\mathrm{DenoteOnly}$: no derived statements are emitted by default.
+- $\mathrm{Materialize}$: derived statements may be emitted under profile rules.
+
+Profiles MAY define additional primitive behaviors and named behavior bundles.
+
+The default endpoint-consumption policy is atomic and non-materializing unless a profile or relator declaration specifies otherwise:
+
+$$
+\Pi_\Gamma(\mathbf{r},p)=\{\mathrm{Atomic},\mathrm{DenoteOnly}\}
+$$
+
+when no more specific policy is defined.
+
+Examples of named behavior bundles include:
+
+$$
+\mathrm{Distributive}
+=
+\{\mathrm{Structured},\mathrm{Decompose},\mathrm{Each}\}
+$$
+
+$$
+\mathrm{CandidateList}
+=
+\{\mathrm{Structured},\mathrm{Decompose},\mathrm{Candidate}\}
+$$
+
+$$
+\mathrm{ArgumentList}
+=
+\{\mathrm{Structured},\mathrm{Decompose},\mathrm{ArgList},\mathrm{Ordered}\}
+$$
+
+Named behavior bundles are profile/library conveniences. C4 Core defines the primitive behavior vocabulary, not a closed inheritance hierarchy of relator classes.
+
+Endpoint consumption may be constrained by relation-state compatibility. For example, candidate-list behavior commonly pairs with unresolved states in $\Psi_\star$, but exact compatibility remains profile-relative and SHOULD be handled by predicates such as:
+
+$$
+\mathrm{ConsumeOk}_\Gamma(\mathbf{r},p,\psi_k,\mathbf{e})
+$$
+
+where $\mathbf{e}\in\mathcal{E}$ is the endpoint expression at position $p$.
+
+---
+
+## 11. Relation-State Application Notation
 
 C4 Core writes relation-state application as:
 
@@ -566,7 +669,7 @@ $$
 
 where $\psi_k \in \Psi$.
 
-The operator `:` applies a relation state to the relation application $\mathbf{r}(\mathbf{s},\mathbf{t})$.
+The operator `:` applies a relation state to the relator application $\mathbf{r}(\mathbf{s},\mathbf{t})$.
 
 The statement tuple:
 
@@ -602,13 +705,13 @@ $$
 \psi_\star : \mathbf{r}(\mathbf{s},\mathbf{t})
 $$
 
-preserves unresolved non-probabilistic superposition over the relation application.
+preserves unresolved non-probabilistic superposition over the relator application.
 
 ---
 
-## 11. Resolved Statements
+## 12. Resolved Statements
 
-A statement may be resolved under an environment $\Gamma$ when its source, relation, and target expressions resolve to C4 objects.
+A statement may be resolved under an environment $\Gamma$ when its source, relator, and target expressions resolve to C4 objects.
 
 For:
 
@@ -650,11 +753,11 @@ $$
 
 Resolution of $P$ is partial. If any required expression fails to resolve under $\Gamma$, then $\widehat{P}_\Gamma$ is undefined unless a profile defines a partial-resolution or unresolved-object representation.
 
-Resolved statements are not necessarily valid statements. Validation remains profile-relative and may reject a resolved statement whose relation, endpoint types, state, or profile constraints are inadmissible.
+Resolved statements are not necessarily valid statements. Validation remains profile-relative and may reject a resolved statement whose relator, endpoint types, state, endpoint consumption policy, or profile constraints are inadmissible.
 
 ---
 
-## 12. Blocks
+## 13. Blocks
 
 A C4 block is an ordered sequence of statements:
 
@@ -671,13 +774,13 @@ $$
 
 Source order is preserved unless an explicit profile defines another ordering or canonicalization policy.
 
-Blocks MAY introduce binding scope, query scope, declaration scope, or local relation-definition scope under the active grammar/profile.
+Blocks MAY introduce binding scope, query scope, declaration scope, or local relator-definition scope under the active grammar/profile.
 
 A block MAY itself be treated as an object when canonicalized.
 
 ---
 
-## 13. Statement and Block Objects
+## 14. Statement and Block Objects
 
 C4 statements and blocks are reifiable objects.
 
@@ -723,7 +826,7 @@ Exact surface syntax for addressing a statement object or block object is deferr
 
 ---
 
-## 14. Canonicalization
+## 15. Canonicalization
 
 Let:
 
@@ -757,7 +860,7 @@ Surface-language-specific parsing and canonicalization are instances of this gen
 
 ---
 
-## 15. Validation
+## 16. Validation
 
 Validation is profile-relative.
 
@@ -797,14 +900,19 @@ $$
 \mathrm{TgtOk}_\Gamma(\mathbf{t},\mathbf{r})
 \land
 \mathrm{StateOk}_\Gamma(\psi_k,\mathbf{r})
+\land
+\mathrm{ConsumeOk}_\Gamma(\mathbf{r},source,\psi_k,\mathbf{s})
+\land
+\mathrm{ConsumeOk}_\Gamma(\mathbf{r},target,\psi_k,\mathbf{t})
 $$
 
 Validation MAY inspect:
 
-- relation-position admissibility;
+- relator-position admissibility;
 - source-position admissibility;
 - target-position admissibility;
 - relation-state support;
+- endpoint-consumption policy;
 - binding-kind consistency;
 - local declaration availability;
 - loaded modules;
@@ -813,11 +921,11 @@ Validation MAY inspect:
 
 Parsing, canonicalization, resolution, and validation are distinct operations.
 
-An unknown relation may parse and canonicalize as a statement while failing validation under a strict profile.
+An unknown relator may parse and canonicalize as a statement while failing validation under a strict profile.
 
 ---
 
-## 16. Open Questions
+## 17. Open Questions
 
 The following remain open for future formalization:
 
@@ -826,6 +934,7 @@ The following remain open for future formalization:
 - exact structure of traversal steps $\eta$;
 - exact minimal interface required of resolution environment $\Gamma$;
 - exact internal structure of the relation-state domain $\Psi$;
+- exact relationship between endpoint-consumption policies and active graph materialization;
 - exact relationship between resolved statements and active graph state;
 - exact relationship between graph names, locator profiles, and integral named graphs;
 - exact relationship between integral named graphs and virtual/projected objects;
