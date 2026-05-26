@@ -10,6 +10,8 @@ This document defines sparse request and response envelope semantics for Fish pr
 
 Fish envelopes are protocol structures. They may project, request, negotiate, serialize, or transport C4 graph-native structures, but they do not replace C4 graph-native semantics.
 
+Protocol/control vocabulary uses the `fish:proto:` namespace path.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -34,6 +36,12 @@ Fish response envelopes describe the protocol projection returned to the client.
 
 A Fish response envelope MAY contain only a status projection unless a richer result schema is requested or required.
 
+The default status-only projection is graph-native Fish syntax:
+
+```fish
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
+```
+
 ---
 
 ## 2. Default Response Rule
@@ -42,13 +50,11 @@ Fish SHOULD return status-only by default.
 
 Fish SHOULD only return what the client requested.
 
-If no richer result schema is requested, the default response is:
+If no richer result schema is requested, the default response is a graph-native status-only response:
 
-```text
-status: <enum-or-code>
+```fish
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
-
-where `<enum-or-code>` is a Fish status projection of a graph-native status object.
 
 The canonical Fish status projection SHOULD be a named status enum or structured status word. Numeric HTTP-like codes MAY be used as compatibility projections.
 
@@ -73,6 +79,14 @@ A Fish request envelope MAY contain protocol projections of:
 - transaction or safety constraints;
 - profile-defined request metadata.
 
+Canonical request fish relations SHOULD use `fish:proto:` protocol/control vocabulary, for example:
+
+```fish
+<request-fish>&fish:proto:operation@fish:proto:<operation>;
+<request-fish>&fish:proto:resultSchema@fish:proto:<schema>;
+<request-fish>&fish:proto:materializationPolicy@fish:proto:<policy>;
+```
+
 The exact Fish surface syntax for request envelopes is deferred.
 
 A request envelope is malformed if its required protocol structure cannot be parsed, decoded, or interpreted as a Fish request under the active protocol version.
@@ -95,7 +109,7 @@ A Fish response envelope MAY contain protocol projections of:
 - profile negotiation metadata;
 - protocol-defined response metadata.
 
-If the negotiated response schema is status-only, the response envelope SHOULD contain only the status projection and any minimal protocol metadata required by the active Fish profile.
+If the negotiated response schema is status-only, the response envelope SHOULD contain only the graph-native status projection and any minimal protocol metadata required by the active Fish profile.
 
 ---
 
@@ -263,7 +277,7 @@ Fish result-schema negotiation determines what the response envelope may include
 
 If the requested result schema is unsupported or malformed, Fish MUST NOT materialize using that schema.
 
-Instead, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA`, `MALFORMED_REQUEST`, or another profile-defined schema-negotiation status.
+Instead, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA`, `MALFORMED_REQUEST`, `MALFORMED_RESULT_SCHEMA`, or another profile-defined schema-negotiation status.
 
 If no result schema is requested, Fish SHOULD return status-only.
 
