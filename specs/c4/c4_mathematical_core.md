@@ -23,6 +23,7 @@ C4 Core uses serialization-neutral terminology.
 | source | left/source endpoint |
 | target | right/target endpoint |
 | relation-state | surface statement-state marker |
+| object | resolved addressable resource |
 
 C4 Core MUST NOT require surface-language terminology for its abstract definitions.
 
@@ -138,31 +139,25 @@ $$
 
 then $G_j$ is the integral named graph resolved from graph name $g$ under environment $\Gamma$.
 
-The root resource of $G_j$ is:
-
-$$
-G_j[\epsilon]
-$$
-
 C4 Core does not define URI schemes, network protocols, domain names, filesystem paths, `/`, or `//` as primitive mathematical operators. Such forms are surface serializations or profile-defined locator syntaxes.
 
 Profiles MAY map URI-like, IRI-like, filesystem-like, package-like, registry-like, or domain-like locator systems into graph names, but those locator systems are not part of C4 Core graph identity unless a profile explicitly makes them so.
 
 ---
 
-## 4. Resource Universe
+## 4. Object Universe
 
 Let:
 
 $$
-\mathcal{U}
+\mathcal{O}
 $$
 
-be the universe of C4 resources.
+be the universe of C4 objects.
 
-A C4 resource is a stable addressable semantic unit.
+A **C4 object** is any resolved addressable resource, including ordinary resources, relation resources, statement resources, block resources, graph roots, rooted subgraphs, profile-defined virtual resources, and profile-defined projected resources.
 
-In the core graph model, a resource is represented as a rooted subgraph selected from an integral named graph.
+In the core graph model, an object may be represented as a rooted subgraph selected from an integral named graph.
 
 Let:
 
@@ -178,13 +173,13 @@ $$
 \gamma \in \mathrm{Seq}(\mathcal{T}_{G_j})
 $$
 
-A resource selected from $G_j$ by traversal chain $\gamma$ is written:
+An object selected from $G_j$ by traversal chain $\gamma$ is written:
 
 $$
 G_j[\gamma]
 $$
 
-The root resource of $G_j$ is:
+The root object of $G_j$ is:
 
 $$
 G_j[\epsilon]
@@ -192,15 +187,15 @@ $$
 
 where $\epsilon$ is the empty traversal chain.
 
-The primary resource universe is therefore:
+The primary object universe is therefore:
 
 $$
-\mathcal{U}
+\mathcal{O}
 =
 \{\,G_j[\gamma] \mid G_j \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_{G_j}),\ G_j[\gamma]\ \text{is defined}\,\}
 $$
 
-Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
+Profiles MAY define virtual, projected, or constructed objects, provided they canonicalize to stable object identities.
 
 ---
 
@@ -214,11 +209,11 @@ $$
 
 be the domain of C4 expressions.
 
-A C4 expression is a structured form that may denote, bind, construct, query, project, or resolve to a resource.
+A C4 expression is a structured form that may denote, bind, construct, query, project, or resolve to an object.
 
-Expressions are broader than resolved resources.
+Expressions are broader than resolved objects.
 
-Resource-denoting traversal expressions are one subdomain of $\mathcal{E}$, not the whole expression domain.
+Object-denoting traversal expressions are one subdomain of $\mathcal{E}$, not the whole expression domain.
 
 A preliminary decomposition is:
 
@@ -280,49 +275,43 @@ $$
 A traversal step may be written as a traversal operator:
 
 $$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+o_{i-1}\overset{\eta_i}{\rightarrow}o_i
 $$
 
-where $u_{i-1},u_i \in \mathcal{U}$ and $\eta_i \in \mathcal{T}$.
+where $o_{i-1},o_i \in \mathcal{O}$ and $\eta_i \in \mathcal{T}$.
 
-When discussing resolved statement endpoints, C4 uses $u_s$ and $u_t$ for the resolved source and target resources:
+When discussing resolved statement endpoints, C4 uses $o_s$ and $o_t$ for the resolved source and target objects.
 
-$$
-u_s=\rho_\Gamma(\mathbf{s}), \qquad u_t=\rho_\Gamma(\mathbf{t})
-$$
-
-When discussing traversal chains, C4 uses indexed resources $u_0,\ldots,u_n$:
+When discussing traversal chains, C4 uses indexed objects $o_0,\ldots,o_n$:
 
 $$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+o_{i-1}\overset{\eta_i}{\rightarrow}o_i
 $$
 
 This avoids confusing statement source/target notation with traversal-step composition.
 
-A traversal chain determines a resource path when there exist resources $u_0,\ldots,u_n$ such that:
+A traversal chain determines an object path when there exist objects $o_0,\ldots,o_n$ such that:
 
 $$
-u_0
-\overset{\eta_1}{\rightarrow}
-u_1
+o_0
+\overset{\eta_1}{\rightarrow}o_1
 \overset{\eta_2}{\rightarrow}
 \cdots
-\overset{\eta_n}{\rightarrow}
-u_n
+\overset{\eta_n}{\rightarrow}o_n
 $$
 
 In that case:
 
 $$
-\rho^\Gamma_\gamma(u_0)=u_n
+\Gamma_\gamma(o_0)=o_n
 $$
 
-A traversal expression is a root resource together with a traversal chain:
+A traversal expression is a root object together with a traversal chain:
 
 $$
 \mathcal{E}_{trav}
 =
-\mathcal{U}
+\mathcal{O}
 \times
 \mathrm{Seq}(\mathcal{T})
 $$
@@ -330,7 +319,7 @@ $$
 A path-like surface expression MAY serialize a rooted traversal chain, but the formal C4 traversal operator is:
 
 $$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+o_{i-1}\overset{\eta_i}{\rightarrow}o_i
 $$
 
 C4 Core does not require any particular textual path separator.
@@ -343,10 +332,10 @@ $$
 
 Thus a surface path-like form is a compact serialization of a rooted traversal chain, not an assertion of containment, subtype, membership, or network location unless a profile explicitly materializes such statements.
 
-Traversal operators are profile-defined partial resource-resolution operators:
+Traversal operators are profile-defined partial object-resolution operators:
 
 $$
-\eta^\Gamma : \mathcal{U} \rightharpoonup \mathcal{U}
+\eta^\Gamma : \mathcal{O} \rightharpoonup \mathcal{O}
 $$
 
 The traversal-step domain may be partitioned into profile-defined traversal classes:
@@ -367,7 +356,7 @@ $$
 
 where $\mathcal{T}_{sub}$ contains subresource-selection operators, $\mathcal{T}_{rel}$ contains relation-mediated traversal operators, $\mathcal{T}_{path}$ contains path-component traversal operators, and $\mathcal{T}_{proj}$ contains projection / mapping traversal operators.
 
-Traversal operators resolve resources. They do not themselves assert C4 statements.
+Traversal operators resolve objects. They do not themselves assert C4 statements.
 
 A profile MAY define materialization rules that emit C4 statements corresponding to traversal behavior, but such materialization is profile-defined and not part of C4 Core traversal semantics.
 
@@ -387,24 +376,16 @@ For now, $\Gamma$ SHOULD be treated as a single abstract environment object rath
 
 The environment $\Gamma$ may provide graph-name resolution, expression resolution, binding scope, loaded profiles, ontology/template registries, canonicalization policies, validation policy, and active graph state.
 
-Let:
+As an expression-resolution operator, $\Gamma$ is partial:
 
 $$
-\rho
-$$
-
-be the expression/resource resolution operator.
-
-General expression resolution is partial:
-
-$$
-\rho_{\Gamma} : \mathcal{E} \rightharpoonup \mathcal{U}
+\Gamma : \mathcal{E} \rightharpoonup \mathcal{O}
 $$
 
 Traversal-chain resolution is also partial:
 
 $$
-\rho^{\Gamma}_{\gamma} : \mathcal{U} \rightharpoonup \mathcal{U}
+\Gamma_\gamma : \mathcal{O} \rightharpoonup \mathcal{O}
 $$
 
 For:
@@ -416,8 +397,8 @@ $$
 traversal resolution is:
 
 $$
-\rho^{\Gamma}_{\gamma}(u_0) =
-\eta_n^{\Gamma}(\cdots\eta_2^{\Gamma}(\eta_1^{\Gamma}(u_0))\cdots)
+\Gamma_\gamma(o_0) =
+\eta_n^{\Gamma}(\cdots\eta_2^{\Gamma}(\eta_1^{\Gamma}(o_0))\cdots)
 $$
 
 when every traversal step is defined.
@@ -425,8 +406,8 @@ when every traversal step is defined.
 Traversal expression resolution is the special case:
 
 $$
-\rho_{\Gamma}((u_0,\gamma)) =
-\rho^{\Gamma}_{\gamma}(u_0)
+\Gamma((o_0,\gamma)) =
+\Gamma_\gamma(o_0)
 $$
 
 when the right-hand side is defined.
@@ -440,7 +421,7 @@ $$
 If $\chi_\Gamma(g)=G_j$, then traversal from the graph root may be written:
 
 $$
-\rho^\Gamma_\gamma(G_j[\epsilon])=G_j[\gamma]
+\Gamma_\gamma(G_j[\epsilon])=G_j[\gamma]
 $$
 
 when $G_j[\gamma]$ is defined.
@@ -555,23 +536,23 @@ where:
 
 Relations are expressions. Relation-position validity is not enforced by membership in a separate primitive expression subset. Instead, relation-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
 
-Source, relation, and target are expressions, not necessarily already-resolved resources.
+Source, relation, and target are expressions, not necessarily already-resolved objects.
 
-When source, relation, and target resolution succeed, the resolved endpoint and relation resources may be written:
-
-$$
-u_s=\rho_\Gamma(\mathbf{s})
-$$
+When source, relation, and target resolution succeed, the resolved objects may be written:
 
 $$
-u_r=\rho_\Gamma(\mathbf{r})
+o_s=\Gamma(\mathbf{s})
 $$
 
 $$
-u_t=\rho_\Gamma(\mathbf{t})
+o_r=\Gamma(\mathbf{r})
 $$
 
-with $u_s,u_r,u_t \in \mathcal{U}$.
+$$
+o_t=\Gamma(\mathbf{t})
+$$
+
+with $o_s,o_r,o_t \in \mathcal{O}$.
 
 ---
 
@@ -627,7 +608,7 @@ preserves unresolved non-probabilistic superposition over the relation applicati
 
 ## 11. Resolved Statements
 
-A statement may be resolved under an environment $\Gamma$ when its source, relation, and target expressions resolve to C4 resources.
+A statement may be resolved under an environment $\Gamma$ when its source, relation, and target expressions resolve to C4 objects.
 
 For:
 
@@ -638,27 +619,27 @@ $$
 if:
 
 $$
-\rho_\Gamma(\mathbf{s})=u_s
+\Gamma(\mathbf{s})=o_s
 $$
 
 $$
-\rho_\Gamma(\mathbf{r})=u_r
+\Gamma(\mathbf{r})=o_r
 $$
 
 $$
-\rho_\Gamma(\mathbf{t})=u_t
+\Gamma(\mathbf{t})=o_t
 $$
 
 then the resolved statement is written:
 
 $$
-\widehat{P}_\Gamma=(u_s,u_r,u_t,\psi_k)
+\widehat{P}_\Gamma=(o_s,o_r,o_t,\psi_k)
 $$
 
 where:
 
 $$
-u_s,u_r,u_t\in\mathcal{U}
+o_s,o_r,o_t\in\mathcal{O}
 $$
 
 and:
@@ -667,7 +648,7 @@ $$
 \psi_k\in\Psi
 $$
 
-Resolution of $P$ is partial. If any required expression fails to resolve under $\Gamma$, then $\widehat{P}_\Gamma$ is undefined unless a profile defines a partial-resolution or unresolved-resource representation.
+Resolution of $P$ is partial. If any required expression fails to resolve under $\Gamma$, then $\widehat{P}_\Gamma$ is undefined unless a profile defines a partial-resolution or unresolved-object representation.
 
 Resolved statements are not necessarily valid statements. Validation remains profile-relative and may reject a resolved statement whose relation, endpoint types, state, or profile constraints are inadmissible.
 
@@ -692,31 +673,31 @@ Source order is preserved unless an explicit profile defines another ordering or
 
 Blocks MAY introduce binding scope, query scope, declaration scope, or local relation-definition scope under the active grammar/profile.
 
-A block MAY itself be treated as a resource when canonicalized.
+A block MAY itself be treated as an object when canonicalized.
 
 ---
 
-## 13. Statement and Block Resources
+## 13. Statement and Block Objects
 
-C4 statements and blocks are reifiable resources.
-
-Let:
-
-$$
-\iota_P : \mathrm{Stmt} \to \mathcal{U}
-$$
-
-map each canonical statement to its statement-resource identity.
+C4 statements and blocks are reifiable objects.
 
 Let:
 
 $$
-\iota_B : \mathrm{Block} \to \mathcal{U}
+\iota_P : \mathrm{Stmt} \to \mathcal{O}
 $$
 
-map each canonical block to its block-resource identity.
+map each canonical statement to its statement-object identity.
 
-If two surface forms canonicalize to the same statement, they MUST have the same statement-resource identity.
+Let:
+
+$$
+\iota_B : \mathrm{Block} \to \mathcal{O}
+$$
+
+map each canonical block to its block-object identity.
+
+If two surface forms canonicalize to the same statement, they MUST have the same statement-object identity.
 
 Formally, for a canonicalization function $\kappa$:
 
@@ -728,7 +709,7 @@ $$
 
 when $\kappa(a),\kappa(b) \in \mathrm{Stmt}$.
 
-Context, provenance, source attribution, modality, temporal validity, and related qualifiers are not primitive slots of $P$. They SHOULD be represented as ordinary C4 statements about the statement-resource $\iota_P(P)$.
+Context, provenance, source attribution, modality, temporal validity, and related qualifiers are not primitive slots of $P$. They SHOULD be represented as ordinary C4 statements about the statement object $\iota_P(P)$.
 
 For example, contextualization may be represented as:
 
@@ -738,7 +719,7 @@ $$
 
 where $\mathbf{r}_{ctx},\mathbf{c}\in\mathcal{E}$.
 
-Exact surface syntax for addressing a statement-resource or block-resource is deferred beyond this mathematical core.
+Exact surface syntax for addressing a statement object or block object is deferred beyond this mathematical core.
 
 ---
 
@@ -783,13 +764,13 @@ Validation is profile-relative.
 Let:
 
 $$
-\nu_{\Gamma}
+\mathrm{diag}_{\Gamma}
 $$
 
 be the validation diagnostic function:
 
 $$
-\nu_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \mathrm{Seq}(\mathrm{Diagnostic})
+\mathrm{diag}_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \mathrm{Seq}(\mathrm{Diagnostic})
 $$
 
 A statement or block is valid under $\Gamma$ iff its diagnostic sequence is empty under a strict validation profile:
@@ -797,7 +778,7 @@ A statement or block is valid under $\Gamma$ iff its diagnostic sequence is empt
 $$
 \mathrm{valid}_{\Gamma}(X)
 \iff
-\nu_{\Gamma}(X)=\varnothing
+\mathrm{diag}_{\Gamma}(X)=\varnothing
 $$
 
 For a statement:
@@ -847,6 +828,6 @@ The following remain open for future formalization:
 - exact internal structure of the relation-state domain $\Psi$;
 - exact relationship between resolved statements and active graph state;
 - exact relationship between graph names, locator profiles, and integral named graphs;
-- exact relationship between integral named graphs and virtual/projected resources;
-- exact surface syntax for statement-resource and block-resource addressing;
+- exact relationship between integral named graphs and virtual/projected objects;
+- exact surface syntax for statement-object and block-object addressing;
 - exact conformance levels for parsers, canonicalizers, validators, emitters, and profile loaders.
