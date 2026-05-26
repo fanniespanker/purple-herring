@@ -1,0 +1,29 @@
+diff --git a/docs/patch-runner-design.md b/docs/patch-runner-design.md
+new file mode 100644
+--- /dev/null
++++ b/docs/patch-runner-design.md
+@@ -0,0 +1,23 @@
++# Patch Runner Design Notes
++
++The patch runner is a local intake tool for repository patch files.
++
++It stages, checks, applies, records, and annotates patch artifacts while Git remains the repository history.
++
++## Patch IDs
++
++Patch IDs are fixed-width decimal strings.
++
++The width is controlled by `patches.id_number_length` and defaults to `6`.
++
++Example patch filenames:
++
++- `000001-add-directory-profile-file-stub.patch`
++- `000002-add-directory-profile-argument-stub.patch`
++
++Hexadecimal patch IDs are intentionally not supported.
++
++Git commit SHAs and patch SHA-256 hashes provide hash identity. Patch IDs provide queue order and human-readable provenance.
++
++## Validation Principle
++
++Use Git exit codes for applicability decisions. Show Git output to humans, but do not parse it for control flow.
