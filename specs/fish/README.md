@@ -23,11 +23,11 @@ C4 Core remains the abstract graph calculus and semantic substrate. Fish may ser
 
 ### 1. Fish Status Registry
 
-File: `fish_status_code_registry.md`
+File: `fish_status_registry.md`
 
 Defines the overall Fish status model.
 
-Despite the current filename, this document is no longer merely a numeric status-code registry. It defines the canonical status chain:
+This document is not merely a numeric status-code registry. It defines the canonical status chain:
 
 ```text
 graph-native status object
@@ -37,8 +37,6 @@ graph-native status object
 ```
 
 HTTP-like numeric codes are treated as optional compatibility projections, not as canonical Fish semantics.
-
-This file may later be renamed to `fish_status_registry.md`.
 
 ### 2. Fish Status Enum Registry
 
@@ -95,7 +93,7 @@ The current recommended reading order is:
 
 ```text
 1. README.md
-2. fish_status_code_registry.md
+2. fish_status_registry.md
 3. fish_status_enum_registry.md
 4. fish_result_schema_negotiation.md
 5. fish_diagnostic_envelopes.md
@@ -147,7 +145,6 @@ Fish projections may summarize, serialize, transport, or negotiate C4 graph-obje
 
 Likely next Fish tasks:
 
-- rename `fish_status_code_registry.md` to `fish_status_registry.md` once references are updated;
 - define concrete Fish syntax for status-only responses;
 - define concrete Fish syntax for request/response envelopes;
 - define concrete Fish syntax for result-schema requests;
