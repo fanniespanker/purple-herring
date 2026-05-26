@@ -25,7 +25,9 @@ graph-native status object
 
 A status-only response returns a compact graph projection of that status.
 
-The canonical Fish status-only response SHOULD be a Fish graph statement relating the request fish to a status list.
+The canonical Fish status-only response SHOULD be a Fish graph statement relating the request fish to a protocol status list.
+
+Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
 Numeric HTTP-like compatibility codes are not canonical Fish status semantics and SHOULD NOT be returned unless explicitly requested by a negotiated result schema or active profile.
 
@@ -33,26 +35,34 @@ Numeric HTTP-like compatibility codes are not canonical Fish status semantics an
 
 ## 2. Default Graph-Native Status-Only Body
 
-The default status-only response body is a graph containing a status relation from the request fish to a list of one or more status enum graph-objects.
+The default status-only response body is a graph containing a protocol status relation from the request fish to a list of one or more protocol status enum graph-objects.
 
 Abstract form:
 
 ```fish
-<request-fish>&fish:status@fish:(<status-enum-1>,<status-enum-2>,...);
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
 ```
 
 The target list is graph structure. Lists in Fish/C4 are graph-native structures, not scalar tuples.
 
+The prefix `fish:proto:(...)` means that the list members are resolved as Fish protocol vocabulary objects, such as:
+
+```text
+fish:proto:OK
+fish:proto:GRAPH_DELTA_PRODUCED
+fish:proto:MATERIALIZATION_NOT_ATTEMPTED
+```
+
 For a single status, the canonical graph-native status-only response SHOULD still use a list:
 
 ```fish
-REQUEST&fish:status@fish:(OK);
+REQUEST&fish:proto:status@fish:proto:(OK);
 ```
 
 For multiple statuses:
 
 ```fish
-REQUEST&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
+REQUEST&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
 ```
 
 A status-only response SHOULD NOT include diagnostics, materialization-result projections, graph-delta projections, patch projections, protocol envelope metadata, or compatibility codes unless explicitly requested or required by profile.
@@ -64,43 +74,43 @@ A status-only response SHOULD NOT include diagnostics, materialization-result pr
 Successful graph-delta production without materialization:
 
 ```fish
-REQUEST&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZATION_NOT_ATTEMPTED);
+REQUEST&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 Successful read-only materialization:
 
 ```fish
-REQUEST&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
+REQUEST&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZED_NO_MUTATION);
 ```
 
 Successful mutating materialization:
 
 ```fish
-REQUEST&fish:status@fish:(GRAPH_DELTA_PRODUCED,MATERIALIZED_MUTATION_APPLIED);
+REQUEST&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCED,MATERIALIZED_MUTATION_APPLIED);
 ```
 
 Malformed result schema, no materialization:
 
 ```fish
-REQUEST&fish:status@fish:(MALFORMED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
+REQUEST&fish:proto:status@fish:proto:(MALFORMED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 Unsupported result schema, no materialization:
 
 ```fish
-REQUEST&fish:status@fish:(UNSUPPORTED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
+REQUEST&fish:proto:status@fish:proto:(UNSUPPORTED_RESULT_SCHEMA,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 Permission failure, no materialization:
 
 ```fish
-REQUEST&fish:status@fish:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
+REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
 ```
 
 Graph-delta production failed, materialization not attempted, diagnostics unavailable:
 
 ```fish
-REQUEST&fish:status@fish:(GRAPH_DELTA_PRODUCTION_FAILED,MATERIALIZATION_NOT_ATTEMPTED,DIAGNOSTICS_UNAVAILABLE);
+REQUEST&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCTION_FAILED,MATERIALIZATION_NOT_ATTEMPTED,DIAGNOSTICS_UNAVAILABLE);
 ```
 
 ---
@@ -123,9 +133,9 @@ A concrete Fish transport profile SHOULD define how request fish addresses are m
 
 ## 5. Status List Semantics
 
-The target of `fish:status` is a list graph.
+The target of `fish:proto:status` is a list graph.
 
-The list MAY contain one or more named Fish status enum graph-objects.
+The list MAY contain one or more named Fish protocol status enum graph-objects.
 
 The order of the list MAY be significant when interpreted as a status trace or stage summary.
 
@@ -161,7 +171,7 @@ PERMISSION_DENIED
 may project:
 
 ```fish
-REQUEST&fish:status@fish:(PERMISSION_DENIED);
+REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED);
 ```
 
 Bare enum shorthand SHOULD only be used in contexts where the request fish is unambiguous.
@@ -200,7 +210,7 @@ A profile defining base64 status-word shorthand MUST specify:
 Example abstract form:
 
 ```fish
-REQUEST&fish:statusWord64@fish:<base64-status-token>;
+REQUEST&fish:proto:statusWord64@fish:proto:<base64-status-token>;
 ```
 
 A status-word shorthand MAY be returned instead of the status-list form only when explicitly requested by a result schema or required by the active Fish profile.
@@ -230,15 +240,15 @@ A Fish profile MAY define a status-only-with-compatibility projection when expli
 Example:
 
 ```fish
-REQUEST&fish:status@fish:(PERMISSION_DENIED);
-REQUEST&fish:compatCode@fish:403;
+REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED);
+REQUEST&fish:proto:compatCode@fish:proto:403;
 ```
 
 This is not the default status-only response.
 
 A compatibility code is an optional projection of the named status enum. It is not canonical Fish status semantics.
 
-If a client requests strict status-only graph form, Fish SHOULD return only the `fish:status` relation unless the active profile requires another form.
+If a client requests strict status-only graph form, Fish SHOULD return only the `fish:proto:status` relation unless the active profile requires another form.
 
 ---
 
@@ -249,12 +259,12 @@ A Fish profile MAY define a status-word expansion when explicitly requested.
 Example abstract graph form:
 
 ```fish
-REQUEST&fish:status@fish:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
-REQUEST&fish:statusFlag@fish:request_wellformed;
-REQUEST&fish:statusFlag@fish:auth_accepted;
-REQUEST&fish:statusFlag@fish:permission_denied;
-REQUEST&fish:statusFlag@fish:materialization_not_attempted;
-REQUEST&fish:statusFlag@fish:final;
+REQUEST&fish:proto:status@fish:proto:(PERMISSION_DENIED,MATERIALIZATION_NOT_ATTEMPTED);
+REQUEST&fish:proto:statusFlag@fish:proto:request_wellformed;
+REQUEST&fish:proto:statusFlag@fish:proto:auth_accepted;
+REQUEST&fish:proto:statusFlag@fish:proto:permission_denied;
+REQUEST&fish:proto:statusFlag@fish:proto:materialization_not_attempted;
+REQUEST&fish:proto:statusFlag@fish:proto:final;
 ```
 
 This is not the default status-only response.
@@ -282,13 +292,13 @@ A status-only response does not include diagnostic detail by default.
 It MAY include diagnostic availability statuses, such as:
 
 ```fish
-REQUEST&fish:status@fish:(VALIDATION_FAILED,DIAGNOSTICS_AVAILABLE);
+REQUEST&fish:proto:status@fish:proto:(VALIDATION_FAILED,DIAGNOSTICS_AVAILABLE);
 ```
 
 or:
 
 ```fish
-REQUEST&fish:status@fish:(VALIDATION_FAILED,DIAGNOSTICS_WITHHELD);
+REQUEST&fish:proto:status@fish:proto:(VALIDATION_FAILED,DIAGNOSTICS_WITHHELD);
 ```
 
 But the diagnostic graph or diagnostic envelope itself is not included unless requested or required.
@@ -304,7 +314,7 @@ It MUST NOT be interpreted as proving that no underlying graph-native result exi
 For example, a response body:
 
 ```fish
-REQUEST&fish:status@fish:(MATERIALIZED_MUTATION_APPLIED);
+REQUEST&fish:proto:status@fish:proto:(MATERIALIZED_MUTATION_APPLIED);
 ```
 
 may project a materialization-result graph-object:
@@ -324,9 +334,9 @@ Omission from a status-only response is not semantic absence from the underlying
 The following remain open for future formalization:
 
 - exact lexical grammar for status enum tokens;
-- whether status enum tokens should be namespace-qualified in canonical syntax;
+- whether status enum tokens should always be resolved under `fish:proto:` in canonical syntax;
 - exact syntax for request fish addresses;
-- whether `fish:status` target lists are always ordered traces or profile-defined collections;
+- whether `fish:proto:status` target lists are always ordered traces or profile-defined collections;
 - whether bare enum token responses are allowed in canonical Fish or only compact transport profiles;
 - exact base64 alphabet and padding rules for status-word shorthand;
 - exact mandatory status-word bit layout, if any;
