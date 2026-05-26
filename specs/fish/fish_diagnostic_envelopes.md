@@ -14,6 +14,8 @@ A diagnostic envelope is returned only when requested by a negotiated result sch
 
 Protocol/control vocabulary uses the `fish:proto:` namespace path.
 
+Protocol relation, schema, operation, marker, and policy names use snake_case. Status enum constants use SCREAMING_SNAKE_CASE.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -77,7 +79,7 @@ A diagnostic envelope MAY include:
 
 The exact envelope syntax is deferred to a future Fish surface/protocol syntax draft.
 
-Protocol diagnostic envelope schema names SHOULD use `fish:proto:<schema-name>` unless another profile namespace is explicitly selected.
+Protocol diagnostic envelope schema names SHOULD use `fish:proto:<schema_name>` unless another profile namespace is explicitly selected.
 
 ---
 
@@ -162,11 +164,11 @@ Diagnostic envelope schemas are result schemas.
 
 A client may request diagnostic output by negotiating a result schema such as:
 
-- `fish:proto:diagnosticStatusOnly`;
-- `fish:proto:diagnosticSummary`;
-- `fish:proto:diagnosticList`;
-- `fish:proto:diagnosticGraph`;
-- `fish:proto:diagnosticEnvelope`;
+- `fish:proto:diagnostic_status_only`;
+- `fish:proto:diagnostic_summary`;
+- `fish:proto:diagnostic_list`;
+- `fish:proto:diagnostic_graph`;
+- `fish:proto:diagnostic_envelope`;
 - profile-defined diagnostic schema.
 
 A diagnostic graph schema returns or projects graph-native diagnostic structure.
