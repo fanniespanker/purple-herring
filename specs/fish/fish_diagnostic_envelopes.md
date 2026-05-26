@@ -12,6 +12,8 @@ Fish diagnostic envelopes do not replace C4 graph-native semantics.
 
 A diagnostic envelope is returned only when requested by a negotiated result schema or required by an active Fish/C4 profile.
 
+Protocol/control vocabulary uses the `fish:proto:` namespace path.
+
 ---
 
 ## 1. Relationship to C4 Core
@@ -37,6 +39,12 @@ A Fish diagnostic envelope MUST NOT be treated as replacing the underlying C4 gr
 
 Fish SHOULD return status-only by default when no richer result schema is requested.
 
+A status-only response is graph-native Fish syntax such as:
+
+```fish
+<request-fish>&fish:proto:status@fish:proto:(<status-enum-1>,<status-enum-2>,...);
+```
+
 Fish SHOULD only return diagnostics when:
 
 - the client requests a diagnostic result schema;
@@ -44,7 +52,7 @@ Fish SHOULD only return diagnostics when:
 - the active protocol/profile requires diagnostics;
 - a profile-defined safety rule requires diagnostic disclosure.
 
-If diagnostics are not requested or required, Fish MAY omit diagnostic details and return only a status code.
+If diagnostics are not requested or required, Fish MAY omit diagnostic details and return only a status-only response.
 
 Omission of diagnostics from a Fish response MUST NOT be interpreted as absence of graph-native diagnostic structure unless the negotiated schema explicitly defines that interpretation.
 
@@ -69,13 +77,15 @@ A diagnostic envelope MAY include:
 
 The exact envelope syntax is deferred to a future Fish surface/protocol syntax draft.
 
+Protocol diagnostic envelope schema names SHOULD use `fish:proto:<schema-name>` unless another profile namespace is explicitly selected.
+
 ---
 
 ## 4. Minimal Diagnostic Entry
 
 A Fish diagnostic entry SHOULD be able to project, when available:
 
-- a diagnostic status or code;
+- a diagnostic status or enum;
 - a severity;
 - a short summary;
 - a graph-native diagnostic object reference;
@@ -85,7 +95,7 @@ A Fish diagnostic entry SHOULD be able to project, when available:
 
 Not every diagnostic entry must include every field.
 
-A status-only diagnostic response MAY contain only a status code if the negotiated schema allows it.
+A status-only diagnostic response MAY contain only a status-only graph response if the negotiated schema allows it.
 
 ---
 
@@ -95,10 +105,10 @@ Fish MAY define protocol-level diagnostic severities.
 
 Possible diagnostic severities include:
 
-- info;
-- warning;
-- error;
-- fatal;
+- `fish:proto:info`;
+- `fish:proto:warning`;
+- `fish:proto:error`;
+- `fish:proto:fatal`;
 - profile-defined severity.
 
 Diagnostic severity is a protocol projection of graph-native diagnostic status or diagnostic metadata.
@@ -109,19 +119,19 @@ Profiles MAY define additional severities or map graph-native diagnostic structu
 
 ---
 
-## 6. Diagnostic Codes
+## 6. Diagnostic Codes and Enums
 
-Fish diagnostic codes are protocol identifiers for graph-native diagnostic statuses or diagnostic objects.
+Fish diagnostic codes/enums are protocol identifiers for graph-native diagnostic statuses or diagnostic objects.
 
-A diagnostic code MAY be:
+A diagnostic code/enum MAY be:
 
-- a Fish status code;
+- a Fish protocol status enum;
 - a profile-defined diagnostic code;
 - a symbolic diagnostic name;
 - a graph-object reference;
 - a profile-defined code object.
 
-Diagnostic codes MUST NOT replace graph-native diagnostic structure when the negotiated schema requires diagnostic graph objects.
+Diagnostic codes/enums MUST NOT replace graph-native diagnostic structure when the negotiated schema requires diagnostic graph objects.
 
 ---
 
@@ -152,16 +162,16 @@ Diagnostic envelope schemas are result schemas.
 
 A client may request diagnostic output by negotiating a result schema such as:
 
-- diagnostic status-only;
-- diagnostic summary;
-- diagnostic list;
-- diagnostic graph;
-- diagnostic envelope;
+- `fish:proto:diagnosticStatusOnly`;
+- `fish:proto:diagnosticSummary`;
+- `fish:proto:diagnosticList`;
+- `fish:proto:diagnosticGraph`;
+- `fish:proto:diagnosticEnvelope`;
 - profile-defined diagnostic schema.
 
 A diagnostic graph schema returns or projects graph-native diagnostic structure.
 
-A diagnostic summary schema MAY return only compressed summaries, codes, or counts.
+A diagnostic summary schema MAY return only compressed summaries, codes, enums, or counts.
 
 Fish SHOULD only return the diagnostic detail level requested by the client or required by the active profile.
 
@@ -171,13 +181,13 @@ Fish SHOULD only return the diagnostic detail level requested by the client or r
 
 If a requested diagnostic schema is unsupported, Fish MUST NOT materialize or project diagnostics using that schema.
 
-Instead, Fish SHOULD return an unsupported-schema error status code.
+Instead, Fish SHOULD return `UNSUPPORTED_RESULT_SCHEMA` or another profile-defined unsupported diagnostic schema status.
 
 If a requested diagnostic schema is malformed, Fish MUST NOT materialize or project diagnostics using that schema.
 
-Instead, Fish SHOULD return a malformed-schema error status code.
+Instead, Fish SHOULD return `MALFORMED_RESULT_SCHEMA` or another profile-defined malformed diagnostic schema status.
 
-Unsupported-schema and malformed-schema conditions SHOULD map to graph-native status objects and Fish `4xx` status-code family entries unless a profile defines otherwise.
+Unsupported-schema and malformed-schema conditions SHOULD map to graph-native status objects and Fish protocol status enums.
 
 ---
 
@@ -201,15 +211,27 @@ A disclosure policy MAY restrict:
 
 If diagnostic details are withheld, Fish SHOULD return a status or diagnostic marker indicating that diagnostics were omitted, redacted, unavailable, or not authorized when the negotiated schema supports such indication.
 
+Relevant status enums include:
+
+- `DIAGNOSTICS_WITHHELD`;
+- `DIAGNOSTICS_UNAVAILABLE`;
+- `PERMISSION_DENIED`.
+
 ---
 
 ## 11. Interaction with Status-Only Responses
 
 A status-only response is not a diagnostic envelope unless a profile defines it as one.
 
-A status-only response MAY indicate diagnostic availability through a status code or negotiated protocol metadata, but it does not include diagnostic entries by default.
+A status-only response MAY indicate diagnostic availability through protocol status enums such as:
 
-If a client requests diagnostics and the materializer or validator cannot provide them, Fish SHOULD return an appropriate status code rather than silently returning an empty diagnostic envelope unless the negotiated schema explicitly permits empty diagnostic envelopes.
+```fish
+<request-fish>&fish:proto:status@fish:proto:(VALIDATION_FAILED,DIAGNOSTICS_AVAILABLE);
+```
+
+but it does not include diagnostic entries by default.
+
+If a client requests diagnostics and the materializer or validator cannot provide them, Fish SHOULD return an appropriate status enum rather than silently returning an empty diagnostic envelope unless the negotiated schema explicitly permits empty diagnostic envelopes.
 
 ---
 
@@ -220,7 +242,7 @@ The following remain open for future formalization:
 - concrete Fish syntax for diagnostic envelopes;
 - exact standard diagnostic envelope schemas;
 - exact standard diagnostic severity names;
-- exact numeric Fish status codes for unsupported diagnostic schema, malformed diagnostic schema, diagnostics withheld, and diagnostics unavailable;
+- exact Fish status enum mappings for unsupported diagnostic schema, malformed diagnostic schema, diagnostics withheld, and diagnostics unavailable;
 - whether diagnostic entries should always include graph-object references when available;
 - whether diagnostic summaries should include counts by severity;
 - how diagnostic envelopes interact with streaming responses;
