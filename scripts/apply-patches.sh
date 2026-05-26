@@ -22,6 +22,7 @@ ID_NUMBER_LENGTH=6
 ALLOW_TSV_FALLBACK=1
 PROMPT_FOR_FALLBACK=1
 REQUIRE_CLEAN_TREE=1
+PATCH_COUNT=""
 
 CLI_PATCH_ROOT=0
 CLI_PENDING_DIR=0
@@ -56,6 +57,10 @@ Modes:
   --preview, --what-if show patch order, applicability, stats, and summary without mutation
   --apply             apply pending patches, commit each patch, move it to applied/, update checklist
   --generate-config   write effective configuration and exit
+
+Execution limit:
+  --count N           process at most N pending patches in sorted order
+  --one               alias for --count 1
 
 Config/workspace:
   --working-dir DIR   use DIR as patch workspace
@@ -95,6 +100,8 @@ parse_args() {
       --force) FORCE_CONFIG=1 ;;
       --fallback-tsv) FORCE_TSV=1; CHECKLIST_FORMAT="tsv" ;;
       --patch-root) shift; [[ "$#" -gt 0 ]] || die "--patch-root requires a directory"; PATCH_ROOT="$1"; CLI_PATCH_ROOT=1 ;;
+      --count) shift; [[ "$#" -gt 0 ]] || die "--count requires a positive integer"; [[ "$1" =~ ^[1-9][0-9]*$ ]] || die "--count must be a positive integer, got: $1"; PATCH_COUNT="$1" ;;
+      --one) PATCH_COUNT=1 ;;
       --pending-dir|--pending) shift; [[ "$#" -gt 0 ]] || die "--pending-dir requires a directory"; PENDING_DIR="$1"; CLI_PENDING_DIR=1 ;;
       --applied-dir|--applied) shift; [[ "$#" -gt 0 ]] || die "--applied-dir requires a directory"; APPLIED_DIR="$1"; CLI_APPLIED_DIR=1 ;;
       --failed-dir|--failed) shift; [[ "$#" -gt 0 ]] || die "--failed-dir requires a directory"; FAILED_DIR="$1"; CLI_FAILED_DIR=1 ;;
@@ -305,12 +312,20 @@ pending_patches() {
   find "$PENDING_DIR" -maxdepth 1 -type f -name "$pattern" | sort
 }
 
+limit_patches_by_count() {
+  [[ -n "$PATCH_COUNT" ]] || return 0
+  [[ "$PATCH_COUNT" =~ ^[1-9][0-9]*$ ]] || die "--count must be a positive integer, got: $PATCH_COUNT"
+  if [[ "${#patches[@]}" -gt "$PATCH_COUNT" ]]; then
+    patches=("${patches[@]:0:$PATCH_COUNT}")
+  fi
+}
+
 is_applied_yaml() {
   local id="$1"
   awk -v id="$id" '
-    $0 ~ "^[[:space:]]*\\\"?" id "\\\"?[[:space:]]*:[[:space:]]*$" { in_patch=1; next }
+    $0 ~ "^[[:space:]]*\"?" id "\"?[[:space:]]*:[[:space:]]*$" { in_patch=1; next }
     in_patch && $0 ~ "^[[:space:]]{2}[^[:space:]]" { in_patch=0 }
-    in_patch && $0 ~ "^[[:space:]]{4}status:[[:space:]]*\\\"?applied\\\"?[[:space:]]*$" { found=1 }
+    in_patch && $0 ~ "^[[:space:]]{4}status:[[:space:]]*\"?applied\"?[[:space:]]*$" { found=1 }
     END { exit found ? 0 : 1 }
   ' "$CHECKLIST"
 }
@@ -461,6 +476,7 @@ main() {
   if [[ "$CHECKLIST_FORMAT" == "yaml" ]]; then echo "checklist: yaml ($CHECKLIST)"; else echo "checklist: tsv ($TSV_CHECKLIST)"; fi
 
   mapfile -t patches < <(pending_patches)
+  limit_patches_by_count
   if [[ "${#patches[@]}" -eq 0 ]]; then echo "no pending patches"; exit 0; fi
 
   if [[ "$MODE" == "--preview" ]]; then
