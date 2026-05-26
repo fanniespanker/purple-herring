@@ -44,6 +44,24 @@ require_repo_root() {
   fi
 }
 
+require_python_yaml() {
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "error: python3 not found" >&2
+    echo "hint: scripts/setup-patch-tools-debian.sh --install" >&2
+    exit 1
+  fi
+
+  if ! python3 - <<'PY' >/dev/null 2>&1
+import yaml
+PY
+  then
+    echo "error: Python package 'yaml' could not be imported" >&2
+    echo "hint: install PyYAML, or on Debian/WSL run:" >&2
+    echo "      scripts/setup-patch-tools-debian.sh --install" >&2
+    exit 1
+  fi
+}
+
 require_clean_tree() {
   if ! git diff --quiet || ! git diff --cached --quiet; then
     echo "error: working tree has uncommitted changes" >&2
@@ -108,6 +126,8 @@ apply_one_patch() {
   local patch="$1"
   local id desc hash applied_path applied_at commit_sha commit_msg
 
+  require_clean_tree
+
   id="$(patch_id_from_path "$patch")"
   desc="$(patch_desc_from_path "$patch")"
   hash="$(sha256_file "$patch")"
@@ -152,6 +172,7 @@ apply_one_patch() {
 
 main() {
   require_repo_root
+  require_python_yaml
   init_dirs
 
   mapfile -t patches < <(pending_patches)
