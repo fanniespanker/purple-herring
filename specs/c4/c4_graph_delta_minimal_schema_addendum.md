@@ -4,7 +4,9 @@
 
 This document is a draft addendum to the C4 Mathematical Core v0.1.6.
 
-It defines a minimal graph-native schema vocabulary for graph-delta objects without turning graph-deltas into external patch records, fixed diff payloads, or non-graph data structures.
+It defines a deliberately small graph-native minimal schema for graph-delta objects.
+
+The schema is intentionally sparse. Most graph-delta layout, correspondence representation, diagnostic representation, materialization metadata, and protocol projection is profile-, implementation-, materializer-, validator-, or Fish-defined.
 
 This addendum assumes the graph-delta model from `c4_graph_delta_objects_addendum.md`:
 
@@ -32,19 +34,34 @@ The body of this addendum is formatted as whole insertable sections. Each insert
 
 A graph-delta object is a graph-object whose internal graph structure describes a produced delta.
 
-C4 Core does not require a graph-delta object to use one fixed physical layout. However, conforming graph-delta profiles SHOULD expose enough graph structure to support inspection, validation, comparison, materialization, and diagnostics.
+C4 Core does not require a graph-delta object to use one fixed physical layout. A graph-delta profile MAY choose any layout that preserves the minimal C4 graph-delta semantics.
 
-This section defines a minimal schema vocabulary as graph roles, status objects, and markings.
+A minimally conforming graph-delta SHOULD expose the following as graph structure:
+
+1. a graph-delta root;
+2. a graph-native return/status;
+3. ordered source and target region roles when the delta is comparison-derived;
+4. graph-native difference markings over source-side and/or target-side graph regions.
+
+The C4 Core minimal difference markings are:
+
+- added;
+- removed;
+- modified;
+- unchanged;
+- unresolved.
 
 These roles and markings are graph-defined. They are not enum primitives, non-graph fields, external lists, or protocol status codes.
+
+Everything beyond this minimal shape is profile-defined unless another C4 specification explicitly standardizes it.
 
 ---
 
 <!-- PRECEDING SECTION: Graph-Delta Minimal Schema -->
 
-## Graph-Delta Root
+## Graph-Delta Root and Return Status
 
-<!-- FOLLOWING SECTION: Graph-Delta Provenance Roles -->
+<!-- FOLLOWING SECTION: Source and Target Region Roles -->
 
 A graph-delta object:
 
@@ -54,74 +71,23 @@ $$
 
 is the root of a graph-delta graph region.
 
-The root graph-object SHOULD provide an entry point to the delta's status, source, target, correspondence, marking, materialization, and diagnostic structure.
+The graph-delta root SHOULD provide an entry point to the delta graph.
 
-A graph-delta root MAY also itself be the status-bearing graph-object for the delta.
+A graph-delta root SHOULD have, or itself serve as, a graph-native return/status object.
 
 C4 Core does not require a separate non-root status object. If a profile uses separate status objects, they remain ordinary graph-objects connected to the graph-delta root by graph structure.
 
----
-
-<!-- PRECEDING SECTION: Graph-Delta Root -->
-
-## Graph-Delta Provenance Roles
-
-<!-- FOLLOWING SECTION: Source and Target Region Roles -->
-
-A graph-delta SHOULD be able to expose the graph-object or graph-objects from which it was produced.
-
-For statement-derived deltas, the producing source is normally the statement graph-object:
-
-$$
-\iota_P(P)\in\Xi_\alpha
-$$
-
-For comparison-derived deltas, the producing source is normally a graph-comparison delta-source object:
-
-$$
-\xi_{cmp}\in\Xi_\alpha
-$$
-
-A graph-delta profile SHOULD define graph relations or graph-role objects corresponding to:
-
-- delta source;
-- produced-by field;
-- producing relator, when applicable;
-- producing statement, when applicable;
-- producing comparison request, when applicable;
-- production diagnostics.
-
-These relations SHOULD point to graph-objects, not external identifiers.
-
-Possible role names include:
-
-- `deltaSource`;
-- `producedUnderField`;
-- `producedByRelator`;
-- `producedFromStatement`;
-- `producedFromComparison`;
-- `productionDiagnostic`.
-
-The exact surface names belong to a surface language, profile, or standard library. C4 Core only requires that the roles be representable as graph structure.
+Numeric status codes, status-code families, response codes, and protocol envelopes are not primitive C4 Core semantics. They belong to Fish or another protocol/profile layer. Numeric codes MAY identify status graph-objects but MUST NOT replace the graph structure of the delta.
 
 ---
 
-<!-- PRECEDING SECTION: Graph-Delta Provenance Roles -->
+<!-- PRECEDING SECTION: Graph-Delta Root and Return Status -->
 
 ## Source and Target Region Roles
 
-<!-- FOLLOWING SECTION: Graph-Delta Status Roles -->
+<!-- FOLLOWING SECTION: Minimal Difference Markings -->
 
 For comparison-derived graph-deltas, source and target roles form an ordered comparison frame.
-
-A graph-delta profile SHOULD define graph relations or graph-role objects corresponding to:
-
-- source region;
-- target region;
-- source-side marking;
-- target-side marking;
-- comparison scope;
-- recursive side-marking propagation.
 
 The source role denotes the prior, input, left, before, or source-side comparison region.
 
@@ -131,62 +97,39 @@ Added and removed markings are interpreted relative to this ordering.
 
 Source and target regions are ordinary graph regions or graph-objects inside or referenced by the graph-delta graph. They are not external fields.
 
+Source and target marking MAY apply recursively over graph regions.
+
 Recursive source/target marking is profile-defined. A profile MUST define the traversal boundary, containment relation, comparison-scope relation, or propagation rule by which recursive side marking propagates. If no recursive propagation policy is supplied or derivable under the active field, source and target roles apply only to explicitly marked graph-objects.
 
 ---
 
 <!-- PRECEDING SECTION: Source and Target Region Roles -->
 
-## Graph-Delta Status Roles
+## Minimal Difference Markings
 
-<!-- FOLLOWING SECTION: Difference Markings -->
+<!-- FOLLOWING SECTION: Difference Markings Without Identity -->
 
-A graph-delta SHOULD expose a status structure.
-
-Status is graph-native. A status is a graph-object, graph relation, or graph-marked region, not a primitive numeric code.
-
-A graph-delta profile MAY define status graph-objects corresponding to broad status families such as:
-
-- equivalent;
-- different;
-- partial;
-- unresolved;
-- ambiguous;
-- failed;
-- profile-defined status.
-
-Numeric status codes, status-code families, response codes, and protocol envelopes belong to Fish or another protocol/profile layer. Numeric codes MAY identify status graph-objects but MUST NOT replace the graph structure of the delta.
-
-A graph-delta MAY contain more than one status marking when different subregions have different comparison outcomes.
-
----
-
-<!-- PRECEDING SECTION: Graph-Delta Status Roles -->
-
-## Difference Markings
-
-<!-- FOLLOWING SECTION: Correspondence Structures -->
-
-A graph-delta profile SHOULD define graph markings for common difference classes.
-
-Common difference markings include:
+The C4 Core minimal difference markings are:
 
 - added;
 - removed;
 - modified;
-- equivalent;
-- substitutable;
-- unresolved;
-- ambiguous;
-- failed;
-- diagnostic;
-- profile-defined marking.
+- unchanged;
+- unresolved.
 
 These markings are graph structure.
 
-A graph-object, graph region, edge/traversal object, correspondence object, or diagnostic object may be marked by connecting it to a marking graph-object or by using a profile-defined marking relation.
+A graph-object, graph region, edge/traversal object, correspondence object, or profile-defined comparison object may be marked by connecting it to a marking graph-object or by using a profile-defined marking relation.
 
-Added, removed, modified, and equivalent regions SHOULD preserve relevant graph structure. They SHOULD NOT be represented only as flat external lists unless a profile explicitly projects the graph-delta into such a representation.
+The markings mean:
+
+- **added**: target-side graph structure with no accepted source-side correspondence under the active comparison policy;
+- **removed**: source-side graph structure with no accepted target-side correspondence under the active comparison policy;
+- **modified**: source-side and target-side graph structures are accepted as corresponding under the active comparison policy, but their recursively compared structures differ under that policy;
+- **unchanged**: source-side and target-side graph structures are accepted as corresponding and not materially different under the active comparison policy;
+- **unresolved**: comparison, correspondence, substitutability, or difference classification is not resolved under the active field.
+
+Added, removed, modified, unchanged, and unresolved regions SHOULD preserve relevant graph structure. They SHOULD NOT be represented only as flat external lists unless a profile explicitly projects the graph-delta into such a representation.
 
 Since edge/traversal objects are graph-objects:
 
@@ -194,121 +137,79 @@ $$
 \eta\in\Xi_\eta\subseteq\Xi
 $$
 
-edges can be marked as added, removed, modified, equivalent, unresolved, or failed like any other graph-object.
+edges can be marked as added, removed, modified, unchanged, or unresolved like any other graph-object.
 
 ---
 
-<!-- PRECEDING SECTION: Difference Markings -->
+<!-- PRECEDING SECTION: Minimal Difference Markings -->
 
-## Correspondence Structures
+## Difference Markings Without Identity
 
-<!-- FOLLOWING SECTION: Diagnostic Structures -->
+<!-- FOLLOWING SECTION: Profile-Defined Graph-Delta Schema -->
 
 C4 Core does not assume primitive identity.
 
-A graph-delta that compares graph structures SHOULD represent correspondence, equivalence, or substitutability as graph structure.
+A graph diff MUST NOT define modification as “the same object changed” unless a profile explicitly supplies an identity-like correspondence policy.
 
-A correspondence structure may be represented by a reified correspondence graph-object connected to:
+Instead, difference markings are interpreted through graph-defined correspondence, equivalence, or substitutability under the active field.
 
-- source-side structure;
-- target-side structure;
-- correspondence policy;
-- comparison status;
-- difference marking;
-- diagnostics.
+C4 Core does not require a standard correspondence-object schema.
 
-A modified structure SHOULD be represented as a correspondence structure whose source-side and target-side regions are accepted as corresponding under the active comparison policy but whose recursively compared structure differs under that policy.
+A profile MAY represent correspondence through reified correspondence graph-objects, direct graph relations, shared scope objects, path-correspondence objects, substitution-policy objects, or any other graph-native structure.
 
-An equivalent or substitutable structure SHOULD be represented as a correspondence structure whose source-side and target-side regions are accepted as equivalent or substitutable under the active comparison policy.
-
-An unresolved or ambiguous structure SHOULD preserve the unresolved or conflicting correspondence structure rather than forcing a resolved classification.
+The only C4 Core requirement is that modified and unchanged markings MUST be grounded in some field/profile-defined correspondence, equivalence, or substitutability basis. If such a basis is unavailable or ambiguous, the relevant structure SHOULD be marked unresolved rather than forced into modified or unchanged status.
 
 ---
 
-<!-- PRECEDING SECTION: Correspondence Structures -->
+<!-- PRECEDING SECTION: Difference Markings Without Identity -->
 
-## Diagnostic Structures
-
-<!-- FOLLOWING SECTION: Materialization Metadata -->
-
-A graph-delta MAY contain diagnostic graph-objects.
-
-Diagnostics may describe:
-
-- invalid delta-source graph structure;
-- unresolved endpoint consumption;
-- unresolved correspondence;
-- ambiguous correspondence;
-- failed comparison;
-- failed materialization;
-- profile mismatch;
-- unsupported policy;
-- canonicalization conflict;
-- protocol projection warning;
-- profile-defined diagnostic.
-
-Diagnostic structures are graph-objects. They MAY later be projected by Fish or another protocol/profile layer into numeric codes, messages, envelopes, or other transport representations.
-
-C4 Core does not require diagnostic text strings, but a profile MAY attach literal expressions or localized diagnostic message objects.
-
----
-
-<!-- PRECEDING SECTION: Diagnostic Structures -->
-
-## Materialization Metadata
+## Profile-Defined Graph-Delta Schema
 
 <!-- FOLLOWING SECTION: Minimal Schema Summary -->
 
-A graph-delta MAY contain materialization metadata.
+Most graph-delta schema details are profile-defined.
 
-Materialization metadata may describe:
+Profile-defined details include, but are not limited to:
 
-- whether materialization is allowed, required, prohibited, already applied, failed, partial, or profile-defined;
-- what materializer or active field produced a materialization result;
-- what graph-object resulted from materialization;
-- what graph regions were affected by materialization;
-- what diagnostics were produced by materialization.
+- exact relation names for graph-delta roles;
+- exact status object schema;
+- exact correspondence object schema;
+- diagnostic schema;
+- materialization metadata schema;
+- recursive propagation rules;
+- severity levels;
+- numeric status-code mapping;
+- patch or transaction projection;
+- whether unchanged regions are included or omitted;
+- whether added, removed, modified, unchanged, or unresolved subgraphs have separate roots;
+- whether modifications are represented by direct markings or reified correspondence structures;
+- whether additional markings such as equivalent, substitutable, ambiguous, failed, diagnostic, partial, materialized, or profile-defined markings are supported.
 
-Materialization metadata is graph structure. It is not a primitive external transaction record.
-
-Materialization remains:
-
-$$
-\mathbf{m}_{\mathfrak{F}}:\Xi_\Delta\rightharpoonup\Xi
-$$
-
-For:
-
-$$
-\mathbf{m}_{\mathfrak{F}}(\xi_\Delta)=\xi_\mu
-$$
-
-both $\xi_\Delta$ and $\xi_\mu$ are graph-objects.
+A profile MAY define additional markings, but additional markings MUST NOT contradict the C4 Core meanings of added, removed, modified, unchanged, and unresolved.
 
 ---
 
-<!-- PRECEDING SECTION: Materialization Metadata -->
+<!-- PRECEDING SECTION: Profile-Defined Graph-Delta Schema -->
 
 ## Minimal Schema Summary
 
 <!-- FOLLOWING SECTION: Integration Notes for Graph-Delta Minimal Schema -->
 
-A minimally inspectable graph-delta profile SHOULD be able to represent the following as graph structure:
+A minimally conforming C4 graph-delta SHOULD represent the following as graph structure:
 
 - a graph-delta root;
-- delta-source provenance;
-- source and target regions for comparison-derived deltas;
-- ordered source/target comparison roles;
-- recursive source/target marking policy or explicit non-recursive behavior;
-- status graph-objects or status markings;
-- difference markings;
-- correspondence structures;
-- diagnostic structures;
-- materialization metadata.
+- a graph-native return/status;
+- ordered source and target regions for comparison-derived deltas;
+- added markings;
+- removed markings;
+- modified markings;
+- unchanged markings;
+- unresolved markings;
+- no primitive identity assumption.
 
-C4 Core does not require every graph-delta object to contain all of these structures. A statement-derived assertion delta, a failed comparison delta, a materialization diagnostic delta, and a profile-defined construction delta may expose different subsets.
+C4 Core does not require every graph-delta object to contain every marking. For example, a delta may contain only added structure, only removed structure, only unresolved structure, or only a return/status root.
 
-However, any profile claiming graph-delta conformance SHOULD document which minimal-schema roles it supports and how those roles are represented as graph structure.
+However, when a profile claims C4 graph-delta minimal-schema conformance, any added, removed, modified, unchanged, or unresolved claim it emits SHOULD be represented as graph structure using the semantics defined above.
 
 ---
 
@@ -324,9 +225,11 @@ The Graph-Delta Objects section SHOULD state that $\xi_\Delta$ is the root of a 
 
 The graph-delta production section SHOULD state that $\boldsymbol{\delta}_{\mathfrak{F}}$ yields graph-delta graph-objects whose internal graph structure may expose the minimal schema roles defined here.
 
-The graph-comparison section SHOULD use source-region and target-region terminology rather than source/target fields.
+The graph-comparison section SHOULD use ordered source-region and target-region terminology rather than source/target fields.
 
-The materialization section SHOULD state that materialization metadata is represented as graph structure and may be projected into protocol representations outside C4 Core.
+The graph-comparison section SHOULD state that the C4 Core minimal difference markings are added, removed, modified, unchanged, and unresolved.
+
+The materialization section SHOULD remain graph-native but should not require a standard materialization metadata schema in C4 Core.
 
 Fish or another protocol layer SHOULD define numeric status codes and protocol envelopes separately from the C4 graph-delta minimal schema.
 
@@ -341,10 +244,10 @@ Fish or another protocol layer SHOULD define numeric status codes and protocol e
 The following remain open for future formalization:
 
 - exact standard relation names for graph-delta roles;
-- exact standard graph-object names for common statuses and markings;
-- whether graph-delta root and status object should usually be the same graph-object;
-- whether a standard correspondence graph-object schema should be specified in C4 Core or left to profiles;
-- whether materialization results should have a dedicated subdomain such as $\Xi_\mu$;
+- exact standard graph-object names for the five minimal markings;
+- whether graph-delta root and return/status object should usually be the same graph-object;
+- whether a standard correspondence graph-object schema should be specified in a C4 profile or left entirely to implementations;
+- whether materialization results require a dedicated subdomain such as $\Xi_\mu$;
 - how recursive source/target marking should interact with projection, filtering, and bounded comparison scopes;
-- how diagnostic severity should be represented graph-natively;
+- how diagnostic severity should be represented graph-natively when a profile chooses to support diagnostics;
 - how Fish numeric status-code registries should reference C4 status graph-objects.
