@@ -253,7 +253,53 @@ This decomposition is provisional and SHOULD be refined when the exact canonical
 
 ---
 
-## 6. Traversal Expressions
+## 6. List Expressions
+
+C4 list expressions are recursive structured expressions.
+
+$$
+\mathcal{E}_{list}\subseteq\mathcal{E}
+$$
+
+For any finite $n\ge 0$ and expressions $\mathbf{e}_1,\ldots,\mathbf{e}_n\in\mathcal{E}$:
+
+$$
+(\mathbf{e}_1,\ldots,\mathbf{e}_n)\in\mathcal{E}_{list}
+$$
+
+Because each list member is an arbitrary C4 expression, a list member MAY itself be a list expression. Therefore nested lists are valid C4 expressions:
+
+$$
+(\mathbf{A},(\mathbf{B},\mathbf{C}),\mathbf{D})\in\mathcal{E}_{list}
+$$
+
+C4 Core does not flatten nested lists by default.
+
+The following expressions are distinct unless a profile, relator, or canonicalization policy explicitly equates them:
+
+$$
+(\mathbf{A},\mathbf{B},\mathbf{C})
+$$
+
+$$
+(\mathbf{A},(\mathbf{B},\mathbf{C}))
+$$
+
+$$
+((\mathbf{A},\mathbf{B}),\mathbf{C})
+$$
+
+A decomposing endpoint-consumption policy decomposes a list by one structural level by default. Thus:
+
+$$
+(\mathbf{A},(\mathbf{B},\mathbf{C}),\mathbf{D})
+$$
+
+has first-level arity $3$, not $4$, unless a profile or relator explicitly defines recursive decomposition.
+
+---
+
+## 7. Traversal Expressions
 
 Let:
 
@@ -365,7 +411,7 @@ A profile MAY define materialization rules that emit C4 statements corresponding
 
 ---
 
-## 7. Resolution
+## 8. Resolution
 
 Let:
 
@@ -431,7 +477,7 @@ when $G_j[\gamma]$ is defined.
 
 ---
 
-## 8. Relation-State Domain
+## 9. Relation-State Domain
 
 Let:
 
@@ -505,7 +551,7 @@ The internal structure of $\Psi$ is profile-defined beyond these distinguished s
 
 ---
 
-## 9. Statement Domain
+## 10. Statement Domain
 
 A C4 statement is a complete directed relation expression with an attached relation state.
 
@@ -559,7 +605,7 @@ with $o_s,o_r,o_t \in \mathcal{O}$.
 
 ---
 
-## 10. Endpoint Consumption Policies
+## 11. Endpoint Consumption Policies
 
 A structured expression in source or target position remains one expression at the statement level. C4 Core does not automatically expand list expressions into multiple statements.
 
@@ -572,84 +618,66 @@ $$
 a profile may define an endpoint-consumption policy:
 
 $$
-\Pi_\Gamma(\mathbf{r},p)\in\mathcal{P}_{consume}
+\Pi_\Gamma(\mathbf{r},p)=(A,D,W)
 $$
 
-where $\mathcal{P}_{consume}$ is the domain of endpoint-consumption policies.
-
-A consumption policy is a finite composition of primitive endpoint-consumption behaviors.
-
-C4 Core defines the following primitive behaviors:
+where:
 
 $$
-\mathcal{B}_{consume}^{core}
-=
-\{
-\mathrm{Atomic},
-\mathrm{Structured},
-\mathrm{Preserve},
-\mathrm{Decompose},
-\mathrm{Each},
-\mathrm{Candidate},
-\mathrm{Collective},
-\mathrm{ArgList},
-\mathrm{Frame},
-\mathrm{Ordered},
-\mathrm{Unordered},
-\mathrm{DenoteOnly},
-\mathrm{Materialize}
-\}
+A\subseteq\mathbb{N}
 $$
 
-Their meanings are:
-
-- $\mathrm{Atomic}$: the endpoint must resolve to one object.
-- $\mathrm{Structured}$: the endpoint may remain structured.
-- $\mathrm{Preserve}$: a structured endpoint is consumed as one structure.
-- $\mathrm{Decompose}$: a structured endpoint may be inspected through its members.
-- $\mathrm{Each}$: members are interpreted distributively.
-- $\mathrm{Candidate}$: members are interpreted as unresolved alternatives.
-- $\mathrm{Collective}$: members participate collectively.
-- $\mathrm{ArgList}$: members are interpreted as ordered arguments.
-- $\mathrm{Frame}$: members fill frame roles.
-- $\mathrm{Ordered}$: source order is semantically significant.
-- $\mathrm{Unordered}$: source order is not semantically significant, though source order MAY still be preserved for canonicalization, provenance, or diagnostics.
-- $\mathrm{DenoteOnly}$: no derived statements are emitted by default.
-- $\mathrm{Materialize}$: derived statements may be emitted under profile rules.
-
-Profiles MAY define additional primitive behaviors and named behavior bundles.
-
-The default endpoint-consumption policy is atomic and non-materializing unless a profile or relator declaration specifies otherwise:
+is the allowed arity set,
 
 $$
-\Pi_\Gamma(\mathbf{r},p)=\{\mathrm{Atomic},\mathrm{DenoteOnly}\}
+D\in\{\mathrm{Atomic},\mathrm{Decomposed}\}
+$$
+
+is the endpoint argument type, and:
+
+$$
+W\in\{\mathrm{Ordered},\mathrm{Unordered}\}
+$$
+
+is the order interpretation.
+
+The default endpoint-consumption policy is:
+
+$$
+\Pi_\Gamma(\mathbf{r},p)=(\{1\},\mathrm{Atomic},\mathrm{Unordered})
 $$
 
 when no more specific policy is defined.
 
-Examples of named behavior bundles include:
+If $D=\mathrm{Atomic}$, the endpoint must resolve to one object.
+
+If $D=\mathrm{Decomposed}$, the endpoint is decomposed into members. For list expressions, decomposition is one structural level by default; nested lists remain members unless a profile or relator explicitly defines recursive decomposition.
+
+If $W=\mathrm{Ordered}$, member order is semantically significant.
+
+If $W=\mathrm{Unordered}$, member order is not semantically significant, though source order MAY still be preserved for canonicalization, provenance, or diagnostics.
+
+Examples of named endpoint-consumption bundles include:
 
 $$
-\mathrm{Distributive}
-=
-\{\mathrm{Structured},\mathrm{Decompose},\mathrm{Each}\}
+\mathrm{AtomicEndpoint}:=(\{1\},\mathrm{Atomic},\mathrm{Unordered})
 $$
 
 $$
-\mathrm{CandidateList}
-=
-\{\mathrm{Structured},\mathrm{Decompose},\mathrm{Candidate}\}
+\mathrm{UnorderedList}_{\ge 1}:=(\mathbb{N}_{\ge 1},\mathrm{Decomposed},\mathrm{Unordered})
 $$
 
 $$
-\mathrm{ArgumentList}
-=
-\{\mathrm{Structured},\mathrm{Decompose},\mathrm{ArgList},\mathrm{Ordered}\}
+\mathrm{OrderedTriple}:=(\{3\},\mathrm{Decomposed},\mathrm{Ordered})
 $$
 
-Named behavior bundles are profile/library conveniences. C4 Core defines the primitive behavior vocabulary, not a closed inheritance hierarchy of relator classes.
+$$
+\mathrm{OrderedList}_{\ge 0}:=(\mathbb{N}_{\ge 0},\mathrm{Decomposed},\mathrm{Ordered})
+$$
 
-Endpoint consumption may be constrained by relation-state compatibility. For example, candidate-list behavior commonly pairs with unresolved states in $\Psi_\star$, but exact compatibility remains profile-relative and SHOULD be handled by predicates such as:
+Named bundles are profile/library conveniences. C4 Core defines the orthogonal policy axes, not a closed inheritance hierarchy of relator classes.
+
+Endpoint consumption may be constrained by relation-state compatibility and relator semantics. These constraints remain profile-relative and SHOULD be handled by predicates such as:
 
 $$
 \mathrm{ConsumeOk}_\Gamma(\mathbf{r},p,\psi_k,\mathbf{e})
@@ -657,9 +685,11 @@ $$
 
 where $\mathbf{e}\in\mathcal{E}$ is the endpoint expression at position $p$.
 
+Behaviors such as distributive interpretation, candidate interpretation, collective interpretation, frame interpretation, denotation-only behavior, and materialization are not primitive endpoint-consumption axes in C4 Core. They are relator semantics, relation-state semantics, materialization policy, or profile-defined behavior layered over endpoint consumption.
+
 ---
 
-## 11. Relation-State Application Notation
+## 12. Relation-State Application Notation
 
 C4 Core writes relation-state application as:
 
@@ -709,7 +739,7 @@ preserves unresolved non-probabilistic superposition over the relator applicatio
 
 ---
 
-## 12. Resolved Statements
+## 13. Resolved Statements
 
 A statement may be resolved under an environment $\Gamma$ when its source, relator, and target expressions resolve to C4 objects.
 
@@ -757,7 +787,7 @@ Resolved statements are not necessarily valid statements. Validation remains pro
 
 ---
 
-## 13. Blocks
+## 14. Blocks
 
 A C4 block is an ordered sequence of statements:
 
@@ -780,7 +810,7 @@ A block MAY itself be treated as an object when canonicalized.
 
 ---
 
-## 14. Statement and Block Objects
+## 15. Statement and Block Objects
 
 C4 statements and blocks are reifiable objects.
 
@@ -826,7 +856,7 @@ Exact surface syntax for addressing a statement object or block object is deferr
 
 ---
 
-## 15. Canonicalization
+## 16. Canonicalization
 
 Let:
 
@@ -860,7 +890,7 @@ Surface-language-specific parsing and canonicalization are instances of this gen
 
 ---
 
-## 16. Validation
+## 17. Validation
 
 Validation is profile-relative.
 
@@ -925,11 +955,11 @@ An unknown relator may parse and canonicalize as a statement while failing valid
 
 ---
 
-## 17. Open Questions
+## 18. Open Questions
 
 The following remain open for future formalization:
 
-- exact recursive definition of $\mathcal{E}$;
+- exact recursive definition of $\mathcal{E}$ beyond the provisional decomposition;
 - exact canonical AST schema;
 - exact structure of traversal steps $\eta$;
 - exact minimal interface required of resolution environment $\Gamma$;
