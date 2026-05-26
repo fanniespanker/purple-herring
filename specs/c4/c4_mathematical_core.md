@@ -6,7 +6,7 @@ This document defines a preliminary mathematical core for C4 v0.1.6.
 
 It stabilizes the abstract C4 model independently of any particular surface syntax.
 
-Fish remains the canonical Purple Herring surface language for C4 expressions, but C4 Core terminology SHOULD avoid Fish-specific terminology except when explicitly describing the Fish mapping.
+C4 Core terminology SHOULD avoid surface-language-specific terminology except when explicitly describing a serialization mapping.
 
 Future drafts SHOULD either incorporate this material into the C4 Core Specification or preserve it as the normative mathematical appendix for the C4 v0.1.x series.
 
@@ -16,19 +16,15 @@ Future drafts SHOULD either incorporate this material into the C4 Core Specifica
 
 C4 Core uses serialization-neutral terminology.
 
-| C4 Core | Fish Surface Language |
+| C4 Core | Surface-language analogue |
 |---|---|
-| statement | fish |
-| block | school |
-| source | tail |
-| target | head |
-| statement state | tail-mode marker |
+| statement | serialized relation statement |
+| block | serialized statement block |
+| source | left/source endpoint |
+| target | right/target endpoint |
+| relation-state | surface statement-state marker |
 
-A Fish fish is the Fish-language surface form of one C4 statement.
-
-A Fish school is the Fish-language surface form of one C4 block.
-
-C4 Core MUST NOT require Fish terminology for its abstract definitions.
+C4 Core MUST NOT require surface-language terminology for its abstract definitions.
 
 ---
 
@@ -387,7 +383,9 @@ $$
 
 be the active resolution environment.
 
-The environment $\Gamma$ may contain the active graph, prefix declarations, binding scope, loaded profiles, Herring Bones modules, ontology/template registries, canonicalization policies, and validation mode.
+For now, $\Gamma$ SHOULD be treated as a single abstract environment object rather than as a fixed tuple of components. This keeps C4 Core from prematurely committing to an implementation layout for bindings, loaded graphs, profiles, registries, canonicalization rules, and validation policy.
+
+The environment $\Gamma$ may provide graph-name resolution, expression resolution, binding scope, loaded profiles, ontology/template registries, canonicalization policies, validation policy, and active graph state.
 
 Let:
 
@@ -395,7 +393,7 @@ $$
 \rho
 $$
 
-be the resolution operator.
+be the expression/resource resolution operator.
 
 General expression resolution is partial:
 
@@ -449,9 +447,7 @@ when $G_j[\gamma]$ is defined.
 
 ---
 
-## 8. Statement Domain
-
-A C4 statement is a complete directed relation expression with an attached relation-resolution state.
+## 8. Relation-State Domain
 
 Let:
 
@@ -459,21 +455,75 @@ $$
 \Psi
 $$
 
-be the domain of C4 relation-resolution states.
+be the C4 relation-state domain.
 
-C4 relation-resolution states are non-probabilistic. They preserve relation-state resolution, non-resolution, and superposition without requiring ranking, weighting, likelihood assignment, or forced collapse. Profiles MAY define weighted, probabilistic, preferential, or collapse procedures, but such structures are not part of C4 Core.
+C4 relation states are non-probabilistic. They preserve relation-state resolution, non-resolution, and superposition without requiring ranking, weighting, likelihood assignment, or forced collapse. Profiles MAY define weighted, probabilistic, preferential, or collapse procedures, but such structures are not part of C4 Core.
 
-At minimum, $\Psi$ contains the distinguished states:
+C4 Core defines at least the following relation-state subdomains:
 
 $$
-\psi_\top,\psi_\bot,\psi_\star \in \Psi
+\Psi_\top,\Psi_\star,\Psi_\bot \subseteq \Psi
 $$
 
 where:
 
-- $\psi_\top$ is the resolved affirmative state;
-- $\psi_\bot$ is the resolved negative state;
-- $\psi_\star$ is the generic unresolved / uncollapsed / superposed state.
+- $\Psi_\top$ is the resolved affirmative relation-state subdomain;
+- $\Psi_\bot$ is the resolved negative relation-state subdomain;
+- $\Psi_\star$ is the unresolved / uncollapsed / superposed relation-state subdomain.
+
+C4 Core does not require these subdomains to exhaust $\Psi$.
+
+Arbitrary members MAY be written:
+
+$$
+\psi_{\top,k}\in\Psi_\top
+$$
+
+$$
+\psi_{\star,k}\in\Psi_\star
+$$
+
+$$
+\psi_{\bot,k}\in\Psi_\bot
+$$
+
+The canonical/default distinguished states are:
+
+$$
+\psi_\top := \psi_{\top,0}
+$$
+
+$$
+\psi_\star := \psi_{\star,0}
+$$
+
+$$
+\psi_\bot := \psi_{\bot,0}
+$$
+
+C4 Core also defines distinguished oriented unresolved states:
+
+$$
+\psi_{\star\top}:=\psi_{\star\top,0}\in\Psi_\star
+$$
+
+$$
+\psi_{\star\bot}:=\psi_{\star\bot,0}\in\Psi_\star
+$$
+
+where:
+
+- $\psi_{\star\top}$ is unresolved but affirmative-oriented;
+- $\psi_\star$ is generic unresolved / unoriented / uncollapsed;
+- $\psi_{\star\bot}$ is unresolved but negative-oriented.
+
+The internal structure of $\Psi$ is profile-defined beyond these distinguished subdomains and states.
+
+---
+
+## 9. Statement Domain
+
+A C4 statement is a complete directed relation expression with an attached relation state.
 
 The statement domain is:
 
@@ -501,27 +551,31 @@ where:
 - $\mathbf{s}$ is the source expression;
 - $\mathbf{r}$ is the relation-position expression;
 - $\mathbf{t}$ is the target expression;
-- $\psi_k \in \Psi$ is the relation-resolution state.
+- $\psi_k \in \Psi$ is the relation state.
 
 Relations are expressions. Relation-position validity is not enforced by membership in a separate primitive expression subset. Instead, relation-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
 
-Source and target are expressions, not necessarily already-resolved resources.
+Source, relation, and target are expressions, not necessarily already-resolved resources.
 
-When source and target resolution succeeds, the resolved endpoint resources may be written:
+When source, relation, and target resolution succeed, the resolved endpoint and relation resources may be written:
 
 $$
 u_s=\rho_\Gamma(\mathbf{s})
 $$
 
 $$
+u_r=\rho_\Gamma(\mathbf{r})
+$$
+
+$$
 u_t=\rho_\Gamma(\mathbf{t})
 $$
 
-with $u_s,u_t \in \mathcal{U}$.
+with $u_s,u_r,u_t \in \mathcal{U}$.
 
 ---
 
-## 9. Relation-State Application Notation
+## 10. Relation-State Application Notation
 
 C4 Core writes relation-state application as:
 
@@ -529,9 +583,9 @@ $$
 \psi_k : \mathbf{r}(\mathbf{s},\mathbf{t})
 $$
 
-where $\psi_k \in \Psi$ and `:` is the C4 Core relation-state application operator.
+where $\psi_k \in \Psi$.
 
-The operator `:` applies a relation-resolution state to the relation application $\mathbf{r}(\mathbf{s},\mathbf{t})$. It is not Fish prefix syntax, namespace syntax, type annotation, ratio notation, or ordinary punctuation.
+The operator `:` applies a relation state to the relation application $\mathbf{r}(\mathbf{s},\mathbf{t})$.
 
 The statement tuple:
 
@@ -571,7 +625,55 @@ preserves unresolved non-probabilistic superposition over the relation applicati
 
 ---
 
-## 10. Blocks
+## 11. Resolved Statements
+
+A statement may be resolved under an environment $\Gamma$ when its source, relation, and target expressions resolve to C4 resources.
+
+For:
+
+$$
+P=(\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+$$
+
+if:
+
+$$
+\rho_\Gamma(\mathbf{s})=u_s
+$$
+
+$$
+\rho_\Gamma(\mathbf{r})=u_r
+$$
+
+$$
+\rho_\Gamma(\mathbf{t})=u_t
+$$
+
+then the resolved statement is written:
+
+$$
+\widehat{P}_\Gamma=(u_s,u_r,u_t,\psi_k)
+$$
+
+where:
+
+$$
+u_s,u_r,u_t\in\mathcal{U}
+$$
+
+and:
+
+$$
+\psi_k\in\Psi
+$$
+
+Resolution of $P$ is partial. If any required expression fails to resolve under $\Gamma$, then $\widehat{P}_\Gamma$ is undefined unless a profile defines a partial-resolution or unresolved-resource representation.
+
+Resolved statements are not necessarily valid statements. Validation remains profile-relative and may reject a resolved statement whose relation, endpoint types, state, or profile constraints are inadmissible.
+
+---
+
+## 12. Blocks
 
 A C4 block is an ordered sequence of statements:
 
@@ -594,7 +696,7 @@ A block MAY itself be treated as a resource when canonicalized.
 
 ---
 
-## 11. Statement and Block Resources
+## 13. Statement and Block Resources
 
 C4 statements and blocks are reifiable resources.
 
@@ -640,7 +742,7 @@ Exact surface syntax for addressing a statement-resource or block-resource is de
 
 ---
 
-## 12. Canonicalization
+## 14. Canonicalization
 
 Let:
 
@@ -670,11 +772,11 @@ $$
 
 when both sides are defined.
 
-Fish-specific parsing and canonicalization are instances of this general form, not the definition of C4 itself.
+Surface-language-specific parsing and canonicalization are instances of this general form, not the definition of C4 itself.
 
 ---
 
-## 13. Validation
+## 15. Validation
 
 Validation is profile-relative.
 
@@ -724,54 +826,26 @@ Validation MAY inspect:
 - relation-state support;
 - binding-kind consistency;
 - local declaration availability;
-- loaded Herring Bones modules;
+- loaded modules;
 - ontology/profile constraints;
 - canonicalization policy.
 
-Parsing, canonicalization, and validation are distinct operations.
+Parsing, canonicalization, resolution, and validation are distinct operations.
 
 An unknown relation may parse and canonicalize as a statement while failing validation under a strict profile.
 
 ---
 
-## 14. Fish Mapping
-
-Fish maps its surface markers onto C4 Core relation-state notation as follows:
-
-$$
-\begin{aligned}
-\mathbf{s}\&\mathbf{r}@\mathbf{t}
-&\mapsto
-\psi_\top : \mathbf{r}(\mathbf{s},\mathbf{t}) \\
-\mathbf{s}\&?\mathbf{r}@\mathbf{t}
-&\mapsto
-\psi_\star : \mathbf{r}(\mathbf{s},\mathbf{t}) \\
-\mathbf{s}\&!\mathbf{r}@\mathbf{t}
-&\mapsto
-\psi_\bot : \mathbf{r}(\mathbf{s},\mathbf{t})
-\end{aligned}
-$$
-
-The Fish marker `?` is surface syntax only. It is not a C4 Core mathematical symbol. In the default Fish mapping, it serializes the generic unresolved state $\psi_\star$.
-
-The Fish combined marker `?!` is provisionally reserved for an unresolved negative-oriented relation state, but its exact C4 Core mapping is deferred until the structure of refined unresolved states in $\Psi$ is formalized.
-
-Fish source/target terminology MAY use tail/head as surface-language mnemonic terminology.
-
-C4 Core terminology SHOULD use source/target.
-
----
-
-## 15. Open Questions
+## 16. Open Questions
 
 The following remain open for future formalization:
 
 - exact recursive definition of $\mathcal{E}$;
 - exact canonical AST schema;
 - exact structure of traversal steps $\eta$;
-- exact contents of resolution environment $\Gamma$;
+- exact minimal interface required of resolution environment $\Gamma$;
 - exact internal structure of the relation-state domain $\Psi$;
-- exact mapping of Fish `?!` into refined unresolved relation states;
+- exact relationship between resolved statements and active graph state;
 - exact relationship between graph names, locator profiles, and integral named graphs;
 - exact relationship between integral named graphs and virtual/projected resources;
 - exact surface syntax for statement-resource and block-resource addressing;
