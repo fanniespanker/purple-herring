@@ -4,7 +4,7 @@
 
 This document is a draft Fish syntax and protocol specification.
 
-It defines the initial namespace/path conventions for Fish protocol, identifier, and vocabulary resources.
+It defines the initial namespace/path conventions for Fish protocol, identifier, address, and vocabulary resources.
 
 Fish namespace conventions are surface/protocol conventions. They do not replace C4 graph-native semantics.
 
@@ -15,7 +15,8 @@ Fish namespace conventions are surface/protocol conventions. They do not replace
 Fish reserves the following initial namespace/path forms:
 
 ```text
-fish:id:<FishID128>        opaque generated Fish address
+fish:id:<FishID128>        opaque generated Fish ID/address
+fish:addr:(...)            structured Fish address tuple
 fish:proto:<name>          Fish protocol/control vocabulary
 fish:proto:(...)           protocol-relative list graph
 fish:<name>                general Fish vocabulary resource
@@ -37,11 +38,37 @@ Example:
 fish:id:VQ6EAOKbQdSnFkRmVUQAAA
 ```
 
-`fish:id:<FishID128>` provides addressability and correlation. It does not define primitive C4 identity.
+`fish:id:<FishID128>` provides compact addressability and correlation. It does not define primitive C4 identity.
+
+A `fish:id:<FishID128>` value MAY be random, UUID-compatible, deterministic, hash-derived from a canonical `fish:addr:(...)`, or profile-defined. Consumers SHOULD treat it as opaque unless the active profile states otherwise.
 
 ---
 
-## 3. Protocol / Control Vocabulary
+## 3. Structured Fish Addresses
+
+Structured Fish addresses use:
+
+```fish
+fish:addr:(<agent_string>,<domain_string>,<session_id>,<school_sequence>,<fish_sequence>)
+```
+
+Example:
+
+```fish
+fish:addr:("natalie","purple-herring.fanniespanker.com",A,A,F)
+```
+
+`agent_string` and `domain_string` are quoted canonical UTF-8 strings.
+
+`session_id`, `school_sequence`, and `fish_sequence` are canonical variable-length unsigned integer projections, normally represented as unpadded Base64URL tokens under a profile-defined varint layout.
+
+Structured addresses may disclose provenance, ordering, session, or domain information. They are useful for protocol traces, deterministic local addressing, debugging, replay, and auditability.
+
+Opaque IDs are usually preferred for compact public/protocol references.
+
+---
+
+## 4. Protocol / Control Vocabulary
 
 Fish protocol/control vocabulary uses:
 
@@ -65,6 +92,7 @@ fish:proto:materialization_policy
 fish:proto:status_word_64
 fish:proto:compat_code
 fish:proto:result_type
+fish:proto:canonical_addr
 fish:proto:GRAPH_DELTA_PRODUCED
 ```
 
@@ -72,7 +100,7 @@ Protocol/control vocabulary includes relations, markers, schema names, operation
 
 ---
 
-## 4. Protocol-Relative Lists
+## 5. Protocol-Relative Lists
 
 A protocol-relative list uses:
 
@@ -99,7 +127,7 @@ Protocol-relative lists are graph structure, not scalar tuples.
 
 ---
 
-## 5. Status Response Convention
+## 6. Status Response Convention
 
 Canonical status-only responses use:
 
@@ -115,7 +143,7 @@ fish:id:VQ6EAOKbQdSnFkRmVUQAAA&fish:proto:status@fish:proto:(GRAPH_DELTA_PRODUCE
 
 ---
 
-## 6. Generic Result Convention
+## 7. Generic Result Convention
 
 Fish response graphs SHOULD use a single generic result relation from request fish to returned result graph roots:
 
@@ -138,7 +166,7 @@ fish:id:DELTA&fish:proto:result_type@fish:proto:graph_delta_graph;
 
 ---
 
-## 7. General Fish Vocabulary
+## 8. General Fish Vocabulary
 
 The form:
 
@@ -154,7 +182,7 @@ Protocol/control vocabulary SHOULD use `fish:proto:<name>` rather than `fish:<na
 
 ---
 
-## 8. Rationale
+## 9. Rationale
 
 The `fish:proto:` namespace path avoids collisions between protocol/control relations and ordinary Fish or domain vocabulary.
 
@@ -172,13 +200,16 @@ fish:status
 
 could remain available for ordinary Fish vocabulary or profile-defined semantics.
 
+`fish:id:` and `fish:addr:` are separated because opaque IDs and structured addresses have different disclosure, privacy, and canonicalization properties.
+
 ---
 
-## 9. Open Questions
+## 10. Open Questions
 
 The following remain open for future formalization:
 
 - exact grammar for namespace/path expressions;
+- exact grammar for `fish:addr:(...)`;
 - whether `fish:proto:` should be considered a namespace, path prefix, profile root, or all of these;
 - whether other reserved roots such as `fish:schema:`, `fish:profile:`, or `fish:status:` should be standardized;
 - whether protocol-relative lists should generalize to other namespace-relative lists;
