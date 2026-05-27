@@ -1,210 +1,160 @@
-# C4 Mathematical Core v0.1.6 Draft
+# C4 Mathematical Core v0.2.1 Draft
 
 ## Status
 
-This document defines a preliminary mathematical core for C4 v0.1.6.
+This document defines the minimized mathematical core for C4.
 
-It stabilizes the abstract C4 model independently of any particular surface syntax.
+C4 Core is the minimum theory needed to explain Fish graph syntax, request fish, status fish, graph-delta/fond projections, and materialization-result projections.
 
-C4 Core terminology SHOULD avoid surface-language-specific terminology except when explicitly describing a serialization mapping.
+C4 Core is not a Fish dialect, protocol profile, status registry, diff format, transport format, or implementation schema.
 
-Future drafts SHOULD either incorporate this material into the C4 Core Specification or preserve it as the normative mathematical appendix for the C4 v0.1.x series.
+Fish and Fish profiles define concrete syntax, request/response graphs, result-schema negotiation, compact encodings, status projections, diagnostics, and protocol behavior.
+
+C4 Core defines only the abstract graph-native semantics those Fish forms refer to.
 
 ---
 
-## 1. Terminology Layers
+## 1. Core Principles
 
-C4 Core uses serialization-neutral terminology.
+C4 is the Contextual Compositional Concept Calculus.
 
-| C4 Core | Surface-language analogue |
+C4 Core provides a minimal graph-native semantic model for:
+
+- expressions;
+- graph-objects;
+- statements;
+- relators;
+- relation states;
+- endpoint consumption;
+- graph-delta production;
+- materialization.
+
+C4 Core is governed by the following principles.
+
+1. Meaningful C4 structures are graph-objects or graph structure.
+2. C4 does not assume primitive identity.
+3. C4 relation states preserve unresolved/superposed meaning without requiring ranking, weighting, probability, or forced collapse.
+4. Endpoint consumption and relator behavior are field/profile-relative graph semantics.
+5. Graph-delta objects and materialization-result objects have no fixed C4 Core schema.
+6. Fish protocol artifacts are not primitive C4 semantics.
+
+---
+
+## 2. Stabilized Notation
+
+| Symbol | Meaning |
 |---|---|
-| statement | serialized relation statement |
-| block | serialized statement block |
-| source | left/source endpoint |
-| target | right/target endpoint |
-| relation-state | surface statement-state marker |
+| $\mathfrak{F}$ | active C4 field: resolution/evaluation context |
+| $\mathbb{N}$ | universe of C4 names |
+| $\mathbb{D}$ | universe of C4 naming domains |
+| $\mathbb{G}$ | universe/class of named graph containers |
+| $G_j\in\mathbb{G}$ | a specific named graph container |
+| $\Xi$ | universe of resolved C4 graph-objects |
+| $\Xi_\nu\subseteq\Xi$ | node graph-object subdomain |
+| $\Xi_\eta\subseteq\Xi$ | edge/traversal graph-object subdomain |
+| $\Xi_\alpha\subseteq\Xi$ | delta-source graph-object subdomain |
+| $\Xi_\Delta\subseteq\Xi$ | graph-delta graph-object subdomain |
+| $\Xi_\mu\subseteq\Xi$ | materialization-result graph-object subdomain |
+| $\mathcal{E}$ | expression domain |
+| $\Psi$ | relation-state domain |
+| $\xi\in\Xi$ | arbitrary resolved graph-object |
+| $\xi_r\in\Xi$ | resolved relator graph-object |
+| $\xi_\pi\in\Xi$ | endpoint-consumption policy graph-object |
+| $\xi_\alpha\in\Xi_\alpha$ | delta-source graph-object |
+| $\xi_\Delta\in\Xi_\Delta$ | graph-delta graph-object |
+| $\xi_\mu\in\Xi_\mu$ | materialization-result graph-object |
+| $\mathbf{x}$ | expression |
+| $\mathbf{x}_s,\mathbf{x}_r,\mathbf{x}_t$ | source, relator, and target expressions |
+| $\psi_k$ | relation state |
+| $P$ | statement tuple |
+| $\Pi_{\mathfrak{F}}(\xi_r,p)$ | endpoint-policy lookup |
+| $\boldsymbol{\delta}_{\mathfrak{F}}$ | graph-delta production operator |
+| $\mathbf{m}_{\mathfrak{F}}$ | materialization operator |
 
-C4 Core MUST NOT require surface-language terminology for its abstract definitions.
+C4 Core avoids the following as primitive semantic forms:
 
----
-
-## 2. Integral Named Graphs
-
-Let:
-
-$$
-\mathcal{G}
-$$
-
-be the class of integral named graphs.
-
-An **integral named graph** is a graph with a stable name and distinguished root, treated by C4 as a coherent identity-bearing unit for resolution, traversal, persistence, and addressability.
-
-“Integral” does not mean internally structureless. An integral graph MAY contain arbitrary internal graph structure. It is integral only in the sense that C4 treats the graph as a named whole unless a traversal expression selects a subresource.
-
-An arbitrary specific integral named graph is written:
-
-$$
-G_j \in \mathcal{G}
-$$
-
-When describing graph-to-graph mapping, projection, migration, or alignment, source and target graphs MAY be written:
-
-$$
-G_s,G_t \in \mathcal{G}
-$$
-
-An integral named graph may be represented as:
-
-$$
-G_j = (n,V,E,r,\ell)
-$$
-
-where:
-
-- $n$ is the graph name;
-- $V$ is the node set;
-- $E$ is the edge / relation / traversal structure;
-- $r \in V$ is the distinguished root node;
-- $\ell$ is a labelling function.
-
-The exact internal structure of $E$ is profile-defined. In C4 graph-native implementations, $E$ SHOULD be understood as relation-mediated graph structure rather than as only untyped binary edges.
+| Avoided form | Replacement / treatment |
+|---|---|
+| $\mathcal{A}_\Delta$ as non-graph delta-source domain | use $\Xi_\alpha\subseteq\Xi$ |
+| $\mathcal{O}$ as generic object universe | use $\Xi$ |
+| primitive identity | use addressability, correspondence, equivalence, or substitutability under $\mathfrak{F}$ or profile |
+| scalar arity/order axes | use graph-defined endpoint-consumption policy |
+| fixed graph-delta schema | leave schema to Fish, materializers, or profiles |
+| return-value axis | use graph-delta and materialization-result graph-objects |
 
 ---
 
-## 3. Graph Names
+## 3. Graph Containers, Names, and Graph-Objects
 
 Let:
 
 $$
-\mathcal{N}
+\mathbb{G}
 $$
 
-be the universe of names.
+be the universe/class of named graph containers.
+
+A named graph container is an addressable graph container available under an active field/profile.
+
+A specific graph container is written:
+
+$$
+G_j\in\mathbb{G}
+$$
 
 Let:
 
 $$
-\mathcal{D}(X)
+\mathbb{N}
 $$
 
-denote the set of naming domains associated with objects of kind $X$.
+be the universe of C4 names, and:
+
+$$
+\mathbb{D}
+$$
+
+be the universe of naming domains.
+
+C4 Core does not define URI schemes, network protocols, filesystem paths, package locators, or Fish IDs as primitive mathematical identity. Such forms are syntax/protocol/profile projections into C4 names or graph-object references.
 
 Let:
 
 $$
-\mathcal{N}(D)
+\Xi
 $$
 
-denote the set of names drawn from naming domains $D$.
+be the universe of resolved C4 graph-objects.
 
-The graph-name domain is:
+A C4 graph-object is any resolved addressable graph-native object in or through the C4 substrate.
 
-$$
-\mathcal{N}_G := \mathcal{N}(\mathcal{D}(\mathcal{G}))
-$$
+Examples include node graph-objects, edge/traversal graph-objects, relator graph-objects, statement graph-objects, graph-delta graph-objects, and materialization-result graph-objects.
 
-where $\mathcal{G}$ is the class of integral named graphs.
+C4 graph-object addressability is not primitive identity. Addressability is a way to refer to graph structure under a field/profile.
 
-A graph name is therefore:
+Node-role and edge/traversal-role graph-objects are written:
 
 $$
-g \in \mathcal{N}_G
+\Xi_\nu\subseteq\Xi
 $$
 
-For a specific graph $G_j$, the graph-specific name domain MAY be written:
-
 $$
-\mathcal{N}_{G_j} := \mathcal{N}(\mathcal{D}(G_j))
+\Xi_\eta\subseteq\Xi
 $$
 
-For source and target graphs, graph-specific name domains MAY be written:
+These are role subdomains, not necessarily disjoint ontological classes.
+
+A traversal chain is an ordered sequence of traversal/edge graph-objects:
 
 $$
-\mathcal{N}_{G_s},\mathcal{N}_{G_t}
+\vec{\eta}\in\mathrm{Seq}(\Xi_\eta)
 $$
 
-Graph-name resolution is environment-relative:
-
-$$
-\chi_\Gamma : \mathcal{N}_G \rightharpoonup \mathcal{G}
-$$
-
-If:
-
-$$
-\chi_\Gamma(g)=G_j
-$$
-
-then $G_j$ is the integral named graph resolved from graph name $g$ under environment $\Gamma$.
-
-The root resource of $G_j$ is:
-
-$$
-G_j[\epsilon]
-$$
-
-C4 Core does not define URI schemes, network protocols, domain names, filesystem paths, `/`, or `//` as primitive mathematical operators. Such forms are surface serializations or profile-defined locator syntaxes.
-
-Profiles MAY map URI-like, IRI-like, filesystem-like, package-like, registry-like, or domain-like locator systems into graph names, but those locator systems are not part of C4 Core graph identity unless a profile explicitly makes them so.
+Textual path separators are not primitive C4 traversal operators. They may serialize traversal chains under Fish or another syntax/profile.
 
 ---
 
-## 4. Resource Universe
-
-Let:
-
-$$
-\mathcal{U}
-$$
-
-be the universe of C4 resources.
-
-A C4 resource is a stable addressable semantic unit.
-
-In the core graph model, a resource is represented as a rooted subgraph selected from an integral named graph.
-
-Let:
-
-$$
-\mathcal{T}_{G_j}
-$$
-
-be the traversal-step domain available in graph $G_j$.
-
-A traversal chain over $G_j$ is:
-
-$$
-\gamma \in \mathrm{Seq}(\mathcal{T}_{G_j})
-$$
-
-A resource selected from $G_j$ by traversal chain $\gamma$ is written:
-
-$$
-G_j[\gamma]
-$$
-
-The root resource of $G_j$ is:
-
-$$
-G_j[\epsilon]
-$$
-
-where $\epsilon$ is the empty traversal chain.
-
-The primary resource universe is therefore:
-
-$$
-\mathcal{U}
-=
-\{\,G_j[\gamma] \mid G_j \in \mathcal{G},\ \gamma \in \mathrm{Seq}(\mathcal{T}_{G_j}),\ G_j[\gamma]\ \text{is defined}\,\}
-$$
-
-Profiles MAY define virtual, projected, or constructed resources, provided they canonicalize to stable resource identities.
-
----
-
-## 5. Expression Domain
+## 4. Expressions and Active Field
 
 Let:
 
@@ -214,240 +164,55 @@ $$
 
 be the domain of C4 expressions.
 
-A C4 expression is a structured form that may denote, bind, construct, query, project, or resolve to a resource.
+An expression is a structured form that may denote, bind, construct, query, project, or resolve to graph structure under an active field/profile.
 
-Expressions are broader than resolved resources.
-
-Resource-denoting traversal expressions are one subdomain of $\mathcal{E}$, not the whole expression domain.
-
-A preliminary decomposition is:
+An arbitrary expression is written:
 
 $$
-\mathcal{E} =
-\mathcal{E}_{trav}
-\cup
-\mathcal{E}_{lit}
-\cup
-\mathcal{E}_{bind}
-\cup
-\mathcal{E}_{list}
-\cup
-\mathcal{E}_{block}
-\cup
-\mathcal{E}_{stmt}
-\cup
-\mathcal{E}_{proj}
-\cup
-\cdots
+\mathbf{x}\in\mathcal{E}
 $$
 
-where:
+List expressions are recursive structured expressions:
 
-- $\mathcal{E}_{trav}$ contains traversal expressions;
-- $\mathcal{E}_{lit}$ contains literal expressions;
-- $\mathcal{E}_{bind}$ contains anonymous, scoped, and query binding expressions;
-- $\mathcal{E}_{list}$ contains list expressions;
-- $\mathcal{E}_{block}$ contains block expressions;
-- $\mathcal{E}_{stmt}$ contains statement-reference expressions;
-- $\mathcal{E}_{proj}$ contains projection / mapping expressions.
+$$
+\mathcal{E}_{list}\subseteq\mathcal{E}
+$$
 
-This decomposition is provisional and SHOULD be refined when the exact canonical AST schema is defined.
+For expressions $\mathbf{x}_1,\ldots,\mathbf{x}_n\in\mathcal{E}$:
 
----
+$$
+(\mathbf{x}_1,\ldots,\mathbf{x}_n)\in\mathcal{E}_{list}
+$$
 
-## 6. Traversal Expressions
+C4 Core does not flatten nested lists by default. Lists, nested lists, sequences, trees, sets, tuples, and frames are graph-expressible structure interpreted by relators, endpoint policies, fields, or profiles.
 
 Let:
 
 $$
-\mathcal{T}
+\mathfrak{F}
 $$
 
-be the traversal-step domain.
+be the active C4 field.
 
-A traversal step is written:
+The active field is the resolution/evaluation context containing whatever graph state, bindings, loaded profiles, naming-domain bindings, policies, relator metadata, graph-delta behavior, and materializer availability are relevant to evaluation.
 
-$$
-\eta \in \mathcal{T}
-$$
-
-A traversal chain is written:
+As an expression-resolution operator, the field is partial:
 
 $$
-\gamma = \langle \eta_1,\ldots,\eta_n \rangle
+\mathfrak{F}:\mathcal{E}\rightharpoonup\Xi
 $$
 
-A traversal step may be written as a traversal operator:
+Thus:
 
 $$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
+\xi=\mathfrak{F}(\mathbf{x})
 $$
 
-where $u_{i-1},u_i \in \mathcal{U}$ and $\eta_i \in \mathcal{T}$.
-
-When discussing resolved statement endpoints, C4 uses $u_s$ and $u_t$ for the resolved source and target resources:
-
-$$
-u_s=\rho_\Gamma(\mathbf{s}), \qquad u_t=\rho_\Gamma(\mathbf{t})
-$$
-
-When discussing traversal chains, C4 uses indexed resources $u_0,\ldots,u_n$:
-
-$$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
-$$
-
-This avoids confusing statement source/target notation with traversal-step composition.
-
-A traversal chain determines a resource path when there exist resources $u_0,\ldots,u_n$ such that:
-
-$$
-u_0
-\overset{\eta_1}{\rightarrow}
-u_1
-\overset{\eta_2}{\rightarrow}
-\cdots
-\overset{\eta_n}{\rightarrow}
-u_n
-$$
-
-In that case:
-
-$$
-\rho^\Gamma_\gamma(u_0)=u_n
-$$
-
-A traversal expression is a root resource together with a traversal chain:
-
-$$
-\mathcal{E}_{trav}
-=
-\mathcal{U}
-\times
-\mathrm{Seq}(\mathcal{T})
-$$
-
-A path-like surface expression MAY serialize a rooted traversal chain, but the formal C4 traversal operator is:
-
-$$
-u_{i-1}\overset{\eta_i}{\rightarrow}u_i
-$$
-
-C4 Core does not require any particular textual path separator.
-
-For a path component $x$, the corresponding path-component traversal operator MAY be written:
-
-$$
-\eta_{\mathrm{path}(x)}
-$$
-
-Thus a surface path-like form is a compact serialization of a rooted traversal chain, not an assertion of containment, subtype, membership, or network location unless a profile explicitly materializes such statements.
-
-Traversal operators are profile-defined partial resource-resolution operators:
-
-$$
-\eta^\Gamma : \mathcal{U} \rightharpoonup \mathcal{U}
-$$
-
-The traversal-step domain may be partitioned into profile-defined traversal classes:
-
-$$
-\mathcal{T}
-=
-\mathcal{T}_{sub}
-\cup
-\mathcal{T}_{rel}
-\cup
-\mathcal{T}_{path}
-\cup
-\mathcal{T}_{proj}
-\cup
-\cdots
-$$
-
-where $\mathcal{T}_{sub}$ contains subresource-selection operators, $\mathcal{T}_{rel}$ contains relation-mediated traversal operators, $\mathcal{T}_{path}$ contains path-component traversal operators, and $\mathcal{T}_{proj}$ contains projection / mapping traversal operators.
-
-Traversal operators resolve resources. They do not themselves assert C4 statements.
-
-A profile MAY define materialization rules that emit C4 statements corresponding to traversal behavior, but such materialization is profile-defined and not part of C4 Core traversal semantics.
+means that expression $\mathbf{x}$ resolves to graph-object $\xi$ under active field $\mathfrak{F}$.
 
 ---
 
-## 7. Resolution
-
-Let:
-
-$$
-\Gamma
-$$
-
-be the active resolution environment.
-
-For now, $\Gamma$ SHOULD be treated as a single abstract environment object rather than as a fixed tuple of components. This keeps C4 Core from prematurely committing to an implementation layout for bindings, loaded graphs, profiles, registries, canonicalization rules, and validation policy.
-
-The environment $\Gamma$ may provide graph-name resolution, expression resolution, binding scope, loaded profiles, ontology/template registries, canonicalization policies, validation policy, and active graph state.
-
-Let:
-
-$$
-\rho
-$$
-
-be the expression/resource resolution operator.
-
-General expression resolution is partial:
-
-$$
-\rho_{\Gamma} : \mathcal{E} \rightharpoonup \mathcal{U}
-$$
-
-Traversal-chain resolution is also partial:
-
-$$
-\rho^{\Gamma}_{\gamma} : \mathcal{U} \rightharpoonup \mathcal{U}
-$$
-
-For:
-
-$$
-\gamma = \langle \eta_1,\ldots,\eta_n \rangle
-$$
-
-traversal resolution is:
-
-$$
-\rho^{\Gamma}_{\gamma}(u_0) =
-\eta_n^{\Gamma}(\cdots\eta_2^{\Gamma}(\eta_1^{\Gamma}(u_0))\cdots)
-$$
-
-when every traversal step is defined.
-
-Traversal expression resolution is the special case:
-
-$$
-\rho_{\Gamma}((u_0,\gamma)) =
-\rho^{\Gamma}_{\gamma}(u_0)
-$$
-
-when the right-hand side is defined.
-
-Graph-name resolution is separate from expression resolution:
-
-$$
-\chi_\Gamma : \mathcal{N}_G \rightharpoonup \mathcal{G}
-$$
-
-If $\chi_\Gamma(g)=G_j$, then traversal from the graph root may be written:
-
-$$
-\rho^\Gamma_\gamma(G_j[\epsilon])=G_j[\gamma]
-$$
-
-when $G_j[\gamma]$ is defined.
-
----
-
-## 8. Relation-State Domain
+## 5. Relation States
 
 Let:
 
@@ -457,292 +222,300 @@ $$
 
 be the C4 relation-state domain.
 
-C4 relation states are non-probabilistic. They preserve relation-state resolution, non-resolution, and superposition without requiring ranking, weighting, likelihood assignment, or forced collapse. Profiles MAY define weighted, probabilistic, preferential, or collapse procedures, but such structures are not part of C4 Core.
+C4 relation states are non-probabilistic. They preserve resolved, unresolved, negated, and superposed relation-state structure without requiring ranking, weighting, likelihood assignment, or forced collapse.
 
-C4 Core defines at least the following relation-state subdomains:
-
-$$
-\Psi_\top,\Psi_\star,\Psi_\bot \subseteq \Psi
-$$
-
-where:
-
-- $\Psi_\top$ is the resolved affirmative relation-state subdomain;
-- $\Psi_\bot$ is the resolved negative relation-state subdomain;
-- $\Psi_\star$ is the unresolved / uncollapsed / superposed relation-state subdomain.
-
-C4 Core does not require these subdomains to exhaust $\Psi$.
-
-Arbitrary members MAY be written:
+C4 Core defines at least:
 
 $$
-\psi_{\top,k}\in\Psi_\top
-$$
-
-$$
-\psi_{\star,k}\in\Psi_\star
-$$
-
-$$
-\psi_{\bot,k}\in\Psi_\bot
-$$
-
-The canonical/default distinguished states are:
-
-$$
-\psi_\top := \psi_{\top,0}
-$$
-
-$$
-\psi_\star := \psi_{\star,0}
-$$
-
-$$
-\psi_\bot := \psi_{\bot,0}
-$$
-
-C4 Core also defines distinguished oriented unresolved states:
-
-$$
-\psi_{\star\top}:=\psi_{\star\top,0}\in\Psi_\star
-$$
-
-$$
-\psi_{\star\bot}:=\psi_{\star\bot,0}\in\Psi_\star
+\Psi_\top,\Psi_\star,\Psi_\bot\subseteq\Psi
 $$
 
 where:
 
-- $\psi_{\star\top}$ is unresolved but affirmative-oriented;
-- $\psi_\star$ is generic unresolved / unoriented / uncollapsed;
-- $\psi_{\star\bot}$ is unresolved but negative-oriented.
+- $\Psi_\top$ is resolved affirmative;
+- $\Psi_\star$ is unresolved / uncollapsed / superposed;
+- $\Psi_\bot$ is resolved negative.
 
-The internal structure of $\Psi$ is profile-defined beyond these distinguished subdomains and states.
+Distinguished defaults are:
+
+$$
+\psi_\top,
+\quad
+\psi_\star,
+\quad
+\psi_\bot
+$$
+
+Profiles may define additional relation states, including oriented unresolved states.
 
 ---
 
-## 9. Statement Domain
+## 6. Statements and Relators
 
-A C4 statement is a complete directed relation expression with an attached relation state.
+A C4 statement is a directed relation expression with an attached relation-state.
 
 The statement domain is:
 
 $$
-\mathrm{Stmt}
-=
-\mathcal{E}
-\times
-\mathcal{E}
-\times
-\mathcal{E}
-\times
-\Psi
+\mathrm{Stmt}=\mathcal{E}\times\mathcal{E}\times\mathcal{E}\times\Psi
 $$
 
-An individual statement is written:
+An individual statement is:
 
 $$
-P = (\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+P=(\mathbf{x}_s,\mathbf{x}_r,\mathbf{x}_t,\psi_k)
 $$
 
 where:
 
-- $\mathbf{s},\mathbf{r},\mathbf{t} \in \mathcal{E}$;
-- $\mathbf{s}$ is the source expression;
-- $\mathbf{r}$ is the relation-position expression;
-- $\mathbf{t}$ is the target expression;
-- $\psi_k \in \Psi$ is the relation state.
+- $\mathbf{x}_s$ is the source expression;
+- $\mathbf{x}_r$ is the relator expression;
+- $\mathbf{x}_t$ is the target expression;
+- $\psi_k$ is the relation state.
 
-Relations are expressions. Relation-position validity is not enforced by membership in a separate primitive expression subset. Instead, relation-position admissibility is determined by profile-relative validation predicates such as $\mathrm{RelOk}_\Gamma(\mathbf{r})$.
+The relator expression occupies relation position. Relator-position admissibility is field/profile-relative.
 
-Source, relation, and target are expressions, not necessarily already-resolved resources.
-
-When source, relation, and target resolution succeed, the resolved endpoint and relation resources may be written:
+When resolution succeeds:
 
 $$
-u_s=\rho_\Gamma(\mathbf{s})
+\xi_s=\mathfrak{F}(\mathbf{x}_s),
+\quad
+\xi_r=\mathfrak{F}(\mathbf{x}_r),
+\quad
+\xi_t=\mathfrak{F}(\mathbf{x}_t)
 $$
 
-$$
-u_r=\rho_\Gamma(\mathbf{r})
-$$
+with:
 
 $$
-u_t=\rho_\Gamma(\mathbf{t})
+\xi_s,\xi_r,\xi_t\in\Xi
 $$
 
-with $u_s,u_r,u_t \in \mathcal{U}$.
+Relation-state application may be written:
+
+$$
+\psi_k:\mathbf{x}_r(\mathbf{x}_s,\mathbf{x}_t)
+$$
+
+The statement tuple may therefore be written:
+
+$$
+P\equiv\psi_k:\mathbf{x}_r(\mathbf{x}_s,\mathbf{x}_t)
+$$
+
+Relator semantics are graph-defined and profile-relative. C4 Core does not require primitive relator-kind axes such as assertion, query, constructor, transform, mapping, node-effect, edge-effect, return value, or yield kind.
+
+Relators do not directly mutate persistent graph state in C4 Core. Relators participate in graph-delta production. Materializers interpret graph-delta objects.
 
 ---
 
-## 10. Relation-State Application Notation
+## 7. Endpoint Consumption
 
-C4 Core writes relation-state application as:
+Endpoint-consumption policy is graph-native.
 
-$$
-\psi_k : \mathbf{r}(\mathbf{s},\mathbf{t})
-$$
+A structured expression in source or target position remains one expression at the statement level. C4 Core does not automatically expand list expressions into multiple statements.
 
-where $\psi_k \in \Psi$.
-
-The operator `:` applies a relation state to the relation application $\mathbf{r}(\mathbf{s},\mathbf{t})$.
-
-The statement tuple:
+For resolved relator graph-object:
 
 $$
-P = (\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
+\xi_r\in\Xi
 $$
 
-may therefore be written:
+and endpoint position:
 
 $$
-P \equiv \psi_k : \mathbf{r}(\mathbf{s},\mathbf{t})
+p\in\{source,target\}
 $$
 
-The resolved affirmative state is abbreviated:
+the endpoint-consumption policy object is:
 
 $$
-\psi_\top : \mathbf{r}(\mathbf{s},\mathbf{t})
-\equiv
-\mathbf{r}(\mathbf{s},\mathbf{t})
-$$
-
-The resolved negative state is interpreted as:
-
-$$
-\psi_\bot : \mathbf{r}(\mathbf{s},\mathbf{t})
-\equiv
-\neg\mathbf{r}(\mathbf{s},\mathbf{t})
-$$
-
-The generic unresolved state:
-
-$$
-\psi_\star : \mathbf{r}(\mathbf{s},\mathbf{t})
-$$
-
-preserves unresolved non-probabilistic superposition over the relation application.
-
----
-
-## 11. Resolved Statements
-
-A statement may be resolved under an environment $\Gamma$ when its source, relation, and target expressions resolve to C4 resources.
-
-For:
-
-$$
-P=(\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
-$$
-
-if:
-
-$$
-\rho_\Gamma(\mathbf{s})=u_s
-$$
-
-$$
-\rho_\Gamma(\mathbf{r})=u_r
-$$
-
-$$
-\rho_\Gamma(\mathbf{t})=u_t
-$$
-
-then the resolved statement is written:
-
-$$
-\widehat{P}_\Gamma=(u_s,u_r,u_t,\psi_k)
+\xi_\pi=\Pi_{\mathfrak{F}}(\xi_r,p)
 $$
 
 where:
 
 $$
-u_s,u_r,u_t\in\mathcal{U}
+\xi_\pi\in\Xi
 $$
 
-and:
+The policy object may describe how an endpoint expression is viewed, accepted, rejected, preserved, transformed, or treated as unresolved.
 
-$$
-\psi_k\in\Psi
-$$
+C4 Core does not treat arity, orderedness, decomposition, list structure, tree structure, frame structure, or bounds as primitive endpoint axes. They are graph structure or graph-described constraints inside endpoint policies.
 
-Resolution of $P$ is partial. If any required expression fails to resolve under $\Gamma$, then $\widehat{P}_\Gamma$ is undefined unless a profile defines a partial-resolution or unresolved-resource representation.
-
-Resolved statements are not necessarily valid statements. Validation remains profile-relative and may reject a resolved statement whose relation, endpoint types, state, or profile constraints are inadmissible.
+Implementations may compile endpoint policies into closures or normal forms, but compilation is implementation behavior, not C4 Core semantics.
 
 ---
 
-## 12. Blocks
+## 8. Statement and Block Reification
+
+Statements and blocks may be reified as graph-objects.
+
+Let:
+
+$$
+\iota_P:\mathrm{Stmt}\to\Xi
+$$
+
+map a canonical statement to its statement graph-object.
 
 A C4 block is an ordered sequence of statements:
 
 $$
-\mathrm{Block} =
-\mathrm{Seq}(\mathrm{Stmt})
+\mathrm{Block}=\mathrm{Seq}(\mathrm{Stmt})
 $$
-
-An individual block is written:
-
-$$
-B = \langle P_1,\ldots,P_n\rangle
-$$
-
-Source order is preserved unless an explicit profile defines another ordering or canonicalization policy.
-
-Blocks MAY introduce binding scope, query scope, declaration scope, or local relation-definition scope under the active grammar/profile.
-
-A block MAY itself be treated as a resource when canonicalized.
-
----
-
-## 13. Statement and Block Resources
-
-C4 statements and blocks are reifiable resources.
 
 Let:
 
 $$
-\iota_P : \mathrm{Stmt} \to \mathcal{U}
+\iota_B:\mathrm{Block}\to\Xi
 $$
 
-map each canonical statement to its statement-resource identity.
+map a canonical block to its block graph-object.
+
+Context, provenance, source attribution, modality, temporal validity, and related qualifiers are not primitive slots of $P$. They should be represented as ordinary graph structure about the statement graph-object.
+
+---
+
+## 9. Graph-Delta Production
+
+Delta production is graph-native.
 
 Let:
 
 $$
-\iota_B : \mathrm{Block} \to \mathcal{U}
+\Xi_\alpha\subseteq\Xi
 $$
 
-map each canonical block to its block-resource identity.
+be the delta-source graph-object subdomain.
 
-If two surface forms canonicalize to the same statement, they MUST have the same statement-resource identity.
-
-Formally, for a canonicalization function $\kappa$:
+Let:
 
 $$
-\kappa(a)=\kappa(b)
-\implies
-\iota_P(\kappa(a))=\iota_P(\kappa(b))
+\Xi_\Delta\subseteq\Xi
 $$
 
-when $\kappa(a),\kappa(b) \in \mathrm{Stmt}$.
+be the graph-delta graph-object subdomain.
 
-Context, provenance, source attribution, modality, temporal validity, and related qualifiers are not primitive slots of $P$. They SHOULD be represented as ordinary C4 statements about the statement-resource $\iota_P(P)$.
-
-For example, contextualization may be represented as:
+The graph-delta production operator is:
 
 $$
-P_c=(\iota_P(P),\mathbf{r}_{ctx},\mathbf{c},\psi_\top)
+\boldsymbol{\delta}_{\mathfrak{F}}:\Xi_\alpha\rightharpoonup\Xi_\Delta
 $$
 
-where $\mathbf{r}_{ctx},\mathbf{c}\in\mathcal{E}$.
+For:
 
-Exact surface syntax for addressing a statement-resource or block-resource is deferred beyond this mathematical core.
+$$
+\xi_\alpha\in\Xi_\alpha
+$$
+
+graph-delta production is:
+
+$$
+\boldsymbol{\delta}_{\mathfrak{F}}(\xi_\alpha)=\xi_\Delta
+$$
+
+where:
+
+$$
+\xi_\Delta\in\Xi_\Delta
+$$
+
+A graph-delta is a graph-object produced by graph-delta production. Its internal schema is not fixed by C4 Core.
+
+A graph-delta may describe, depending on field/profile/materializer/protocol interpretation, graph contribution, graph change, graph comparison, construction, selection, validation/check outcome, projection possibility, diagnostic possibility, or another profile-defined effect/result possibility.
+
+Graph-deltas are not external patch blobs, protocol envelopes, or fixed diff schemas in C4 Core.
 
 ---
 
-## 14. Canonicalization
+## 10. Statement Denotation as Delta Production
+
+Statements may serve as delta sources when reified.
+
+When:
+
+$$
+\iota_P(P)\in\Xi_\alpha
+$$
+
+statement denotation is:
+
+$$
+\mathbf{d}_{\mathfrak{F}}(P):=\boldsymbol{\delta}_{\mathfrak{F}}(\iota_P(P))
+$$
+
+Thus:
+
+$$
+\mathbf{d}_{\mathfrak{F}}(P)=\xi_\Delta
+$$
+
+where:
+
+$$
+\xi_\Delta\in\Xi_\Delta
+$$
+
+The notation $\mathbf{d}_{\mathfrak{F}}$ is a convenience alias. It does not introduce a separate non-graph denotation process outside graph-delta production.
+
+---
+
+## 11. Materialization
+
+Let:
+
+$$
+\Xi_\mu\subseteq\Xi
+$$
+
+be the materialization-result graph-object subdomain.
+
+Materialization is:
+
+$$
+\mathbf{m}_{\mathfrak{F}}:\Xi_\Delta\rightharpoonup\Xi_\mu
+$$
+
+For:
+
+$$
+\xi_\Delta\in\Xi_\Delta
+$$
+
+materialization is:
+
+$$
+\mathbf{m}_{\mathfrak{F}}(\xi_\Delta)=\xi_\mu
+$$
+
+where:
+
+$$
+\xi_\mu\in\Xi_\mu
+$$
+
+A materializer is a graph-delta interpreter or processor.
+
+Materialization is not identical to mutation. Mutation of persistent graph state is one possible materialization behavior. Other behaviors include validation, diagnostics, indexing, projection, export, query-result construction, protocol response construction, no-op confirmation, or profile-defined processing.
+
+Only materialization may mutate persistent graph state, and mutation is only one possible materialization behavior.
+
+C4 Core defines $\Xi_\mu$ as a role/subdomain but does not define a fixed materialization-result schema.
+
+The canonical graph-native pipeline is:
+
+$$
+\xi_\alpha
+\overset{\boldsymbol{\delta}_{\mathfrak{F}}}{\longmapsto}
+\xi_\Delta
+\overset{\mathbf{m}_{\mathfrak{F}}}{\longmapsto}
+\xi_\mu
+$$
+
+---
+
+## 12. Canonicalization and Validation
 
 Let:
 
@@ -752,101 +525,77 @@ $$
 
 be canonicalization.
 
-For a surface language $L$, parsing and canonicalization are separated:
+For a surface language $L$:
 
 $$
-\mathrm{parse}_{L} : \Sigma_L^* \rightharpoonup AST_L
+\mathrm{parse}_L:\Sigma_L^*\rightharpoonup AST_L
 $$
 
 $$
-\kappa_L : AST_L \rightharpoonup \mathrm{Stmt} \cup \mathrm{Block} \cup \mathcal{E}
+\kappa_L:AST_L\rightharpoonup\mathrm{Stmt}\cup\mathrm{Block}\cup\mathcal{E}
 $$
 
-Canonical equivalence is defined over canonical C4 structures:
+Surface-language parsing and canonicalization are not the definition of C4 itself.
 
-$$
-a \equiv_{C4} b
-\iff
-\kappa(a)=\kappa(b)
-$$
+Validation is field/profile-relative.
 
-when both sides are defined.
+C4 Core names only broad validation concerns:
 
-Surface-language-specific parsing and canonicalization are instances of this general form, not the definition of C4 itself.
+- expression resolution;
+- relator-position admissibility;
+- endpoint-policy lookup;
+- endpoint consumption;
+- relation-state compatibility;
+- delta-source admissibility;
+- graph-delta production admissibility;
+- materialization preflight.
+
+Validation diagnostics are graph-native or profile-defined. Fish may project them into diagnostic envelopes, but those envelopes are not C4 Core semantics.
 
 ---
 
-## 15. Validation
+## 13. No Primitive Identity
 
-Validation is profile-relative.
+C4 Core does not define primitive identity.
 
-Let:
+Terms such as “same object,” “object identity,” or “changed object” should be avoided as primitive semantic claims.
 
-$$
-\nu_{\Gamma}
-$$
+C4 may use:
 
-be the validation diagnostic function:
+- addressability;
+- canonical equivalence;
+- correspondence;
+- substitutability;
+- profile-defined equivalence;
+- field-relative resolution;
+- graph-defined mapping;
+- materializer-defined before/after relation.
 
-$$
-\nu_{\Gamma} : \mathrm{Stmt} \cup \mathrm{Block} \to \mathrm{Seq}(\mathrm{Diagnostic})
-$$
-
-A statement or block is valid under $\Gamma$ iff its diagnostic sequence is empty under a strict validation profile:
-
-$$
-\mathrm{valid}_{\Gamma}(X)
-\iff
-\nu_{\Gamma}(X)=\varnothing
-$$
-
-For a statement:
-
-$$
-P=(\mathbf{s},\mathbf{r},\mathbf{t},\psi_k)
-$$
-
-strict validation MAY require:
-
-$$
-\mathrm{RelOk}_\Gamma(\mathbf{r})
-\land
-\mathrm{SrcOk}_\Gamma(\mathbf{s},\mathbf{r})
-\land
-\mathrm{TgtOk}_\Gamma(\mathbf{t},\mathbf{r})
-\land
-\mathrm{StateOk}_\Gamma(\psi_k,\mathbf{r})
-$$
-
-Validation MAY inspect:
-
-- relation-position admissibility;
-- source-position admissibility;
-- target-position admissibility;
-- relation-state support;
-- binding-kind consistency;
-- local declaration availability;
-- loaded modules;
-- ontology/profile constraints;
-- canonicalization policy.
-
-Parsing, canonicalization, resolution, and validation are distinct operations.
-
-An unknown relation may parse and canonicalize as a statement while failing validation under a strict profile.
+A graph diff or graph comparison does not say that one identical object changed unless a profile explicitly supplies an identity-like correspondence policy.
 
 ---
 
-## 16. Open Questions
+## 14. Protocol Boundary: C4 and Fish
+
+C4 Core defines the minimal graph-native theory Fish needs in order to be meaningful.
+
+Fish defines syntax, request fish, response graphs, status-only graph responses, status enums, status words, compact identifiers, result-schema negotiation, graph-delta/fond projections, materialization-result projections, diagnostic envelopes, profile negotiation, and transport/interchange behavior.
+
+Fish projections may summarize, serialize, transport, negotiate, or compactly encode C4 graph-objects.
+
+Fish projections do not replace C4 graph-native semantics.
+
+C4 Core does not define Fish status codes, Fish request/response syntax, Fish ID encodings, Fish result schemas, graph-delta projection schemas, materialization-result schemas, or diagnostic envelope schemas.
+
+---
+
+## 15. Open Questions
 
 The following remain open for future formalization:
 
-- exact recursive definition of $\mathcal{E}$;
-- exact canonical AST schema;
-- exact structure of traversal steps $\eta$;
-- exact minimal interface required of resolution environment $\Gamma$;
-- exact internal structure of the relation-state domain $\Psi$;
-- exact relationship between resolved statements and active graph state;
-- exact relationship between graph names, locator profiles, and integral named graphs;
-- exact relationship between integral named graphs and virtual/projected resources;
-- exact surface syntax for statement-resource and block-resource addressing;
-- exact conformance levels for parsers, canonicalizers, validators, emitters, and profile loaders.
+- exact canonical AST schema for $\mathcal{E}$;
+- whether $\Xi_\alpha$, $\Xi_\Delta$, and $\Xi_\mu$ are fixed subdomains or profile-relative predicates over $\Xi$;
+- exact minimum relation-state set required by Fish;
+- exact minimum endpoint-consumption theory Fish requires;
+- how much relator metadata theory Fish needs before it becomes a Fish/profile concern;
+- whether any materializer theory beyond $\mathbf{m}_{\mathfrak{F}}:\Xi_\Delta\rightharpoonup\Xi_\mu$ belongs in C4 Core.
