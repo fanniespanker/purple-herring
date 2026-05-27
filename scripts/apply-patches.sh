@@ -442,11 +442,7 @@ apply_one_patch() {
   if is_applied "$id"; then echo "skip: $id already marked applied"; return 0; fi
   echo "check: $patch"
   if ! git apply --check "$patch"; then
-    mkdir -p "$FAILED_DIR"; mv "$patch" "$FAILED_DIR/$(basename "$patch")"
-    upsert_checklist_entry "$id" "$FAILED_DIR/$(basename "$patch")" "failed" "" "$hash" "$desc"
-    git add "$CHECKLIST" "$TSV_CHECKLIST" "$FAILED_DIR/$(basename "$patch")" 2>/dev/null || true
-    git commit -m "Record failed patch $id" || true
-    die "patch failed check and was moved to $FAILED_DIR"
+    die "patch failed check: $patch"
   fi
   echo "apply: $patch"; git apply "$patch"
   mkdir -p "$APPLIED_DIR"; mv "$patch" "$applied_path"
