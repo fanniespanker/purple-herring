@@ -1,5 +1,5 @@
-# SASHIMI BOUCHOU
+# SASHIMI BŌCHŌ (SASHIMI BOUCHOU) PARSER/CANONICALIZER
 
-This directory is for Sashimi Bouchou specifications and notes.
+This directory is for Sashimi Bōchō (or Bouchou) parser/canonicalizer specifications and notes.
 
-Sashimi Bouchou is the parser, canonicalizer, formatter, validator, and toolchain for Purple Herring / C4 source.
+Sashimi Bōchō is the parser, canonicalizer, formatter, validator, and toolchain for Purple Herring / C4 source.
