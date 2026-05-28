@@ -6,16 +6,16 @@ This document is a planning draft for Purple Herring graph persistence, backend 
 
 It is not an implementation commitment. It records the preferred backend strategy, architectural boundaries, and milestones for moving from ordinary storage substrates toward a possible dedicated Fish-native graph database.
 
-The provisional name for a hypothetical future Fish-native graph database is **Fish Mongres**.
+The provisional name for a hypothetical future Fish-native graph database is **Fish Fish Mongres**.
 
 This draft is aligned with the Fish v0.3 language direction:
 
-- Fish statements use relation-state operators such as `&+`, `&-`, `&`, `&+?`, `&-?`, and `&?`;
-- relators are relator phrases rather than underscore-bound template names;
-- relator phrases may contain embedded Fish components delimited by `{ ... }`;
-- Schools and graph regions may have AUIDs derived from layered canonical projections;
-- Fish packages use `fish[0]` as the package root FRI / capo al fin;
-- full School Fish is carried in bodies/files/payloads, while FRIs remain the restricted address-oriented surface.
+* Fish statements use relation-state operators such as `&+`, `&-`, `&`, `&+?`, `&-?`, and `&?`;
+* relators are relator phrases rather than underscore-bound template names;
+* relator phrases may contain embedded Fish components delimited by `{ ... }`;
+* Schools and graph regions may have AUIDs derived from layered canonical projections;
+* Fish packages use `fish[0]` as the package root FRI / capo al fin;
+* full School Fish is carried in bodies/files/payloads, while FRIs remain the restricted address-oriented surface.
 
 ---
 
@@ -25,29 +25,29 @@ Purple Herring needs persistent graph infrastructure capable of storing, queryin
 
 The backend must eventually support:
 
-- Fish statements as first-class graph resources;
-- relator phrases as structured graph objects;
-- embedded Fish components inside relator phrases;
-- Schools and package-scoped fish sequences;
-- FRIs / fries;
-- AUIDs and other identifier forms;
-- opaque identifiers and content/provenance identifiers;
-- resolved positive relations;
-- resolved negative relations;
-- resolved non-polar / middle relations;
-- unresolved positive relations;
-- unresolved negative relations;
-- unresolved non-polar / middle relations;
-- assertion-state queries;
-- query variables and binding results;
-- graph-change materialization;
-- graph-delta / fond projections;
-- materialization-result projections;
-- diagnostic projections;
-- provenance and ingestion traces;
-- atomic mutation boundaries;
-- authored source preservation;
-- canonical graph storage views.
+* Fish statements as first-class graph resources;
+* relator phrases as structured graph objects;
+* embedded Fish components inside relator phrases;
+* Schools and package-scoped fish sequences;
+* FRIs / fries;
+* AUIDs and other identifier forms;
+* opaque identifiers and content/provenance identifiers;
+* resolved positive relations;
+* resolved negative relations;
+* resolved non-polar / middle relations;
+* unresolved positive relations;
+* unresolved negative relations;
+* unresolved non-polar / middle relations;
+* assertion-state queries;
+* query variables and binding results;
+* graph-change materialization;
+* graph-delta / fond projections;
+* materialization-result projections;
+* diagnostic projections;
+* provenance and ingestion traces;
+* atomic mutation boundaries;
+* authored source preservation;
+* canonical graph storage views.
 
 The preferred strategy is to build Fish-native semantics above ordinary storage first, then optimize or replace the storage substrate later if real workloads justify it.
 
@@ -101,34 +101,34 @@ Materializer / Query Planner / Projection Engine
         ↓
 Backend Adapter API
         ↓
-Postgres / document DB / graph DB / custom store / Fish Mongres
+Postgres / document DB / graph DB / custom store / Mongres
 ```
 
-The Fish Native Logical Graph Engine owns:
+The Fish Tank Logical Graph Engine owns:
 
-- statement semantics;
-- relation-state semantics;
-- relator phrase semantics;
-- embedded Fish component interpretation;
-- assertion states;
-- unresolvedness;
-- query binding;
-- package-local fish indexing;
-- FRI resolution;
-- AUID profile evaluation;
-- materialization policy;
-- projection rules;
-- diagnostic/result semantics.
+* statement semantics;
+* relation-state semantics;
+* relator phrase semantics;
+* embedded Fish component interpretation;
+* assertion states;
+* unresolvedness;
+* query binding;
+* package-local fish indexing;
+* FRI resolution;
+* AUID profile evaluation;
+* materialization policy;
+* projection rules;
+* diagnostic/result semantics.
 
 The backend adapter owns:
 
-- persistence;
-- indexing;
-- transaction execution;
-- retrieval;
-- backend-specific query compilation;
-- migration hooks;
-- storage-level integrity checks.
+* persistence;
+* indexing;
+* transaction execution;
+* retrieval;
+* backend-specific query compilation;
+* migration hooks;
+* storage-level integrity checks.
 
 ---
 
@@ -240,11 +240,11 @@ EmbeddedFishComponent
 
 Relator phrase components may include:
 
-- word components;
-- namespace-qualified resource components;
-- embedded Fish components;
-- query variables;
-- profile-defined components.
+* word components;
+* namespace-qualified resource components;
+* embedded Fish components;
+* query variables;
+* profile-defined components.
 
 Whitespace between relator phrase components is syntactic separation only. Storage SHOULD preserve authored whitespace for editing/diagnostics but MUST use canonical component structure for graph semantics and AUID computation.
 
@@ -332,12 +332,12 @@ Unchanged sibling regions do not need to be recanonicalized or rehashed.
 
 Storage SHOULD therefore be able to cache:
 
-- local payload hashes;
-- immediate child branch records;
-- child AUID lists;
-- region AUIDs;
-- package AUIDs;
-- graph-delta/fond comparison indexes.
+* local payload hashes;
+* immediate child branch records;
+* child AUID lists;
+* region AUIDs;
+* package AUIDs;
+* graph-delta/fond comparison indexes.
 
 AUID encoding is carrier-defined. Storage MAY use binary AUID bytes internally even if HTTP/FRI/Fish source uses text encodings.
 
@@ -460,19 +460,19 @@ PostgreSQL + JSONB + indexes
 
 Rationale:
 
-- strong transactions;
-- mature persistence;
-- ordinary deployment;
-- JSONB for statement metadata and profile-specific payloads;
-- relational indexes for common query paths;
-- enough flexibility to evolve before the Fish model stabilizes.
+* strong transactions;
+* mature persistence;
+* ordinary deployment;
+* JSONB for statement metadata and profile-specific payloads;
+* relational indexes for common query paths;
+* enough flexibility to evolve before the Fish model stabilizes.
 
 Alternative early substrates may include:
 
-- a document database;
-- a multi-model document/graph database;
-- an embedded key-value store with explicit indexes;
-- a property graph database used as a persistence substrate.
+* a document database;
+* a multi-model document/graph database;
+* an embedded key-value store with explicit indexes;
+* a property graph database used as a persistence substrate.
 
 The backend choice should not leak into Fish semantics.
 
@@ -612,23 +612,23 @@ Forking an existing graph database may become useful later for targeted optimiza
 
 Forking is attractive because an existing graph database may already provide:
 
-- persistence;
-- indexing;
-- transactions;
-- query planning;
-- backup/restore;
-- clustering;
-- operational tooling.
+* persistence;
+* indexing;
+* transactions;
+* query planning;
+* backup/restore;
+* clustering;
+* operational tooling.
 
 Forking is risky because Purple Herring may need to alter foundational assumptions:
 
-- edges are not always fully resolved;
-- statements are resources;
-- relator phrases may contain embedded graph structure;
-- relation states are first-class;
-- AUIDs and canonical projections are first-class;
-- graph deltas and materialization units are semantic objects;
-- package/provenance identity matters.
+* edges are not always fully resolved;
+* statements are resources;
+* relator phrases may contain embedded graph structure;
+* relation states are first-class;
+* AUIDs and canonical projections are first-class;
+* graph deltas and materialization units are semantic objects;
+* package/provenance identity matters.
 
 A fork should only be considered after the logical graph engine and workload data reveal a specific storage-layer bottleneck.
 
@@ -653,15 +653,15 @@ background indexer
 
 Useful plugin goals:
 
-- faster relator phrase matching;
-- faster embedded Fish component lookup;
-- faster unresolved relation search;
-- package-local fish lookup;
-- graph-delta / fond projection caching;
-- materialization-unit transaction helpers;
-- canonical Fish hash computation;
-- AUID computation and invalidation;
-- FRI path indexing.
+* faster relator phrase matching;
+* faster embedded Fish component lookup;
+* faster unresolved relation search;
+* package-local fish lookup;
+* graph-delta / fond projection caching;
+* materialization-unit transaction helpers;
+* canonical Fish hash computation;
+* AUID computation and invalidation;
+* FRI path indexing.
 
 A plugin should accelerate Fish-native operations without moving language semantics into an unmaintainable backend fork.
 
@@ -673,25 +673,27 @@ A plugin should accelerate Fish-native operations without moving language semant
 
 Fish Mongres would be a storage engine designed around Fish/C4 logical objects instead of retrofitting Fish onto an ordinary property graph or relational database.
 
+The suggested package/repository name is `fish_mongres`. The short informal name may remain `Mongres`.
+
 Fish Mongres might natively support:
 
-- Fish statement resources;
-- relator phrase resources;
-- embedded Fish components inside relator phrases;
-- package fish sequences;
-- `fish[0]` package root FRI / capo al fin;
-- relation-state indexes;
-- unresolved relations;
-- relator phrase AUID indexes;
-- AUID-based canonical storage;
-- incremental AUID invalidation and recomputation;
-- FishEID package identity;
-- graph-delta / fond projections;
-- atomic materialization units;
-- diagnostic/result projections;
-- provenance-aware query paths;
-- authored source preservation;
-- canonical Fish source and canonical graph object storage.
+* Fish statement resources;
+* relator phrase resources;
+* embedded Fish components inside relator phrases;
+* package fish sequences;
+* `fish[0]` package root FRI / capo al fin;
+* relation-state indexes;
+* unresolved relations;
+* relator phrase AUID indexes;
+* AUID-based canonical storage;
+* incremental AUID invalidation and recomputation;
+* FishEID package identity;
+* graph-delta / fond projections;
+* atomic materialization units;
+* diagnostic/result projections;
+* provenance-aware query paths;
+* authored source preservation;
+* canonical Fish source and canonical graph object storage.
 
 Fish Mongres should remain hypothetical until adapter-backed implementations prove which native features are actually needed.
 
@@ -711,16 +713,16 @@ Goal: keep Fish and HTTP binding specs backend-independent.
 
 Deliverables:
 
-- Fish primary specification;
-- Purple Herring HTTP binding;
-- AUID notes;
-- backend roadmap;
-- open questions list.
+* Fish primary specification;
+* Purple Herring HTTP binding;
+* AUID notes;
+* backend roadmap;
+* open questions list.
 
 Exit criteria:
 
-- specs do not assume a specific graph database;
-- package, FRI, School, relator phrase, relation-state, AUID, and operation endpoint semantics are defined at the language/binding layer.
+* specs do not assume a specific graph database;
+* package, FRI, School, relator phrase, relation-state, AUID, and operation endpoint semantics are defined at the language/binding layer.
 
 ---
 
@@ -730,50 +732,50 @@ Goal: define backend-independent logical objects.
 
 Deliverables:
 
-- `Resource` model;
-- `Statement` model;
-- `RelatorPhrase` model;
-- `EmbeddedFishComponent` model;
-- `School` model;
-- `Package` model;
-- `RelationState` / `AssertionState` model;
-- `AUID` model;
-- `GraphChange` and `MaterializationUnit` model;
-- `Diagnostic` and `ProjectionResult` model.
+* `Resource` model;
+* `Statement` model;
+* `RelatorPhrase` model;
+* `EmbeddedFishComponent` model;
+* `School` model;
+* `Package` model;
+* `RelationState` / `AssertionState` model;
+* `AUID` model;
+* `GraphChange` and `MaterializationUnit` model;
+* `Diagnostic` and `ProjectionResult` model.
 
 Exit criteria:
 
-- Fish statements can be represented without choosing a database;
-- unresolved, negative, and non-polar relations have explicit model positions;
-- relator phrases can store embedded Fish structure;
-- package-local indexing is represented.
+* Fish statements can be represented without choosing a database;
+* unresolved, negative, and non-polar relations have explicit model positions;
+* relator phrases can store embedded Fish structure;
+* package-local indexing is represented.
 
 ---
 
-### Milestone 2 — SARDINE Parse + Canonicalization Prototype
+### Milestone 2 — Sashimi Bōchō / sashimi_bouchou Parse + Canonicalization Prototype
 
 Goal: parse Fish source into logical objects.
 
 Deliverables:
 
-- parser for core Fish statements;
-- parser for relation-state operators;
-- parser for relator phrases;
-- parser for embedded Fish components `{ ... }`;
-- parser for Schools;
-- parser for `><>` comments and comment schools;
-- whitespace-insensitive parsing outside literals/comment schools;
-- request-root expression support;
-- query variables;
-- canonical Fish serialization draft;
-- package sequence builder with `fish[0] = root FRI`.
+* parser for core Fish statements;
+* parser for relation-state operators;
+* parser for relator phrases;
+* parser for embedded Fish components `{ ... }`;
+* parser for Schools;
+* parser for `><>` comments and comment schools;
+* whitespace-insensitive parsing outside literals/comment schools;
+* request-root expression support;
+* query variables;
+* canonical Fish serialization draft;
+* package sequence builder with `fish[0] = root FRI`.
 
 Exit criteria:
 
-- a Fish body can be parsed into canonical package form;
-- package-local fish indexes are deterministic under the prototype profile;
-- comments/whitespace do not affect canonicalization;
-- relator phrases and embedded Fish components survive round-trip canonicalization.
+* a Fish body can be parsed into canonical package form;
+* package-local fish indexes are deterministic under the prototype profile;
+* comments/whitespace do not affect canonicalization;
+* relator phrases and embedded Fish components survive round-trip canonicalization.
 
 ---
 
@@ -783,21 +785,21 @@ Goal: compute AUIDs for Fish resources, statements, relator phrases, Schools, an
 
 Deliverables:
 
-- local payload hash function;
-- immediate child branch record encoding;
-- child collection mode handling;
-- canonical unordered branch sorting;
-- relation-state encoding;
-- relator phrase AUIDs;
-- embedded Fish component AUIDs;
-- package AUIDs;
-- cache invalidation prototype.
+* local payload hash function;
+* immediate child branch record encoding;
+* child collection mode handling;
+* canonical unordered branch sorting;
+* relation-state encoding;
+* relator phrase AUIDs;
+* embedded Fish component AUIDs;
+* package AUIDs;
+* cache invalidation prototype.
 
 Exit criteria:
 
-- AUIDs are computed from local payload + immediate child AUID records;
-- unchanged sibling regions do not need recanonicalization after a local update;
-- AUID encoding remains carrier-defined.
+* AUIDs are computed from local payload + immediate child AUID records;
+* unchanged sibling regions do not need recanonicalization after a local update;
+* AUID encoding remains carrier-defined.
 
 ---
 
@@ -813,23 +815,23 @@ PostgreSQL + JSONB
 
 Deliverables:
 
-- backend adapter interface;
-- PostgreSQL schema prototype;
-- resource storage;
-- package storage;
-- statement storage;
-- relator phrase storage;
-- embedded Fish component storage;
-- AUID storage;
-- simple FRI lookup;
-- package_eid + fish_index lookup.
+* backend adapter interface;
+* PostgreSQL schema prototype;
+* resource storage;
+* package storage;
+* statement storage;
+* relator phrase storage;
+* embedded Fish component storage;
+* AUID storage;
+* simple FRI lookup;
+* package_eid + fish_index lookup.
 
 Exit criteria:
 
-- packages can be ingested, stored, and retrieved;
-- individual fish can be located by package-local index;
-- simple statements can be stored as reified objects;
-- relator phrases are stored as structured objects, not only strings.
+* packages can be ingested, stored, and retrieved;
+* individual fish can be located by package-local index;
+* simple statements can be stored as reified objects;
+* relator phrases are stored as structured objects, not only strings.
 
 ---
 
@@ -839,20 +841,20 @@ Goal: evaluate basic Fish queries.
 
 Deliverables:
 
-- resource retrieval;
-- concrete assertion query;
-- relation-state query;
-- relator-component query with `{ $x }`;
-- relation-variable query with `$r`;
-- assertion-state result vocabulary;
-- JSON binding-table projection;
-- Fish match projection.
+* resource retrieval;
+* concrete assertion query;
+* relation-state query;
+* relator-component query with `{ $x }`;
+* relation-variable query with `$r`;
+* assertion-state result vocabulary;
+* JSON binding-table projection;
+* Fish match projection.
 
 Exit criteria:
 
-- queries like `#/Diane &+ is { $x } of @ #/Andrea;` return bindings;
-- queries like `#/Diane &+ $r @ #/Andrea;` return relator phrase bindings;
-- relation-state query behavior is independent of backend-specific syntax.
+* queries like `#/Diane &+ is { $x } of @ #/Andrea;` return bindings;
+* queries like `#/Diane &+ $r @ #/Andrea;` return relator phrase bindings;
+* relation-state query behavior is independent of backend-specific syntax.
 
 ---
 
@@ -862,21 +864,21 @@ Goal: expose Fish query/add/mutate/delete operations over HTTP binding.
 
 Deliverables:
 
-- `.query` endpoint;
-- `.add` endpoint;
-- `.mutate` endpoint;
-- `.delete` endpoint;
-- `/.well-known/purple-herring` JSON discovery;
-- media type handling for `application/vnd.purple-herring.fish`;
-- request-root binding;
-- atomic mutation boundary for mutational endpoints.
+* `.query` endpoint;
+* `.add` endpoint;
+* `.mutate` endpoint;
+* `.delete` endpoint;
+* `/.well-known/purple-herring` JSON discovery;
+* media type handling for `application/vnd.purple-herring.fish`;
+* request-root binding;
+* atomic mutation boundary for mutational endpoints.
 
 Exit criteria:
 
-- raw Fish bodies can be submitted to operation endpoints;
-- `.query` is read-only;
-- mutational endpoints commit all-or-none for persistent graph state;
-- full Fish source is carried in bodies, not encoded into address targets.
+* raw Fish bodies can be submitted to operation endpoints;
+* `.query` is read-only;
+* mutational endpoints commit all-or-none for persistent graph state;
+* full Fish source is carried in bodies, not encoded into address targets.
 
 ---
 
@@ -886,17 +888,17 @@ Goal: support one-request bind-and-mutate operations.
 
 Deliverables:
 
-- binding-pattern evaluation;
-- mutation-template instantiation;
-- cardinality policy;
-- atomic validation and commit;
-- diagnostic behavior for ambiguous bindings.
+* binding-pattern evaluation;
+* mutation-template instantiation;
+* cardinality policy;
+* atomic validation and commit;
+* diagnostic behavior for ambiguous bindings.
 
 Exit criteria:
 
-- variables bound within a mutational request can be used inside the same request;
-- no hidden session-local variable state is required;
-- ambiguous binding behavior is explicit.
+* variables bound within a mutational request can be used inside the same request;
+* no hidden session-local variable state is required;
+* ambiguous binding behavior is explicit.
 
 ---
 
@@ -906,18 +908,18 @@ Goal: produce graph-change and diagnostic results.
 
 Deliverables:
 
-- graph-change validation;
-- permission/materialization policy hooks;
-- diagnostic objects;
-- diagnostic summary projection;
-- diagnostic disclosure policy placeholder;
-- materialization-result summary projection.
+* graph-change validation;
+* permission/materialization policy hooks;
+* diagnostic objects;
+* diagnostic summary projection;
+* diagnostic disclosure policy placeholder;
+* materialization-result summary projection.
 
 Exit criteria:
 
-- failed mutations produce structured diagnostics;
-- rejected mutations do not partially commit;
-- diagnostic disclosure can be restricted by policy.
+* failed mutations produce structured diagnostics;
+* rejected mutations do not partially commit;
+* diagnostic disclosure can be restricted by policy.
 
 ---
 
@@ -927,21 +929,21 @@ Goal: optimize the real query paths discovered in MVP use.
 
 Deliverables:
 
-- workload traces;
-- query latency measurements;
-- relator phrase index;
-- embedded component index;
-- relation-state index;
-- AUID index;
-- child branch record index;
-- FRI path index;
-- package-local lookup index;
-- unresolved-relation query index if needed.
+* workload traces;
+* query latency measurements;
+* relator phrase index;
+* embedded component index;
+* relation-state index;
+* AUID index;
+* child branch record index;
+* FRI path index;
+* package-local lookup index;
+* unresolved-relation query index if needed.
 
 Exit criteria:
 
-- common Fish queries have predictable performance;
-- index complexity is justified by measured workload.
+* common Fish queries have predictable performance;
+* index complexity is justified by measured workload.
 
 ---
 
@@ -951,17 +953,17 @@ Goal: prove that Fish semantics are not locked to one backend.
 
 Deliverables:
 
-- second backend adapter prototype, or mock backend with conformance tests;
-- backend adapter conformance suite;
-- canonical package ingestion tests;
-- query result equivalence tests;
-- AUID equivalence tests;
-- atomicity behavior tests.
+* second backend adapter prototype, or mock backend with conformance tests;
+* backend adapter conformance suite;
+* canonical package ingestion tests;
+* query result equivalence tests;
+* AUID equivalence tests;
+* atomicity behavior tests.
 
 Exit criteria:
 
-- the logical graph engine can run against more than one backend adapter;
-- Fish semantics remain stable across backends.
+* the logical graph engine can run against more than one backend adapter;
+* Fish semantics remain stable across backends.
 
 ---
 
@@ -971,17 +973,17 @@ Goal: decide whether deeper backend integration is justified.
 
 Deliverables:
 
-- bottleneck report;
-- backend extension candidates;
-- graph database fork candidates;
-- storage-engine requirements;
-- cost/risk comparison;
-- migration plan from adapter-backed storage.
+* bottleneck report;
+* backend extension candidates;
+* graph database fork candidates;
+* storage-engine requirements;
+* cost/risk comparison;
+* migration plan from adapter-backed storage.
 
 Exit criteria:
 
-- there is evidence for or against backend forking/plugin work;
-- no fork begins without a specific optimization target.
+* there is evidence for or against backend forking/plugin work;
+* no fork begins without a specific optimization target.
 
 ---
 
@@ -991,22 +993,22 @@ Goal: experiment with a Fish-native storage engine if justified.
 
 Deliverables:
 
-- native statement storage layout;
-- native relator phrase storage layout;
-- embedded Fish component storage;
-- package sequence storage;
-- relation-state index;
-- unresolved relation index;
-- AUID index and invalidation mechanism;
-- materialization-unit transaction prototype;
-- graph-delta/fond projection prototype;
-- import/export compatibility with Fish packages.
+* native statement storage layout;
+* native relator phrase storage layout;
+* embedded Fish component storage;
+* package sequence storage;
+* relation-state index;
+* unresolved relation index;
+* AUID index and invalidation mechanism;
+* materialization-unit transaction prototype;
+* graph-delta/fond projection prototype;
+* import/export compatibility with Fish packages.
 
 Exit criteria:
 
-- Fish Mongres demonstrates a clear advantage over adapter-backed storage for identified workloads;
-- import/export preserves Fish package semantics;
-- reliability requirements are understood before production use.
+* Fish Mongres demonstrates a clear advantage over adapter-backed storage for identified workloads;
+* import/export preserves Fish package semantics;
+* reliability requirements are understood before production use.
 
 ---
 
@@ -1018,7 +1020,7 @@ The project should avoid the following premature commitments:
 Do not write a database before the logical model stabilizes.
 Do not fork a graph database before workload data exists.
 Do not encode Fish semantics exclusively in backend-specific queries.
-Do not make Postgres, Neo4j, Arango, JanusGraph, or Fish Mongres part of Fish semantics.
+Do not make Postgres, Neo4j, Arango, JanusGraph, Fish Mongres, or any other backend part of Fish semantics.
 Do not make package-local indexes pretend to be global content identity.
 Do not make diagnostic/result projection syntax depend on a storage engine.
 Do not store relator phrases only as raw strings.
@@ -1032,19 +1034,18 @@ Do not make AUID text encoding part of storage semantics.
 
 The following remain open:
 
-- exact logical object model;
-- exact package EID layout;
-- exact AUID canonicalization profile;
-- exact AUID digest length and hash algorithm;
-- whether `fish:eid:` should encode package EIDs, edge EIDs, or both;
-- whether package-local fish indexes are zero-based permanently;
-- whether `fish[0]` as package root FRI should remain normative permanently;
-- whether the capo al fin terminology belongs in the primary spec, backend notes, or culinary glossary;
-- initial backend choice;
-- adapter API shape;
-- first query indexes;
-- migration path from MVP storage to future specialized storage;
-- whether relator phrase AUIDs should be first-class resources;
-- whether embedded Fish components inside relator phrases should always be separately addressable;
-- whether Fish Mongres should ever be implemented as a fork, plugin, or from-scratch database.
-
+* exact logical object model;
+* exact package EID layout;
+* exact AUID canonicalization profile;
+* exact AUID digest length and hash algorithm;
+* whether `fish:eid:` should encode package EIDs, edge EIDs, or both;
+* whether package-local fish indexes are zero-based permanently;
+* whether `fish[0]` as package root FRI should remain normative permanently;
+* whether the capo al fin terminology belongs in the primary spec, backend notes, or culinary glossary;
+* initial backend choice;
+* adapter API shape;
+* first query indexes;
+* migration path from MVP storage to future specialized storage;
+* whether relator phrase AUIDs should be first-class resources;
+* whether embedded Fish components inside relator phrases should always be separately addressable;
+* whether Fish Mongres should ever be implemented as a fork, plugin, or from-scratch database.
