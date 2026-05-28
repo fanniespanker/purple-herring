@@ -6,7 +6,7 @@ This document is a planning draft for Purple Herring graph persistence, backend 
 
 It is not an implementation commitment. It records the preferred backend strategy, architectural boundaries, and milestones for moving from ordinary storage substrates toward a possible dedicated Fish-native graph database.
 
-The provisional name for a hypothetical future Fish-native graph database is **Mongres**.
+The provisional name for a hypothetical future Fish-native graph database is **Fish Mongres**.
 
 This draft is aligned with the Fish v0.3 language direction:
 
@@ -93,15 +93,15 @@ The desired long-term architecture is layered:
 ```text
 Fish source / FRI / School / HTTP binding
         ↓
-SARDINE parser and canonicalizer
+Sashimi Bōchō / sashimi_bouchou parser and canonicalizer
         ↓
-Fish Native Logical Graph Engine
+Fish Tank Logical Graph Engine
         ↓
 Materializer / Query Planner / Projection Engine
         ↓
 Backend Adapter API
         ↓
-Postgres / document DB / graph DB / custom store / Mongres
+Postgres / document DB / graph DB / custom store / Fish Mongres
 ```
 
 The Fish Native Logical Graph Engine owns:
@@ -667,13 +667,13 @@ A plugin should accelerate Fish-native operations without moving language semant
 
 ---
 
-## 17. Hypothetical Fish-Native Database: Mongres
+## 17. Hypothetical Fish-Native Database: Fish Mongres
 
-**Mongres** is the provisional name for a hypothetical future Fish-native graph persistence engine.
+**Fish Mongres** is the provisional name for a hypothetical future Fish-native graph persistence engine.
 
-Mongres would be a storage engine designed around Fish/C4 logical objects instead of retrofitting Fish onto an ordinary property graph or relational database.
+Fish Mongres would be a storage engine designed around Fish/C4 logical objects instead of retrofitting Fish onto an ordinary property graph or relational database.
 
-Mongres might natively support:
+Fish Mongres might natively support:
 
 - Fish statement resources;
 - relator phrase resources;
@@ -693,12 +693,12 @@ Mongres might natively support:
 - authored source preservation;
 - canonical Fish source and canonical graph object storage.
 
-Mongres should remain hypothetical until adapter-backed implementations prove which native features are actually needed.
+Fish Mongres should remain hypothetical until adapter-backed implementations prove which native features are actually needed.
 
 Non-normative tagline:
 
 ```text
-Mongres: a Fish-native graph store for Purple Herring.
+Fish Mongres: a Fish-native graph store for Purple Herring.
 ```
 
 ---
@@ -985,7 +985,7 @@ Exit criteria:
 
 ---
 
-### Milestone 12 — Mongres Research Prototype
+### Milestone 12 — Fish Mongres Research Prototype
 
 Goal: experiment with a Fish-native storage engine if justified.
 
@@ -1004,7 +1004,7 @@ Deliverables:
 
 Exit criteria:
 
-- Mongres demonstrates a clear advantage over adapter-backed storage for identified workloads;
+- Fish Mongres demonstrates a clear advantage over adapter-backed storage for identified workloads;
 - import/export preserves Fish package semantics;
 - reliability requirements are understood before production use.
 
@@ -1018,7 +1018,7 @@ The project should avoid the following premature commitments:
 Do not write a database before the logical model stabilizes.
 Do not fork a graph database before workload data exists.
 Do not encode Fish semantics exclusively in backend-specific queries.
-Do not make Postgres, Neo4j, Arango, JanusGraph, or Mongres part of Fish semantics.
+Do not make Postgres, Neo4j, Arango, JanusGraph, or Fish Mongres part of Fish semantics.
 Do not make package-local indexes pretend to be global content identity.
 Do not make diagnostic/result projection syntax depend on a storage engine.
 Do not store relator phrases only as raw strings.
@@ -1046,5 +1046,5 @@ The following remain open:
 - migration path from MVP storage to future specialized storage;
 - whether relator phrase AUIDs should be first-class resources;
 - whether embedded Fish components inside relator phrases should always be separately addressable;
-- whether Mongres should ever be implemented as a fork, plugin, or from-scratch database.
+- whether Fish Mongres should ever be implemented as a fork, plugin, or from-scratch database.
 
