@@ -507,10 +507,6 @@ The `#` sigil is a Fish body-local request-root reference.
 
 Inside a Fish body, `#` denotes the graph node corresponding to the request-root FRI supplied by the active host binding.
 
-`#` alone denotes the request-root resource.
-
-A request-root-relative resource path appends one or more slash-prefixed path segments after `#`.
-
 Examples:
 
 ```fish
@@ -519,15 +515,11 @@ Examples:
 #/Diane &+ modo:owns @ #/Andrea;
 ```
 
-In `#/Diane`, `#` denotes the request-root resource and `/Diane` is the request-root-relative path under that root.
-
-A request-root-relative path MUST NOT contain empty path segments and MUST NOT end in a trailing slash. Therefore `#/`, `#//Diane`, `#/Diane/`, and `#/Diane//Andrea` are not canonical request-root-relative paths.
-
-Path segments that use human-readable token runs SHOULD follow the Fish token-run spacing rule: `fish-identifier-token, { " ", fish-identifier-token }`.
+The expression `#/Diane` denotes a resource relative to the request root.
 
 The `#` sigil is used inside Fish bodies and Schools.
 
-Address FRIs used as raw HTTP request targets do not contain raw `#`. Host bindings that serialize request-root-relative paths into URI fragments MUST define the carrier encoding separately from Fish source syntax.
+Address FRIs used as raw HTTP request targets do not contain raw `#`.
 
 ---
 
@@ -544,18 +536,6 @@ FRIs may be path-like:
 /github.com/fannie-spanker/media-oriented-description-ontology
 ```
 
-FRIs may be request-root-relative:
-
-```fish
-#
-#/Diane
-#/Diane/Case File 1
-```
-
-In a request-root-relative FRI, `#` denotes the active request root and each slash-prefixed segment denotes a path segment under that root.
-
-A canonical request-root-relative FRI MUST NOT contain empty path segments and MUST NOT end in a trailing slash.
-
 FRIs may also be Fish expressions when the active context permits statement-like resource identifiers or query-pattern identifiers.
 
 A FRI may denote:
@@ -570,8 +550,6 @@ A FRI may denote:
 - a profile-defined service resource.
 
 FRI syntax is refined by host bindings and active profiles.
-
-Host bindings MAY serialize absolute resources combined with request-root or subresource paths into carrier-specific forms, such as URI fragments. Such carrier forms are encodings of Fish/FRI address structure, not raw HTTP request-target syntax.
 
 ---
 
