@@ -55,10 +55,6 @@ The preferred strategy is to build Fish-native semantics above ordinary storage 
 
 ## 2. Design Principle
 
-C4 defines the abstract graph-semantic model.
-
-Fish is the concrete source/interchange surface for expressing C4 structures.
-
 Purple Herring semantics belong to the Purple Herring/Fish/C4 layer.
 
 The storage backend should initially be treated as a persistence and indexing substrate, not as the authority on Fish semantics.
@@ -108,7 +104,7 @@ Backend Adapter API
 Postgres / document DB / graph DB / custom store / Fish Mongres
 ```
 
-The Fish Tank Logical Graph Engine owns C4/Fish logical semantics:
+The Fish Tank Logical Graph Engine owns:
 
 * statement semantics;
 * relation-state semantics;

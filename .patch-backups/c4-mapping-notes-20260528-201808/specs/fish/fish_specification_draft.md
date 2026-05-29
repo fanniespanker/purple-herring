@@ -29,52 +29,7 @@ Fish is used to represent:
 
 ---
 
-## 2. Relationship to C4
-
-C4, the Contextual Compositional Concept Calculus, defines the abstract graph-semantic structures used by Purple Herring.
-
-Fish is the concrete source, query, update, and interchange surface for expressing those C4 structures.
-
-Fish syntax MUST NOT be treated as the semantic authority where it conflicts with the active C4 model. Fish provides a parseable and canonicalizable surface for C4 graph objects, relation expressions, assertion states, graph regions, and resource references.
-
-The general relationship is:
-
-```text
-C4
-  abstract graph calculus and semantic model
-
-Fish
-  concrete surface notation and interchange form for C4 structures
-
-Sashimi Bōchō / sashimi_bouchou
-  parser and canonicalizer from Fish source into C4/Fish logical graph objects
-
-Fish Tank
-  runtime/backend abstraction for storing, querying, materializing, and projecting C4/Fish graph structures
-```
-
-Initial mapping:
-
-| Fish surface | C4 structure |
-|---|---|
-| Fish statement | C4 assertion / relation expression |
-| tail | C4 source expression |
-| relator phrase | C4 relator expression |
-| head | C4 target expression |
-| assertion operator | C4 assertion-state operator |
-| assertion polarity | C4 assertion polarity |
-| assertion resolution | C4 assertion resolution |
-| embedded Fish component | embedded C4 subgraph, resource expression, or statement set |
-| School | bounded C4 graph region or statement set |
-| Fish package | ordered C4/Fish interchange package under one package root |
-| FRI | C4 resource reference / graph address |
-| AUID | canonical projection equivalence identifier for a C4/Fish graph region |
-
-This mapping is intentionally structural. It does not require every C4 structure to have exactly one Fish surface form, nor every Fish authoring shorthand to survive canonicalization.
-
----
-
-## 3. Core Terms
+## 2. Core Terms
 
 ### Fish
 
@@ -148,11 +103,9 @@ A query pattern is a Fish statement or School containing query variables, relati
 
 ---
 
-## 4. Fish Statements
+## 3. Fish Statements
 
 A Fish statement relates a tail to a head through a relator phrase.
-
-A Fish statement is the Fish surface form of a C4 assertion or relation expression.
 
 General form:
 
@@ -178,7 +131,7 @@ A complete Fish statement is itself a graph resource and may be reified, address
 
 ---
 
-## 5. Tail, Relator Phrase, and Head
+## 4. Tail, Relator Phrase, and Head
 
 ### Tail
 
@@ -189,8 +142,6 @@ A tail may be a resource reference, FRI, local binding, request-root-relative ex
 ### Relator Phrase
 
 The relator phrase defines the relation form between tail and head.
-
-A relator phrase is the Fish surface form of a C4 relator expression.
 
 A relator phrase begins after the relation-state operator and ends at the head marker `@`.
 
@@ -221,7 +172,7 @@ A relator phrase MAY contain embedded Fish components delimited by `{` and `}`.
 
 The embedded component MAY contain a resource expression, a Fish statement, or a School, according to the active Fish profile.
 
-Embedded Fish components are embedded C4 graph structure, not raw text interpolation.
+Embedded Fish components are graph structure, not raw text interpolation.
 
 A canonicalizer MUST parse embedded Fish components into canonical graph form. Raw whitespace inside the braces is not semantic except inside literals, comment schools, or other whitespace-bearing forms.
 
@@ -252,7 +203,7 @@ A head may be a resource reference, FRI, local binding, request-root-relative ex
 
 ---
 
-## 6. Relation-State Operators
+## 5. Relation-State Operators
 
 Fish relation-state operators encode polarity and resolution state.
 
@@ -327,7 +278,7 @@ Examples:
 
 ---
 
-## 7. Bindings
+## 6. Bindings
 
 Fish uses binding sigils for variables and existential resources.
 
@@ -365,11 +316,9 @@ An existential binding introduces or refers to an existential graph resource acc
 
 ---
 
-## 8. Schools
+## 7. Schools
 
 A School is a set, block, document, payload, or resource containing one or more Fish statements interpreted together.
-
-A School is the Fish interchange form of a bounded C4 graph region or statement set.
 
 Example School:
 
@@ -394,7 +343,7 @@ A School may itself be addressable as a graph resource.
 
 ---
 
-## 9. Fish Packages
+## 8. Fish Packages
 
 A Fish package is an ordered fish sequence interpreted under one package root FRI.
 
@@ -441,7 +390,7 @@ This term is non-normative. The normative term is **package root FRI**.
 
 ---
 
-## 10. Request-Root Sigil
+## 9. Request-Root Sigil
 
 The `#` sigil is a Fish body-local request-root reference.
 
@@ -463,11 +412,9 @@ Address FRIs used as raw HTTP request targets do not contain raw `#`.
 
 ---
 
-## 11. Fish Resource Identifiers / FRIs / fries
+## 10. Fish Resource Identifiers / FRIs / fries
 
 A Fish Resource Identifier, or FRI, identifies a graph resource or graph expression.
-
-A FRI is the Fish surface form of a C4 resource reference or graph address.
 
 FRIs may be path-like:
 
@@ -493,15 +440,13 @@ FRI syntax is refined by host bindings and active profiles.
 
 ---
 
-## 12. Aquatically Unique Identifiers / AUIDs
+## 11. Aquatically Unique Identifiers / AUIDs
 
 An Aquatically Unique Identifier, or AUID, is a deterministic recursive hash over the canonical local payload of a Fish/C4 resource tree, subtree, School, or bounded graph region plus the AUIDs of its immediate descendants in canonical order.
 
 AUID is initially one experimental identifier method, not an identifier family.
 
 An AUID identifies canonical equivalence under a declared AUID profile. It does not assert primitive identity.
-
-For C4 purposes, an AUID is an equivalence identifier for a canonical projection of a C4/Fish graph region, not an identity primitive.
 
 The AUID principle is:
 
@@ -720,7 +665,7 @@ Regional AUIDs are useful for:
 
 ---
 
-## 13. Namespaces and Qualified Resources
+## 12. Namespaces and Qualified Resources
 
 Fish resources may use namespace-like prefixes.
 
@@ -762,7 +707,7 @@ fish:<name>                general Fish vocabulary resource
 
 ---
 
-## 14. Query Forms
+## 13. Query Forms
 
 Fish queries are Fish statements or Schools interpreted as query patterns.
 
@@ -806,7 +751,7 @@ This asks for relation resources or relator phrases `$r` connecting `#/Diane` to
 
 ---
 
-## 15. Assertion-State Results
+## 14. Assertion-State Results
 
 A concrete assertion query or assertion-pattern query may return one or more assertion states.
 
@@ -828,7 +773,7 @@ Multiple states MAY be returned when the graph contains conflict, ambiguity, unr
 
 ---
 
-## 16. Binding Results
+## 15. Binding Results
 
 Binding queries return bindings for query variables.
 
@@ -859,7 +804,7 @@ The canonical Fish binding-result graph syntax is deferred.
 
 ---
 
-## 17. Projection and Omission
+## 16. Projection and Omission
 
 Fish response bodies are projections of graph-native structures.
 
@@ -875,7 +820,7 @@ Summary schemas return compressed facts, counts, flags, bindings, assertion stat
 
 ---
 
-## 18. Graph-Change Payloads
+## 17. Graph-Change Payloads
 
 Fish Schools may be used as graph-change payloads.
 
@@ -887,7 +832,7 @@ Graph-change payloads are interpreted as atomic materialization units when submi
 
 ---
 
-## 19. Materialization Concepts
+## 18. Materialization Concepts
 
 ### Materialization
 
@@ -905,7 +850,7 @@ Responses may report partial validation, diagnostics, ambiguity, unresolved subg
 
 ---
 
-## 20. Fish Bodies
+## 19. Fish Bodies
 
 A Fish body is raw Fish source carried by a host binding, file, message, repository object, or embedded document.
 
@@ -926,7 +871,7 @@ Fish bodies are the ordinary authoring form for expressive Fish queries and grap
 
 ---
 
-## 21. Comments
+## 20. Comments
 
 Fish source MAY contain line comments and comment schools.
 
@@ -956,7 +901,7 @@ The exact escaping rules for `}` inside comment schools are deferred.
 
 ---
 
-## 22. Whitespace
+## 21. Whitespace
 
 Fish source is whitespace-insensitive outside quoted literals, comment schools, and other explicitly whitespace-bearing literal forms.
 
@@ -970,7 +915,7 @@ Incidental whitespace, comments, and comment schools MUST NOT contribute to AUID
 
 ---
 
-## 23. Media Type
+## 22. Media Type
 
 The canonical Purple Herring Fish media type is:
 
@@ -991,7 +936,7 @@ The media type may be used for:
 
 ---
 
-## 24. Relationship to Host Bindings
+## 23. Relationship to Host Bindings
 
 Host bindings define how Fish documents, Schools, FRIs, request roots, query patterns, graph-change payloads, and response bodies are carried through a concrete host environment.
 
@@ -1001,7 +946,7 @@ Other host bindings may target filesystems, Git repositories, archives, message 
 
 ---
 
-## 25. Non-Normative Culinary Notes
+## 24. Non-Normative Culinary Notes
 
 The following terminology is non-normative:
 
@@ -1024,7 +969,7 @@ These metaphors are explanatory and aesthetic. They do not define conformance be
 
 ---
 
-## 26. Open Questions
+## 25. Open Questions
 
 The following remain open:
 
