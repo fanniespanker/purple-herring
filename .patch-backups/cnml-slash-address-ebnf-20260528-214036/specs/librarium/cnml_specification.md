@@ -625,23 +625,12 @@ Processors MUST NOT emit dot-separated address expressions as canonical CNML sub
 A carrier or host binding MAY percent-encode, escape, or otherwise serialize canonical CNML subresource paths when required, but such carrier encodings MUST preserve recovery of the canonical `#/...` path.
 
 ```ebnf
-address             = "#" | "#", subresource-path ;
-subresource-path    = "/", subresource-segment, { "/", subresource-segment } ;
-subresource-segment = subresource-token, { " ", subresource-token } ;
-subresource-token   = fish-identifier-token ;
+address          = "#" | "#", subresource-path ;
+subresource-path = "/", segment, { "/", segment } ;
+segment          = non-empty-cnml-address-segment ;
 ```
 
-`fish-identifier-token` is the identifier-token character class defined by the Fish specification. CNML does not redefine that character class.
-
-Canonical CNML subresource segments MAY contain U+0020 SPACE only as an internal separator between Fish identifier-token runs.
-
-A canonical segment MUST NOT begin or end with SPACE.
-
-A canonical segment MUST NOT contain consecutive SPACE characters.
-
-A canonical segment MUST NOT contain tabs, line breaks, non-breaking spaces, or other Unicode whitespace characters.
-
-Whitespace MAY appear literally in `n` values only when it can be represented in the canonical CNML subresource path under these segment rules, or when the active profile derives a valid fallback canonical segment.
+Whitespace MAY appear literally in `n` values and in canonical CNML subresource paths.
 
 ### Escaping in Address Expressions
 

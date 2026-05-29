@@ -148,67 +148,7 @@ A query pattern is a Fish statement or School containing query variables, relati
 
 ---
 
-## 4. Lexical Conventions
-
-This section defines core Fish lexical conventions used by Fish itself and by dependent profiles or host formats, including CNML.
-
-### Canonical Space
-
-Canonical Fish space is U+0020 SPACE.
-
-When a Fish grammar rule refers to `" "`, `SPACE`, or canonical space, it means U+0020 SPACE only.
-
-Tabs, line breaks, non-breaking spaces, and other Unicode whitespace characters are not canonical spaces.
-
-Non-canonical whitespace MAY appear in source positions where Fish treats whitespace as incidental, but canonical serializers MUST emit U+0020 SPACE where a canonical separating space is required.
-
-### Fish Identifier Tokens
-
-A `fish-identifier-token` is the basic unquoted token class used by Fish profiles for identifier-like path segments, local names, and other profile-defined symbolic atoms.
-
-The base character class for a `fish-identifier-token` is:
-
-```ebnf
-fish-identifier-token = fish-identifier-character, { fish-identifier-character } ;
-
-fish-identifier-character =
-    Unicode_Letter
-  | Unicode_Mark
-  | Unicode_Number
-  | profile-permitted-connector ;
-```
-
-`Unicode_Letter`, `Unicode_Mark`, and `Unicode_Number` refer to Unicode general-category families for letters, combining/marking characters, and numbers.
-
-`profile-permitted-connector` is a profile-defined extension point. A profile MAY permit connector characters such as `_` only when those characters do not conflict with the active grammar, host binding, or canonicalization profile.
-
-A Fish profile that permits connector characters MUST define their canonicalization, normalization, and escaping behavior.
-
-Fish identifier tokens MUST NOT contain Fish structural delimiters unless a profile explicitly defines an escaped or quoted form.
-
-Fish structural delimiters include, at minimum:
-
-```text
-& @ ; { } ( ) [ ] , / # $ * ? + - : = ^ ~ < > " '
-```
-
-The active Fish profile MAY classify additional characters as delimiters.
-
-### Token-Run Spacing
-
-When a Fish profile permits human-readable token runs separated by spaces, those spaces MUST use canonical Fish space.
-
-A token-run spacing rule SHOULD take the form:
-
-```ebnf
-token-run = fish-identifier-token, { " ", fish-identifier-token } ;
-```
-
-Such a token run cannot begin with space, end with space, contain consecutive spaces, or contain non-U+0020 whitespace.
-
----
-
-## 5. Fish Statements
+## 4. Fish Statements
 
 A Fish statement relates a tail to a head through a relator phrase.
 
@@ -238,7 +178,7 @@ A complete Fish statement is itself a graph resource and may be reified, address
 
 ---
 
-## 6. Tail, Relator Phrase, and Head
+## 5. Tail, Relator Phrase, and Head
 
 ### Tail
 
@@ -387,7 +327,7 @@ Examples:
 
 ---
 
-## 8. Bindings
+## 7. Bindings
 
 Fish uses binding sigils for variables and existential resources.
 
@@ -425,7 +365,7 @@ An existential binding introduces or refers to an existential graph resource acc
 
 ---
 
-## 9. Schools
+## 8. Schools
 
 A School is a set, block, document, payload, or resource containing one or more Fish statements interpreted together.
 
@@ -454,7 +394,7 @@ A School may itself be addressable as a graph resource.
 
 ---
 
-## 10. Fish Packages
+## 9. Fish Packages
 
 A Fish package is an ordered fish sequence interpreted under one package root FRI.
 
@@ -501,7 +441,7 @@ This term is non-normative. The normative term is **package root FRI**.
 
 ---
 
-## 11. Request-Root Sigil
+## 10. Request-Root Sigil
 
 The `#` sigil is a Fish body-local request-root reference.
 
@@ -523,7 +463,7 @@ Address FRIs used as raw HTTP request targets do not contain raw `#`.
 
 ---
 
-## 12. Fish Resource Identifiers / FRIs / fries
+## 11. Fish Resource Identifiers / FRIs / fries
 
 A Fish Resource Identifier, or FRI, identifies a graph resource or graph expression.
 
@@ -553,7 +493,7 @@ FRI syntax is refined by host bindings and active profiles.
 
 ---
 
-## 13. Aquatically Unique Identifiers / AUIDs
+## 12. Aquatically Unique Identifiers / AUIDs
 
 An Aquatically Unique Identifier, or AUID, is a deterministic recursive hash over the canonical local payload of a Fish/C4 resource tree, subtree, School, or bounded graph region plus the AUIDs of its immediate descendants in canonical order.
 
@@ -780,7 +720,7 @@ Regional AUIDs are useful for:
 
 ---
 
-## 14. Namespaces and Qualified Resources
+## 13. Namespaces and Qualified Resources
 
 Fish resources may use namespace-like prefixes.
 
@@ -822,7 +762,7 @@ fish:<name>                general Fish vocabulary resource
 
 ---
 
-## 15. Query Forms
+## 14. Query Forms
 
 Fish queries are Fish statements or Schools interpreted as query patterns.
 
@@ -866,7 +806,7 @@ This asks for relation resources or relator phrases `$r` connecting `#/Diane` to
 
 ---
 
-## 16. Assertion-State Results
+## 15. Assertion-State Results
 
 A concrete assertion query or assertion-pattern query may return one or more assertion states.
 
@@ -888,7 +828,7 @@ Multiple states MAY be returned when the graph contains conflict, ambiguity, unr
 
 ---
 
-## 17. Binding Results
+## 16. Binding Results
 
 Binding queries return bindings for query variables.
 
@@ -919,7 +859,7 @@ The canonical Fish binding-result graph syntax is deferred.
 
 ---
 
-## 18. Projection and Omission
+## 17. Projection and Omission
 
 Fish response bodies are projections of graph-native structures.
 
@@ -935,7 +875,7 @@ Summary schemas return compressed facts, counts, flags, bindings, assertion stat
 
 ---
 
-## 19. Graph-Change Payloads
+## 18. Graph-Change Payloads
 
 Fish Schools may be used as graph-change payloads.
 
@@ -947,7 +887,7 @@ Graph-change payloads are interpreted as atomic materialization units when submi
 
 ---
 
-## 20. Materialization Concepts
+## 19. Materialization Concepts
 
 ### Materialization
 
@@ -965,7 +905,7 @@ Responses may report partial validation, diagnostics, ambiguity, unresolved subg
 
 ---
 
-## 21. Fish Bodies
+## 20. Fish Bodies
 
 A Fish body is raw Fish source carried by a host binding, file, message, repository object, or embedded document.
 
@@ -986,7 +926,7 @@ Fish bodies are the ordinary authoring form for expressive Fish queries and grap
 
 ---
 
-## 22. Comments
+## 21. Comments
 
 Fish source MAY contain line comments and comment schools.
 
@@ -1016,23 +956,21 @@ The exact escaping rules for `}` inside comment schools are deferred.
 
 ---
 
-## 23. Whitespace
+## 22. Whitespace
 
-Fish source is whitespace-insensitive outside quoted literals, comment schools, canonical token-run spacing, and other explicitly whitespace-bearing literal forms.
+Fish source is whitespace-insensitive outside quoted literals, comment schools, and other explicitly whitespace-bearing literal forms.
 
 Whitespace MAY separate tokens for readability, but it does not affect Fish semantics or AUID computation unless the active profile explicitly defines a whitespace-bearing construct.
 
 Whitespace MUST separate relator phrase components in full School Fish source.
 
-Where canonical Fish source requires a separating space, that space MUST be U+0020 SPACE.
-
-A canonical Fish serializer MUST emit deterministic whitespace and MUST use U+0020 SPACE for canonical separating spaces.
+A canonical Fish serializer MUST emit deterministic whitespace.
 
 Incidental whitespace, comments, and comment schools MUST NOT contribute to AUID canonical projections.
 
 ---
 
-## 24. Media Type
+## 23. Media Type
 
 The canonical Purple Herring Fish media type is:
 
@@ -1053,7 +991,7 @@ The media type may be used for:
 
 ---
 
-## 25. Relationship to Host Bindings
+## 24. Relationship to Host Bindings
 
 Host bindings define how Fish documents, Schools, FRIs, request roots, query patterns, graph-change payloads, and response bodies are carried through a concrete host environment.
 
@@ -1063,7 +1001,7 @@ Other host bindings may target filesystems, Git repositories, archives, message 
 
 ---
 
-## 26. Non-Normative Culinary Notes
+## 25. Non-Normative Culinary Notes
 
 The following terminology is non-normative:
 
@@ -1086,7 +1024,7 @@ These metaphors are explanatory and aesthetic. They do not define conformance be
 
 ---
 
-## 27. Open Questions
+## 26. Open Questions
 
 The following remain open:
 
