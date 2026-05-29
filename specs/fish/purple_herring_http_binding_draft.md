@@ -40,6 +40,7 @@ Each graph root maps a request-target space to graph resources addressable by Fi
 ### Fish
 
 Fish is the C4 surface syntax, query/update expression language, and graph interchange representation used by Purple Herring graph services.
+
 ### C4 Relationship
 
 The HTTP binding transports Fish source and Fish response projections. The graph semantics belong to C4 and the active Purple Herring/Fish profile.
