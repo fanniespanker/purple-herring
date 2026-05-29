@@ -219,7 +219,7 @@ Accept: application/vnd.purple-herring.fish
 
 Here `/fish-srv/characters/.add` is the operation endpoint, and the operation endpoint is rooted at `/fish-srv/characters/` as declared by discovery. Inside the Fish body, `#` denotes the graph node corresponding to that root.
 
-Thus `#/Diane` and `#/Andrea` are FRI-relative references under `/fish-srv/characters/`.
+Thus `#/Diane` and `#/Andrea` are request-root-relative references under `/fish-srv/characters/`.
 
 ---
 
