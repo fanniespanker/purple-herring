@@ -625,12 +625,10 @@ Processors MUST NOT emit dot-separated address expressions as canonical CNML sub
 A carrier or host binding MAY percent-encode, escape, or otherwise serialize canonical CNML subresource paths when required, but such carrier encodings MUST preserve recovery of the canonical `#/...` path.
 
 ```ebnf
-address          = "#" | "#", subresource-path ;
-subresource-path = "/", segment, { "/", segment } ;
-segment          = non-empty-cnml-address-segment ;
+address = segment, { ".", segment } ;
 ```
 
-Whitespace MAY appear literally in `n` values and in canonical CNML subresource paths.
+Whitespace MAY appear literally in `n` values and in CNML address expressions.
 
 ### Escaping in Address Expressions
 
