@@ -198,16 +198,14 @@ Purple Herring-conformant CNML processors SHOULD pass `<fish>` block contents to
 
 Authors SHOULD NOT wrap each Fish statement in its own XML element. A single `<fish>` block MAY contain a School of one or more Fish statements.
 
-Fish examples inside CNML MAY use bare `&` for resolved non-polar assertions. Use `&+` or `&-` only when the example specifically needs positive or negative assertion polarity.
-
 Example:
 
 ```xml
 <fish>
-  # & has {genre} @ Fiction/noir;
-  # & has {intended_audience} @ Audience/general;
-  #/Act 1/Chapter 1 & portrays @ Relationships/dynamics/example_dynamic;
-  #/Act 2/Chapter 3 & explores @ Ideas/example_theme;
+  # &+ has_genre @ Fiction/noir;
+  # &+ intended_audience @ Audience/general;
+  #/Act 1/Chapter 1 &+ portrays @ Relationships/dynamics/example_dynamic;
+  #/Act 2/Chapter 3 &+ explores @ Ideas/example_theme;
 </fish>
 ```
 
@@ -254,10 +252,10 @@ Example:
   <identifier scheme="IRI">https://example.org/work/example</identifier>
 
   <fish>
-    # & has {genre} @ Fiction/noir;
-    # & has {intended_audience} @ Audience/general;
-    #/Act 1/Chapter 1 & portrays @ Relationships/dynamics/example_dynamic;
-    #/Act 2/Chapter 3 & explores @ Ideas/example_theme;
+    # &+ has_genre @ Fiction/noir;
+    # &+ intended_audience @ Audience/general;
+    #/Act 1/Chapter 1 &+ portrays @ Relationships/dynamics/example_dynamic;
+    #/Act 2/Chapter 3 &+ explores @ Ideas/example_theme;
   </fish>
 
   <mainmatter>
@@ -525,48 +523,6 @@ This section defines CNML-local addressing over authored `n` values, milestones,
 CNML elements MAY carry an `n` attribute.
 
 The `n` attribute defines an authored local CNML name usable as a segment in CNML address expressions.
-
-`n` is CNML-native addressing metadata, not XML identity. Authors MAY use spaces, capitalization, and human-readable labels in `n` values. Capitalization and ordinary title-like spacing are encouraged when they improve authoring clarity, source readability, or stylistic consistency.
-
-When an element has an authored `n` value, that value is the canonical CNML address segment for that element within its containing addressable context.
-
-Canonical CNML subresource paths are built from addressable CNML source elements in the resolved CNML containment tree. A source element is addressable when it has an authored `n` value, or when the active profile derives a fallback address segment for it.
-
-Unnamed structural or matter containers such as `<frontmatter>`, `<mainmatter>`, and `<backmatter>` do not contribute canonical path segments by default. They MAY contribute path segments only when they have explicit `n` values or when the active profile requires matter-frame addressing.
-
-The `#` token denotes the root of the current CNML/Fish resource context. `#` alone refers to that root resource.
-
-A canonical CNML subresource path begins after `#` as one or more slash-prefixed address segments. In `#/Act 1/Chapter 1`, `#` denotes the resource root and `/Act 1/Chapter 1` is the canonical subresource path under that root.
-
-Canonical CNML subresource paths MUST NOT end in a trailing slash. They MUST NOT contain empty path segments. Therefore `#/`, `#//Act 1`, `#/Act 1/`, and `#/Act 1//Chapter 1` are not canonical CNML subresource paths.
-
-A path segment names an addressable CNML subresource node; that node MAY still contain further addressable descendants.
-
-Examples:
-
-```text
-#                                      current resource root
-<act n="Act 1">                        #/Act 1
-<chapter n="Chapter 1">                #/Act 1/Chapter 1
-<scene n="Opening Scene">              #/Act 1/Chapter 1/Opening Scene
-<mainmatter><act n="Act 1">...</act>   #/Act 1
-```
-
-An absolute external resource IRI MAY be combined with a canonical CNML subresource fragment. In that combined form, the URI scheme, authority, and path identify the external/network resource; `#` denotes the root of that referenced resource; and the slash-prefixed path following `#` identifies a canonical CNML subresource under that resource.
-
-Example:
-
-```text
-https://fanniespanker.com/hardboiledwhore/
-  external/network resource root
-
-https://fanniespanker.com/hardboiledwhore/#/Act%203/Chapter%2015
-  carrier-encoded reference to canonical CNML subresource #/Act 3/Chapter 15
-```
-
-Slash characters after `#` are CNML subresource path separators. They MUST NOT be interpreted as network path separators for URI authority/path resolution.
-
-A carrier-safe encoding, slug, lowercase form, percent-encoded form, or machine-oriented address spelling MAY be defined by a profile or host binding. Such forms are transport or projection encodings. They are not replacements for the canonical CNML subresource path derived from authored `n` values.
 
 ```xml
 <work format="novel" n="Example Work">
