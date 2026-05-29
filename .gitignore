@@ -22,3 +22,6 @@ target
 
 # Local patch-script backups
 .patch-backups/
+
+# Local/generated patch delivery scripts
+patches.d/
