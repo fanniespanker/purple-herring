@@ -399,16 +399,6 @@ A binding query contains one or more query variables.
 
 A query variable requests binding results.
 
-### Assertion-State Segment Query
-
-A query MAY bind assertion-state segments:
-
-```fish
-#/Diane &{$assertion_polarity}{$assertion_resolution} is { owner } of @ #/Andrea;
-```
-
-This asks for matching relations while binding their assertion polarity and assertion resolution.
-
 ### Relation-Variable Query
 
 A relation-variable query binds a relation position.
