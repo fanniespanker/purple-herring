@@ -274,8 +274,8 @@ POST /fish-srv/characters/.add
 Content-Type: application/vnd.purple-herring.fish
 Accept: application/vnd.purple-herring.fish
 
-#/Diane&modo:owns@#/Andrea;
-#/Diane&modo:loves@#/Andrea;
+#/Diane &+ modo:owns @ #/Andrea;
+#/Diane &+ modo:loves @ #/Andrea;
 ```
 
 The submitted School may add new graph material, define relations within newly submitted material, or define relations from newly submitted material outward according to the active graph-service policy.
@@ -297,7 +297,7 @@ POST /fish-srv/characters/.mutate
 Content-Type: application/vnd.purple-herring.fish
 Accept: application/vnd.purple-herring.fish
 
-#/Diane&modo:owns@#/Andrea;
+#/Diane &+ modo:owns @ #/Andrea;
 ```
 
 The active graph-service policy defines which additions, edits, replacements, retractions, resolutions, transformations, or other graph changes are permitted.
@@ -317,7 +317,7 @@ POST /fish-srv/characters/.delete
 Content-Type: application/vnd.purple-herring.fish
 Accept: application/vnd.purple-herring.fish
 
-#/Diane&modo:owns@#/Andrea;
+#/Diane &+ modo:owns @ #/Andrea;
 ```
 
 The active graph-service policy defines whether deletion means physical deletion, graph retraction, tombstoning, archival deactivation, negation, or another profile-defined removal behavior.
@@ -376,7 +376,7 @@ Accept: application/vnd.purple-herring.fish
 A concrete assertion query asks for the assertion state or matching representation of a fully specified assertion.
 
 ```fish
-#/Diane&is_[owner]_of@#/Andrea;
+#/Diane &+ is {owner} of @ #/Andrea;
 ```
 
 ### Assertion-Pattern Query
@@ -384,17 +384,17 @@ A concrete assertion query asks for the assertion state or matching representati
 An assertion-pattern query contains no query-binding variables but may contain unspecified slots.
 
 ```fish
-#/Diane&is_[]_of@#/Andrea;
+#/Diane &+ is {} of @ #/Andrea;
 ```
 
-An empty template slot `[]` is existential for assertion-state evaluation but does not bind or return slot values.
+An empty template slot `{}` is existential for assertion-state evaluation but does not bind or return slot values.
 
 ### Binding Query
 
 A binding query contains one or more query variables.
 
 ```fish
-#/Diane&is_[$x]_of@#/Andrea;
+#/Diane &+ is {$x} of @#/Andrea;
 ```
 
 A query variable requests binding results.
@@ -404,14 +404,14 @@ A query variable requests binding results.
 A relation-variable query binds a relation position.
 
 ```fish
-#/Diane&$r@#/Andrea;
+#/Diane & $r @ #/Andrea;
 ```
 
 This asks for relation resources or relators `$r` such that the relation connects `#/Diane` to `#/Andrea`.
 
 ---
 
-## 17. Assertion-State Results
+## 17. Assertion-State Results // UPDATE
 
 An assertion query or assertion-pattern query may return one or more assertion states.
 
@@ -420,9 +420,11 @@ Initial assertion-state vocabulary:
 | State | Meaning |
 |---|---|
 | `ASSERTED_POSITIVE` | a matching positive assertion exists |
+| `ASSERTED_NON_POLAR` | a matching non-polar assertion exists |
 | `ASSERTED_NEGATIVE` | a matching negative assertion exists |
-| `UNRESOLVED_POSITIVE` | matching positive unresolved structure exists |
-| `UNRESOLVED_NEGATIVE` | matching negative unresolved structure exists |
+| `UNRESOLVED_POSITIVE` | a matching positive unresolved structure exists |
+| `UNRESOLVED_NON_POLAR` | a matching non-polar unresolved structure exists |
+| `UNRESOLVED_NEGATIVE` | a matching negative unresolved structure exists |
 | `NO_RELATION` | no matching asserted or unresolved relation is known under the active scope/profile |
 
 Multiple states MAY be returned when the active graph state contains conflict, ambiguity, unresolved material, or mixed assertion states.
