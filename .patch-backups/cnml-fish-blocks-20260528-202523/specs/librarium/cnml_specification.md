@@ -182,34 +182,6 @@ synopsis
 
 Relational, ontological, interpretive, subject, genre, audience, adaptation, parody, support/opposition, portrayal, and thematic metadata SHOULD be represented with fish relation statements.
 
-### CNML-Native Fish Blocks
-
-CNML-native Fish blocks are represented by plain `<fish>` elements.
-
-A `<fish>` element contains Fish source text. That Fish source is the concrete Purple Herring surface for C4 graph structures associated with the containing CNML context.
-
-A `<fish>` block MAY appear wherever block content is permitted by the active CNML profile.
-
-A `<fish>` block SHOULD be interpreted relative to its nearest containing CNML structural, publication, discourse, or evaluator context. When a Fish block uses `#`, that request-root/reference-root is the current CNML context as exposed by the active Purple Herring/C4 profile.
-
-A `<fish>` block is semantic graph data, not visible prose. Ordinary CNML renderers MAY ignore, preserve, warn on, expose, or externally hand off `<fish>` blocks according to their processing profile.
-
-Purple Herring-conformant CNML processors SHOULD pass `<fish>` block contents to Fish/C4 tooling such as Sashimi Bōchō / `sashimi_bouchou` for parsing and canonicalization.
-
-Authors SHOULD NOT wrap each Fish statement in its own XML element. A single `<fish>` block MAY contain a School of one or more Fish statements.
-
-Example:
-
-```xml
-<fish>
-  # &+ has_genre @ Fiction/noir;
-  # &+ intended_audience @ Audience/general;
-  #/Act 1/Chapter 1 &+ portrays @ Relationships/dynamics/example_dynamic;
-  #/Act 2/Chapter 3 &+ explores @ Ideas/example_theme;
-</fish>
-```
-
-
 `<link>` declares an associated resource for the current CNML context. It does not represent visible linked text by default.
 
 `<link>` is distinct from inline `<ref>`:
@@ -252,10 +224,10 @@ Example:
   <identifier scheme="IRI">https://example.org/work/example</identifier>
 
   <fish>
-    # &+ has_genre @ Fiction/noir;
-    # &+ intended_audience @ Audience/general;
-    #/Act 1/Chapter 1 &+ portrays @ Relationships/dynamics/example_dynamic;
-    #/Act 2/Chapter 3 &+ explores @ Ideas/example_theme;
+    #&has_genre@Fiction/noir;
+    #&intended_audience@Audience/general;
+    #Act 1.Chapter 1&portrays@Relationships/dynamics/example_dynamic;
+    #Act 2.Chapter 3&explores@Ideas/example_theme;
   </fish>
 
   <mainmatter>
