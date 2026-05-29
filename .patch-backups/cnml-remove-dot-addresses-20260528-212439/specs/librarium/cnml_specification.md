@@ -583,10 +583,8 @@ A carrier-safe encoding, slug, lowercase form, percent-encoded form, or machine-
 The milestone may be addressed as:
 
 ```text
-#/Act 1/Chapter 4/ms5
+Example Work.Act 1.Chapter 4.ms5
 ```
-
-This path is interpreted relative to the current resource root. The enclosing `<work n="Example Work">` identifies the work/resource context; it does not need to be repeated inside a work-root-relative subresource path.
 
 `n` is not an XML identifier. It is not required to be document-global.
 
@@ -602,27 +600,13 @@ This path is interpreted relative to the current resource root. The enclosing `<
 
 ### CNML Address Expressions
 
-A CNML address expression is a canonical subresource path over addressable CNML source elements.
+A CNML address expression is a path over authored `n` values and/or processor-derived address segments.
 
-The canonical address form is rooted with `#`.
+The path separator is `.`.
 
-`#` alone denotes the current resource root.
+Each unescaped `.` separates one path segment from the next.
 
-A subresource address appends one or more slash-prefixed address segments after `#`:
-
-```text
-#/Act 1/Chapter 4/ms5
-```
-
-Each `/segment` resolves against an addressable CNML unit in the current address scope.
-
-The slash `/` is the canonical CNML subresource path separator.
-
-Dot-separated CNML address paths are not canonical and are not part of this draft.
-
-Processors MUST NOT emit dot-separated address expressions as canonical CNML subresource paths.
-
-A carrier or host binding MAY percent-encode, escape, or otherwise serialize canonical CNML subresource paths when required, but such carrier encodings MUST preserve recovery of the canonical `#/...` path.
+A path segment resolves against an addressable CNML unit in the current address scope.
 
 ```ebnf
 address = segment, { ".", segment } ;
