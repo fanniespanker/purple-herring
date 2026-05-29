@@ -6,7 +6,7 @@ This document is a planning draft for Purple Herring graph persistence, backend 
 
 It is not an implementation commitment. It records the preferred backend strategy, architectural boundaries, and milestones for moving from ordinary storage substrates toward a possible dedicated Fish-native graph database.
 
-The provisional name for a hypothetical future Fish-native graph database is **Fish Fish Mongres**.
+The provisional name for a hypothetical future Fish-native graph database is **Fish Mongres**.
 
 This draft is aligned with the Fish v0.3 language direction:
 
@@ -101,7 +101,7 @@ Materializer / Query Planner / Projection Engine
         ↓
 Backend Adapter API
         ↓
-Postgres / document DB / graph DB / custom store / Mongres
+Postgres / document DB / graph DB / custom store / Fish Mongres
 ```
 
 The Fish Tank Logical Graph Engine owns:
